@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>银行同业交易中心成交数据</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+
+</head>
+<body>
+<a href="/">返回主页</a>
+
+<h1>银行同业交易中心成交数据</h1>
+<form action="" method="post">
+
+<label for="deal_date">选择日期：</label><input id="deal_date" type="date" name="date" value="2020-12-25"/>
+<!--<button type="submit" onclick="get_deal()">确认</button>-->
+    <button  value="Login" >确认</button>
+</form>
+
+<h2>数据列表如下：{{date|safe}}</h2>
+{{ deal_data|safe }}
+
+</body>
+</html>

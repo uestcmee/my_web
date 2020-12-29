@@ -1,0 +1,92 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>JavaScript实现获取table中某一列的值</title>
+    <script type="text/javascript">
+        function getTdValue()
+        {
+            var tableId = document.getElementById("tab");
+            var str =  Array();
+            for(var i=1; i < tableId.rows.length;i++)
+            {
+                // alert(tableId.rows[i].cells[1].innerHTML);
+                str.join(tableId.rows[i].cells[1].innerHTML)
+            }
+            alert(str)
+        }
+    </script>
+</head>
+
+<body style="width:100%; height:100%;">
+<table style="width:100%; height:100%;" id="tab" onclick="getTdValue()" border="1" cellpadding="1" cellspacing="1">
+    <tr style="background-color:#CCC;">
+        <th>学号</th>
+        <th>姓名</th>
+        <th>性别</th>
+        <th>年龄</th>
+    </tr>
+    <tr>
+        <td>1</td>
+        <td>李斯</td>
+        <td>男</td>
+        <td>22</td>
+    </tr>
+    <tr>
+        <td>2</td>
+        <td>王倩</td>
+        <td>女</td>
+        <td>20</td>
+    </tr>
+    <tr>
+        <td>3</td>
+        <td>于谦</td>
+        <td>男</td>
+        <td>18</td>
+    </tr>
+    <tr>
+        <td>4</td>
+        <td>柳浪</td>
+        <td>女</td>
+        <td>19</td>
+    </tr>
+    <tr>
+        <td>5</td>
+        <td>诸葛亮</td>
+        <td>男</td>
+        <td>20</td>
+    </tr>
+    <tr>
+        <td>6</td>
+        <td>东方云</td>
+        <td>女</td>
+        <td>21</td>
+    </tr>
+    <tr>
+        <td>7</td>
+        <td>公孙策</td>
+        <td>男</td>
+        <td>22</td>
+    </tr>
+    <tr>
+        <td>8</td>
+        <td>宝清</td>
+        <td>女</td>
+        <td>23</td>
+    </tr>
+    <tr>
+        <td>9</td>
+        <td>智育</td>
+        <td>男</td>
+        <td>20</td>
+    </tr>
+    <tr>
+        <td>10</td>
+        <td>柳丝丝</td>
+        <td>女</td>
+        <td>21</td>
+    </tr>
+</table>
+</body>
+</html> 

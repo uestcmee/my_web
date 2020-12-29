@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>黄金价差数据</title>
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="../static/css/au_data.css">
+    <script src="../static/js/echarts.min.js"></script>
+
+</head>
+<body>
+<a href="/">返回主页</a>
+
+
+<h1>黄金价差数据</h1>
+
+<div id="au_day" class="js_pic">黄金日内走势图 </div>
+<div id="au_delta" class="js_pic">黄金价差走势图 </div>
+<div id="au_ytm" class="js_pic">隐含收益率走势图 </div>
+
+<div id="high_freq">
+    <table>
+        <tr>
+            <td class="biaoge_title">代码</td>
+            <td>AU(T+D).SGE</td>
+            <td id="dominant">AU2106.SHF</td>
+        </tr>
+        <tr>
+            <td class="biaoge_title">简称</td>
+            <td>SGE黄金T+D</td>
+            <td>沪金2106</td>
+        </tr>
+        <tr>
+            <td class="biaoge_title">最新成交价</td>
+            <td id="xh_now">init</td>
+            <td id="qh_now">init</td>
+        </tr>
+        <tr>
+            <td class="biaoge_title">买价</td>
+            <td id="xh_buy">init</td>
+            <td id="qh_buy">init</td>
+        </tr>
+        <tr>
+            <td class="biaoge_title">卖价</td>
+            <td id="xh_sale">init</td>
+            <td id="qh_sale">init</td>
+        </tr>
+        <tr>
+            <td class="biaoge_title">收益率</td>
+            <td id="jiacha0">init</td>
+            <td id="ytm0">init</td>
+        </tr>
+        <tr>
+            <td class="biaoge_title">正套</td>
+            <td id="jiacha_zheng">init</td>
+            <td id="ytm_zheng">init</td>
+        </tr>
+        <tr>
+            <td class="biaoge_title">反套</td>
+            <td id="jiacha_fan">init</td>
+            <td id="ytm_fan">init</td>
+        </tr>
+    </table>
+</div>
+
+&nbsp;
+
+<table>
+    <tr>
+        <td>上次更新时间：</td>
+        <td id= "data_update_time"></td>
+    </tr>
+    <tr>
+        <td>现在时间：</td>
+        <td id= "now_time"></td>
+    </tr>
+
+</table>
+
+
+<h2>历史数据列表：</h2>
+<div id="au_hist" class="js_hist_pic">历史数据图</div>
+
+<div id="au_hist_data">{{ au_price|safe }}</div>
+
+
+
+<script src="../static/js/ec_au.js"></script>
+<script src="../static/js/au_data.js"></script>
+<script>
+    function fresh_time() {
+        var now_date = new Date().toLocaleString()
+        document.getElementById('now_time').innerText=(now_date)
+    }
+    fresh_time()
+    setInterval(fresh_time,1000)
+</script>
+</body>
+
+</html>

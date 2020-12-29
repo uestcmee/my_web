@@ -1,0 +1,47 @@
+.js_pic{
+    position: absolute;
+    width: 400px;
+    height: 200px;
+    left:500px;
+    align-content: center;
+    justify-content: center;
+}
+
+#au_day{
+    float: right;
+    margin-top: 0;
+}
+
+#au_delta{
+    float: right;
+    margin-top: 250px;
+
+}
+#au_ytm{
+    float: right;
+    margin-top: 500px;
+
+}
+
+
+#au_hist{
+
+    position: absolute;
+    width: 400px;
+    height: 200px;
+    left:10px;
+    align-content: center;
+    justify-content: center;
+}
+
+.deal{
+    margin-top: 250px;
+}
+
+table{
+    margin-left: 30px;
+}
+
+.biaoge_title{
+    font-weight: bold;
+}
