@@ -19,17 +19,25 @@
 <div id="au_ytm" class="js_pic">隐含收益率走势图 </div>
 
 <div id="high_freq">
-    <table>
+    <table border="1">
         <tr>
             <td class="biaoge_title">代码</td>
             <td>AU(T+D).SGE</td>
-            <td id="dominant">AU2106.SHF</td>
+            <td id="dominant" >
+                <select name="qhhy" id="qhhy">
+                    <option value="1">Au2106</option>
+                    <option value="2">Au2108</option>
+                </select>
+
+            </td>
+            <td><button id="change_contract" onclick="history.go(0)">切换合约</button></td>
+
         </tr>
-        <tr>
-            <td class="biaoge_title">简称</td>
-            <td>SGE黄金T+D</td>
-            <td>沪金2106</td>
-        </tr>
+<!--        <tr>-->
+<!--            <td class="biaoge_title">简称</td>-->
+<!--            <td>SGE黄金T+D</td>-->
+<!--            <td>沪金2106</td>-->
+<!--        </tr>-->
         <tr>
             <td class="biaoge_title">最新成交价</td>
             <td id="xh_now">init</td>
@@ -37,13 +45,13 @@
         </tr>
         <tr>
             <td class="biaoge_title">买价</td>
-            <td id="xh_buy">init</td>
-            <td id="qh_buy">init</td>
+            <td id="xh_buy" >init</td>
+            <td id="qh_buy" >init</td>
         </tr>
         <tr>
             <td class="biaoge_title">卖价</td>
-            <td id="xh_sale">init</td>
-            <td id="qh_sale">init</td>
+            <td id="xh_sale" >init</td>
+            <td id="qh_sale" >init</td>
         </tr>
         <tr>
             <td class="biaoge_title">收益率</td>

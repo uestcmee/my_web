@@ -6,6 +6,7 @@ import flask.json
 import json,decimal
 import pandas as pd
 from datetime import timedelta
+import time
 
 class MyJSONEncoder(flask.json.JSONEncoder):
     def default(self, obj):
@@ -54,8 +55,15 @@ def fetch_lookback_data():
 @app.route('/au_data',methods=['GET','POST'])
 def au_info():
     df=pd.read_csv('./data/Au/0_close_hist.csv',encoding='gbk')
+    df['收益率']=df['收益率'].apply(lambda x:round(x,2))
     return render_template('au_data.html',
                            au_price=df.to_html(classes="deal",table_id='hist_table',index=False))
+
+from au_data import contract_list
+@app.route('/au_contract_list')
+def au_contract_list():
+    return contract_list()
+
 
 
 from au_data import get_both
@@ -64,8 +72,6 @@ from au_data import get_both
 def au_real_time():
     df=get_both()
     df.dropna(axis=0,inplace=True) # 不能有空值，需要处理
-
-
 
     df_dict={key: list(map(lambda x:round(x,2) ,value.to_list())) for key, value in df.iteritems()}
     df_dict['times']=df.index.tolist()
@@ -109,6 +115,10 @@ from au_data import high_freq
 
 @app.route('/au_high_freq')
 def fetch_high_freq():
+    while high_freq()==0:
+        print('数据获取失败')
+        time.sleep(1)
+    # print(high_freq())
     return jsonify(high_freq())
 
 

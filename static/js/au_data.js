@@ -1,3 +1,22 @@
+
+function get_contract(){
+    $.ajax({
+    url:'/au_contract_list',
+    success: function(data){
+        $('#qhhy').contents().remove();
+        for (var key in data){
+            var item = data[key]
+
+            $('<option value='+key+'>'+item+'</option>').appendTo('#qhhy');
+        }
+    },
+    error:function(){
+
+    }
+    })
+}
+get_contract()
+
 function getTdValue()
 {
     var sleep = function(time) {
@@ -11,7 +30,7 @@ function getTdValue()
 
     for(var i=1; i < tableId.rows.length;i++)
     {
-        // alert(tableId.rows[i].cells[1].innerHTML);
+
         times.push(tableId.rows[i].cells[0].innerHTML)
         ytm.push(tableId.rows[i].cells[4].innerHTML)
 
@@ -20,10 +39,27 @@ function getTdValue()
     au_hist_option.series[0].data = ytm;
     au_hist.setOption(au_hist_option);
 }
+
 getTdValue();
-setInterval(getTdValue,1000)
+function fade(){
+
+
+    document.getElementById('qh_now').classList.remove('red','green')
+    document.getElementById('xh_now').classList.remove('red','green')
+    document.getElementById('qh_buy').classList.remove('red','green')
+    document.getElementById('xh_buy').classList.remove('red','green')
+    document.getElementById('qh_sale').classList.remove('red','green')
+    document.getElementById('xh_sale').classList.remove('red','green')
+
+}
+fade();
+setInterval(fade,1000)
 
 function high_freq_data(){
+    var sleep = function(time) {
+        var startTime = new Date().getTime() + parseInt(time, 10);
+        while(new Date().getTime() < startTime) {}
+    };
     $.ajax({
         url:'/au_high_freq',
         timeout:10000,
@@ -34,6 +70,60 @@ function high_freq_data(){
            $('#qh_sale').html(data.qh_sale_p);
            $('#xh_buy').html(data.xh_buy_p);
            $('#xh_sale').html(data.xh_sale_p);
+           if (data.qh_now_p > document.getElementById('qh_now').innerText){
+               document.getElementById('qh_now').classList.add('red')
+           }
+           else if (data.qh_now_p < document.getElementById('qh_now').innerText){
+               document.getElementById('qh_now').classList.add('green')
+           }
+           else {
+
+           }
+            if (data.xh_now_p > document.getElementById('xh_now').innerText){
+                document.getElementById('xh_now').classList.add('red')
+            }
+            else if (data.xh_now_p < document.getElementById('xh_now').innerText){
+                document.getElementById('xh_now').classList.add('green')
+            }
+            else {
+
+            }
+            if (data.xh_buy_p > document.getElementById('xh_buy').innerText){
+                document.getElementById('xh_buy').classList.add('red')
+            }
+            else if (data.xh_buy_p < document.getElementById('xh_buy').innerText){
+                document.getElementById('xh_buy').classList.add('green')
+            }
+            else {
+
+            }
+            if (data.qh_buy_p > document.getElementById('qh_buy').innerText){
+                document.getElementById('qh_buy').classList.add('red')
+            }
+            else if (data.qh_buy_p < document.getElementById('qh_buy').innerText){
+                document.getElementById('qh_buy').classList.add('green')
+            }
+            else {
+
+            }
+            if (data.xh_sale_p > document.getElementById('xh_sale').innerText){
+                document.getElementById('xh_sale').classList.add('red')
+            }
+            else if (data.xh_sale_p < document.getElementById('xh_sale').innerText){
+                document.getElementById('xh_sale').classList.add('green')
+            }
+            else {
+
+            }
+            if (data.qh_sale_p > document.getElementById('qh_sale').innerText){
+                document.getElementById('qh_sale').classList.add('red')
+            }
+            else if (data.qh_sale_p < document.getElementById('qh_sale').innerText){
+                document.getElementById('qh_sale').classList.add('green')
+            }
+            else {
+
+            }
            $('#qh_now').html(data.qh_now_p);
            $('#xh_now').html(data.xh_now_p);
            $('#ytm0').html(data.puretao);
@@ -42,7 +132,7 @@ function high_freq_data(){
            $('#jiacha0').html(data.puretao_bp);
            $('#jiacha_zheng').html(data.zhengtao_bp);
            $('#jiacha_fan').html(data.fantao_bp);
-           // $('#jiacha0').html($('#qh_now')-$('#xh_now'));
+
 
         },
         error: function (){
@@ -51,8 +141,24 @@ function high_freq_data(){
     })
 
 }
+
 high_freq_data();
 setInterval(high_freq_data,1000)
+//function noon_stop(){
+//    var inter=setInterval(high_freq_data,1000)
+//
+//    var now=new Date()
+//    var noon_0 = new Date()
+//        noon_0.setHours(11,30,0)
+//    var noon_1 = new Date()
+//        noon_1.setHours(12,59,0)
+//    if (now>noon_0 && now<noon_1){
+//        clearInterval(inter)
+//    }
+//    else{
+//    }
+//}
+//setInterval(noon_stop,1000)//1s检测一次在中午
 
 function au_day_price() {
     $.ajax({

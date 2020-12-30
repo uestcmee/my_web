@@ -120,7 +120,13 @@ var au_delta_option = {
         name: '价差',
         type: 'line',
         smooth: true,
-        data: []
+        data: [],
+        markPoint: {
+            data: [
+                    {type: 'max', name: '最大值'},
+                    {type: 'min', name: '最小值'}
+                ]
+            },
     }]
 };
 
@@ -179,7 +185,13 @@ var au_ytm_option = {
         name: '收益率',
         type: 'line',
         smooth: true,
-        data: []
+        data: [],
+        markPoint: {
+            data: [
+                {type: 'max', name: '最大值'},
+                {type: 'min', name: '最小值'}
+            ]
+        },
     }]
 };
 
@@ -239,7 +251,13 @@ var au_hist_option = {
         name: '收益率',
         type: 'line',
         smooth: true,
-        data: []
+        data: [],
+        markPoint: {
+            data: [
+                    {type: 'max', name: '最大值'},
+                    {type: 'min', name: '最小值'}
+                ]
+            },
     }]
 };
 

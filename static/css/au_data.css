@@ -45,3 +45,13 @@ table{
 .biaoge_title{
     font-weight: bold;
 }
+
+#qhhy{
+    font-size: large;
+}
+.red{
+    background-color: lightcoral;
+}
+.green{
+    background-color: lightgreen;
+}
