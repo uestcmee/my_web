@@ -132,6 +132,7 @@ function high_freq_data(){
            $('#jiacha0').html(data.puretao_bp);
            $('#jiacha_zheng').html(data.zhengtao_bp);
            $('#jiacha_fan').html(data.fantao_bp);
+           $('#data_update_time').html(data.fresh_time)
 
 
         },
@@ -184,7 +185,6 @@ function au_day_price() {
 
              var date=new Date().toLocaleString()
 
-             $('#data_update_time').html(date)
         },
         error: function () {
 
