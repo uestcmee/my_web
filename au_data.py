@@ -22,7 +22,10 @@ def get_hist():
 
 def high_freq(contract='AU2106'):
     high_freq_path = './data/Au/high_freq/'
-    full_df = pd.DataFrame(eval(open('{}{}.txt'.format(high_freq_path, today_str)).readline(-1)))
+    with open('{}{}_{}.txt'.format(high_freq_path, today_str, today.hour)) as f:
+        line = f.readlines()[-1]
+        f.close()
+    full_df = pd.DataFrame(eval(line))
     tot_dict = dict({k: v for k, v in zip(['xh_buy_p', 'xh_sale_p', 'xh_now_p'], full_df.loc['AUTD'][1:4].tolist())})
     future_info = full_df.loc[contract]
     xh_dict = {'qh_sale_p': future_info['sale'], 'qh_buy_p': future_info['buy'],
@@ -36,7 +39,6 @@ def high_freq(contract='AU2106'):
                'fresh_time': future_info['time']}
     tot_dict.update(xh_dict)
     return tot_dict
-
 
 
 if __name__ == '__main__':

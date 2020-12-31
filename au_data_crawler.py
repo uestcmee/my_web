@@ -17,9 +17,9 @@ today_str = ''
 def is_trade_time():
     now = datetime.datetime.now()
     t = str(now)[11:19]
-    print(t)
-    if t >= '20:59:55' or t <= '02:30:05' or (t >= '9:29:55' and t <= '11:30:05') or (
-            t > '13:29:55' and t < '15:00:05'):
+    # print(t)
+    if t >= '20:59:55' or t <= '02:30:05' or (t >= '09:29:55' and t <= '11:30:05') or (
+            t > '13:29:55' and t < '15:31:00'):
         return True
     else:
         return False
@@ -52,6 +52,13 @@ def one_future_real_time(symbol='AU2106'):
     return pd.DataFrame(df.price)
 
 
+def update_hist(au_and_future):
+    close_data = au_and_future.loc['15:00'].tolist()
+    date = str(datetime.datetime.now())[:10]
+    with open('./data/Au/0_close_hist.csv', 'a') as f:
+        f.write(','.join([date] + [str(x) for x in close_data]) + '\n')
+        f.close()
+
 def get_both():
     future_oneday_real_time = one_future_real_time(symbol='AU2106')
     au_oneday_real_time = au_real_time()
@@ -68,11 +75,10 @@ def get_both():
     today = datetime.datetime.today()
     day_to_delivery = (delivery_day - today).days + 1  # 补上半天的差
     au_and_future['ytm'] = au_and_future['diff'] * 365 / ((day_to_delivery) * au_and_future['Au_TD']) * 100
-    # if str(datetime.datetime.now().time()) > '15:32':
-    #     day_str = str(datetime.datetime.now())[:10] + '.csv'
-    #     if day_str not in os.listdir('./data/Au/'):
-    #         au_and_future.to_csv('./data/Au/{}'.format(day_str))
-    #         update_hist(au_and_future)
+    if str(datetime.datetime.now().time()) > '15:32':
+        if '.csv'.format(today_str) not in os.listdir('./data/Au/'):
+            au_and_future.to_csv('./data/Au/{}.csv'.format(today_str))
+            update_hist(au_and_future)
     return au_and_future
 
 
@@ -242,29 +248,39 @@ def main_fun():
         today_str = str(today + one_day)[:10]
     else:
         today_str = str(today)[:10]
+
     contract_list_path = './data/Au/contract_info/'
+
     # TODO 分天的间隔细节还需考虑
     if '{}.csv'.format(today_str) not in os.listdir(contract_list_path):
-        save_contract_list().to_csv(contract_list_path + '{}.csv'.format(today_str),
-                                    encoding='gbk')
+        save_contract_list().sort_values('position', ascending=False) \
+            .to_csv(contract_list_path + '{}.csv'.format(today_str),
+                    encoding='gbk')
         print('{}合约列表保存完毕'.format(today_str))
-
     global qh_symbol_list
     qh_symbol_list = pd.read_csv(contract_list_path + '{}.csv'.format(today_str),
                                  encoding='gbk', index_col=0).index.tolist()
 
     # 分钟序列，每次写入完整的
     # 200行0.3s,有点久。。。不过20s一次，还好吧
-    minutes_path = './data/Au/minutes/'
-    # get_both().to_csv(minutes_path+'{}.csv'.format(today_str))
+    now_time = int(time.time())
+    if now_time % 20 == 0:
+        minutes_path = './data/Au/minutes/'
+        get_both().to_csv(minutes_path + '{}.csv'.format(today_str))
 
-    with open('./data/Au/high_freq/{}.txt'.format(today_str), 'a') as f:
-        f.write(high_freq().to_json())
+    # 高频数据，每次都要运行，每一个小时保存一个文件，否则文件太大了
+    with open('./data/Au/high_freq/{}_{}.txt'.format(today_str, today.hour), 'a') as f:
+        f.write(high_freq().to_json() + '\n')
         f.close()
 
 
+def crawler_loop():
+    while True:
+        if is_trade_time():
+            main_fun()
+        time.sleep(2)
 print('已开始运行')
 
 if __name__ == '__main__':
-    main_fun()
+    crawler_loop()
     # TODO 黄金分时成交明细

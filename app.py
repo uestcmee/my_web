@@ -1,7 +1,7 @@
 import datetime
 import decimal
 import json
-from datetime import timedelta
+import threading
 
 import flask.json
 import pandas as pd
@@ -78,7 +78,8 @@ def au_contract_list():
     contract_list_path = './data/Au/contract_info/'
     qh_symbol_list = pd.read_csv(contract_list_path + '{}.csv'.format(today_str),
                                  encoding='gbk', index_col=0).index.tolist()
-    contract_list_dict = {x: x for x in qh_symbol_list}
+    # print(qh_symbol_list)
+    contract_list_dict = {i: x for i, x in enumerate(qh_symbol_list)}
     return contract_list_dict
 
 
@@ -128,20 +129,30 @@ def get_user_info():
 
 from au_data import high_freq
 
-@app.route('/au_high_freq')
+
+@app.route('/au_high_freq', methods=['GET', 'POST'])
 def fetch_high_freq():
+    if request.method == 'POST':
+        contract_name = (dict(eval(request.get_data().decode('ANSI')))['name'])
+        if len(contract_name) < 3:
+            return jsonify({0: 0})
+        return jsonify(high_freq(contract=contract_name))
+    else:
+        # print('not a post')
+        return jsonify({0: 0})
 
-    return jsonify(high_freq())
 
-
-
-app.config['DEBUG']=True
-app.config['SEND_FILE_MAX_AGE_DEFAULT']=timedelta(seconds=1)
+# app.config['DEBUG']=True
+# app.config['SEND_FILE_MAX_AGE_DEFAULT']=timedelta(seconds=1)
 
 # TODO 在黄金页面加入高频实时买卖盘信息
 # TODO 识别并切换主力合约
 # TODO 加入多期货合约序列支持
 if __name__ == '__main__':
-    print(app.url_map)
-    # app.run(host='0.0.0.0', port = 8000)
-    app.run()
+    from au_data_crawler import crawler_loop
+
+    t = threading.Thread(target=crawler_loop)
+    t.start()
+    # print(app.url_map)
+    app.run(host='0.0.0.0', port=8000)
+    # app.run()
