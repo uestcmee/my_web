@@ -9,7 +9,7 @@
 
 </head>
 <body>
-<a href="/">返回主页</a>
+<!--<a href="/">返回主页</a>-->
 
 
 <h1>黄金价差数据</h1>
@@ -17,7 +17,7 @@
 <div id="au_day" class="js_pic">黄金日内走势图 </div>
 <div id="au_delta" class="js_pic">黄金价差走势图 </div>
 <div id="au_ytm" class="js_pic">隐含收益率走势图 </div>
-
+<h3><span>当前持仓量最大期货:</span><span id="most_active"></span></h3>
 <div id="high_freq">
     <table border="1">
         <tr>
@@ -25,12 +25,12 @@
             <td>AU(T+D).SGE</td>
             <td id="dominant" >
                 <select name="qhhy" id="qhhy">
-                    <option value="1">Au2106</option>
-                    <option value="2">Au2108</option>
+                    <!--                    <option value="1">Au2106</option>-->
+                    <!--                    <option value="2">Au2108</option>-->
                 </select>
 
             </td>
-            <td><button id="change_contract" onclick="history.go(0)">切换合约</button></td>
+            <!--            <td><button id="change_contract" onclick="history.go(0)">切换合约</button></td>-->
 
         </tr>
 <!--        <tr>-->
@@ -90,8 +90,6 @@
 <div id="au_hist" class="js_hist_pic">历史数据图</div>
 
 <div id="au_hist_data">{{ au_price|safe }}</div>
-
-
 
 <script src="../static/js/ec_au.js"></script>
 <script src="../static/js/au_data.js"></script>

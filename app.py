@@ -1,12 +1,14 @@
-from flask import Flask, render_template
-from flask import request
-from flask import jsonify
 import datetime
+import decimal
+import json
+import threading
+
 import flask.json
-import json,decimal
 import pandas as pd
-from datetime import timedelta
-import time
+from flask import Flask, render_template
+from flask import jsonify
+from flask import request
+
 
 class MyJSONEncoder(flask.json.JSONEncoder):
     def default(self, obj):
@@ -15,7 +17,8 @@ class MyJSONEncoder(flask.json.JSONEncoder):
             return str(obj)
         return super(MyJSONEncoder, self).default(obj)
 
-#循环引用，解决方法，推迟一方的导入，让例外一方完成
+
+# 循环引用，解决方法，推迟一方的导入，让例外一方完成
 app = Flask(__name__)
 app.json_encoder = MyJSONEncoder
 
@@ -35,6 +38,7 @@ def py_fetch_lookback_data(lf=1,sf=1,lm=30,sm=5):
     res=[df.index.tolist(),df.iloc[:,0].tolist(),df.iloc[:,1].tolist()]
     return res
 
+
 @app.route('/lookback',methods=['GET','POST'])
 def fetch_lookback_data():
     lf,sf,lm,sm=0,0,0,0
@@ -52,29 +56,41 @@ def fetch_lookback_data():
     [day,stg_r, idx_r] = data
     return jsonify({'day': day, 'stg_r': stg_r, 'idx_r': idx_r})
 
-@app.route('/au_data',methods=['GET','POST'])
-def au_info():
-    df=pd.read_csv('./data/Au/0_close_hist.csv',encoding='gbk')
-    df['收益率']=df['收益率'].apply(lambda x:round(x,2))
-    return render_template('au_data.html',
-                           au_price=df.to_html(classes="deal",table_id='hist_table',index=False))
 
-from au_data import contract_list
+@app.route('/au_data', methods=['GET', 'POST'])
+def au_info():
+    df = pd.read_csv('./data/Au/0_close_hist.csv', encoding='gbk')
+    df['收益率'] = df['收益率'].apply(lambda x: round(x, 2))
+    return render_template('au_data.html',
+                           au_price=df.to_html(classes="deal", table_id='hist_table', index=False))
+
+
+today = datetime.datetime.now()
+one_day = datetime.timedelta(days=1)
+if today.hour >= 17:
+    today_str = str(today + one_day)[:10]
+else:
+    today_str = str(today)[:10]
+
+
 @app.route('/au_contract_list')
 def au_contract_list():
-    return contract_list()
+    contract_list_path = './data/Au/contract_info/'
+    qh_symbol_list = pd.read_csv(contract_list_path + '{}.csv'.format(today_str),
+                                 encoding='gbk', index_col=0).index.tolist()
+    # print(qh_symbol_list)
+    contract_list_dict = {i: x for i, x in enumerate(qh_symbol_list)}
+    return contract_list_dict
 
 
-
-from au_data import get_both
-
-@app.route('/au_real_time',methods=['GET','POST'])
+@app.route('/au_real_time', methods=['GET', 'POST'])
 def au_real_time():
-    df=get_both()
-    df.dropna(axis=0,inplace=True) # 不能有空值，需要处理
-
-    df_dict={key: list(map(lambda x:round(x,2) ,value.to_list())) for key, value in df.iteritems()}
-    df_dict['times']=df.index.tolist()
+    minutes_path = './data/Au/minutes/'
+    df = pd.read_csv(minutes_path + '{}.csv'.format(today_str),
+                     encoding='gbk', index_col=0)
+    df.dropna(axis=0, inplace=True)  # 不能有空值，需要处理
+    df_dict = {key: list(map(lambda x: round(x, 2), value.to_list())) for key, value in df.iteritems()}
+    df_dict['times'] = df.index.tolist()
     return jsonify(df_dict)
 
 
@@ -113,23 +129,30 @@ def get_user_info():
 
 from au_data import high_freq
 
-@app.route('/au_high_freq')
+
+@app.route('/au_high_freq', methods=['GET', 'POST'])
 def fetch_high_freq():
-    while high_freq()==0:
-        print('数据获取失败')
-        time.sleep(1)
-    # print(high_freq())
-    return jsonify(high_freq())
+    if request.method == 'POST':
+        contract_name = (dict(eval(request.get_data().decode('ANSI')))['name'])
+        if len(contract_name) < 3:
+            return jsonify({0: 0})
+        return jsonify(high_freq(contract=contract_name))
+    else:
+        # print('not a post')
+        return jsonify({0: 0})
 
 
-
-app.config['DEBUG']=True
-app.config['SEND_FILE_MAX_AGE_DEFAULT']=timedelta(seconds=1)
+# app.config['DEBUG']=True
+# app.config['SEND_FILE_MAX_AGE_DEFAULT']=timedelta(seconds=1)
 
 # TODO 在黄金页面加入高频实时买卖盘信息
 # TODO 识别并切换主力合约
 # TODO 加入多期货合约序列支持
 if __name__ == '__main__':
-    print(app.url_map)
-    # app.run(host='0.0.0.0', port = 8000)
-    app.run()
+    from au_data_crawler import crawler_loop
+
+    t = threading.Thread(target=crawler_loop)
+    t.start()
+    # print(app.url_map)
+    app.run(host='0.0.0.0', port=8000)
+    # app.run()

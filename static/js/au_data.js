@@ -4,14 +4,16 @@ function get_contract(){
     url:'/au_contract_list',
     success: function(data){
         $('#qhhy').contents().remove();
+        console.log(data)
         for (var key in data){
+            console.log(key)
             var item = data[key]
-
             $('<option value='+key+'>'+item+'</option>').appendTo('#qhhy');
         }
+//        $('#qhhy').val('AU2106');
+        $('#most_active').html(data[0])
     },
     error:function(){
-
     }
     })
 }
@@ -43,7 +45,6 @@ function getTdValue()
 getTdValue();
 function fade(){
 
-
     document.getElementById('qh_now').classList.remove('red','green')
     document.getElementById('xh_now').classList.remove('red','green')
     document.getElementById('qh_buy').classList.remove('red','green')
@@ -60,16 +61,18 @@ function high_freq_data(){
         var startTime = new Date().getTime() + parseInt(time, 10);
         while(new Date().getTime() < startTime) {}
     };
+
+
     $.ajax({
+        type:"POST",
         url:'/au_high_freq',
+        data:JSON.stringify({'name':$("#qhhy").find("option:selected").text()}),
+        contentType:'application/json',
         timeout:10000,
         dataType:'json',
         success:function (data){
+            
 
-           $('#qh_buy').html(data.qh_buy_p);
-           $('#qh_sale').html(data.qh_sale_p);
-           $('#xh_buy').html(data.xh_buy_p);
-           $('#xh_sale').html(data.xh_sale_p);
            if (data.qh_now_p > document.getElementById('qh_now').innerText){
                document.getElementById('qh_now').classList.add('red')
            }
@@ -124,6 +127,10 @@ function high_freq_data(){
             else {
 
             }
+           $('#qh_buy').html(data.qh_buy_p);
+           $('#qh_sale').html(data.qh_sale_p);
+           $('#xh_buy').html(data.xh_buy_p);
+           $('#xh_sale').html(data.xh_sale_p);
            $('#qh_now').html(data.qh_now_p);
            $('#xh_now').html(data.xh_now_p);
            $('#ytm0').html(data.puretao);
@@ -132,7 +139,7 @@ function high_freq_data(){
            $('#jiacha0').html(data.puretao_bp);
            $('#jiacha_zheng').html(data.zhengtao_bp);
            $('#jiacha_fan').html(data.fantao_bp);
-
+           $('#data_update_time').html(data.fresh_time)
 
         },
         error: function (){
@@ -143,22 +150,8 @@ function high_freq_data(){
 }
 
 high_freq_data();
-setInterval(high_freq_data,1000)
-//function noon_stop(){
-//    var inter=setInterval(high_freq_data,1000)
-//
-//    var now=new Date()
-//    var noon_0 = new Date()
-//        noon_0.setHours(11,30,0)
-//    var noon_1 = new Date()
-//        noon_1.setHours(12,59,0)
-//    if (now>noon_0 && now<noon_1){
-//        clearInterval(inter)
-//    }
-//    else{
-//    }
-//}
-//setInterval(noon_stop,1000)//1s检测一次在中午
+setInterval(high_freq_data,2000)
+
 
 function au_day_price() {
     $.ajax({
@@ -182,12 +175,10 @@ function au_day_price() {
              au_delta.setOption(au_delta_option);
              au_ytm.setOption(au_ytm_option);
 
-             var date=new Date().toLocaleString()
+             // var date=new Date().toLocaleString()
 
-             $('#data_update_time').html(date)
         },
         error: function () {
-
             console.log("失败了")
         }
     })
