@@ -116,7 +116,10 @@ def save_contract_list():  # 上海期货交易所数据，可以直接获取全
 
     delivery_info = delivery_info[['symbol', 'listed_day', 'delivery_day']]  # 代码，上市日，到期日
     delivery_info.set_index('symbol', inplace=True)
-    contract_other_info = contract_list_sina().loc[delivery_info.index.tolist()]
+
+    contract_other_info = contract_list_sina()
+    both_list = set(contract_other_info.index.tolist()).intersection(delivery_info.index.tolist())
+    contract_other_info = contract_other_info.loc[both_list]
     delivery_info = pd.concat([delivery_info, contract_other_info], axis=1)
     # global qh_symbol_list #不能这样，这里不一定每次都运行
     # qh_symbol_list=delivery_info.index.tolist()

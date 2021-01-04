@@ -153,6 +153,7 @@ if __name__ == '__main__':
 
     t = threading.Thread(target=crawler_loop)
     t.start()
+    print('爬虫已开始运行')
     # print(app.url_map)
-    app.run(host='0.0.0.0', port=8000)
-    # app.run()
+    # app.run(host='0.0.0.0', port=8000)
+    app.run()
