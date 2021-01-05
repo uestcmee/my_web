@@ -1,6 +1,8 @@
+# coding:utf-8
 import datetime
 import decimal
 import json
+import os
 import threading
 
 import flask.json
@@ -142,8 +144,40 @@ def fetch_high_freq():
         return jsonify({0: 0})
 
 
-# app.config['DEBUG']=True
-# app.config['SEND_FILE_MAX_AGE_DEFAULT']=timedelta(seconds=1)
+from deal_process import deal_process_func
+
+
+@app.route('/upload', methods=['POST', 'GET'])
+def upload():
+    if request.method == 'POST':
+        f = request.files['file']
+        if (f.filename == ''):
+            return render_template('upload.html', message='未选择文件')
+        basepath = os.path.dirname(__file__)  # 当前文件所在路径
+        # secure_filename 只支持英文
+        upload_path = os.path.join(basepath, 'static\\uploads', (f.filename))  # 注意：没有的文件夹一定要先创建，不然会提示没有该路径
+        f.save(upload_path)
+        # return redirect(url_for('upload'))
+        if f.filename.split('.')[-1] == 'txt':
+            tot_df_dict = deal_process_func(f.filename)
+            # show_data=tot_df.to_html(classes='deal_df')
+            return render_template('upload.html', message='整理完成',
+                                   now_date=f.filename.split('.')[0],
+                                   df_duanrong=tot_df_dict['短融'].to_html(),
+                                   df_zhongpiao=tot_df_dict['中票'].to_html(),
+                                   df_qiyezhai=tot_df_dict['企业债'].to_html(),
+                                   df_qita=tot_df_dict['其他'].to_html(),
+                                   )
+        else:
+            show_data = '格式不支持显示'
+            return render_template('upload.html', message='选择文件上传')
+        # print(show_data )
+
+    return render_template('upload.html', message='选择文件上传')
+
+
+app.config['DEBUG'] = True
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=1)
 
 # TODO 在黄金页面加入高频实时买卖盘信息
 # TODO 识别并切换主力合约

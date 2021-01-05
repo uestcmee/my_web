@@ -1,3 +1,6 @@
-a = ['AU2106', 'AU2102', 'AU2104', 'AU2103', 'AU2108', 'AU2110', 'AU2101', 'AU2112']
-
-print({x: x for x in a})
+# coding:utf-8
+with open('./static/uploads/2020年06月24日周三.txt') as f:
+    show_data = f.read()  # .encode('utf-8')
+    # show_data=make_response(show_data)
+    print(show_data)
+    f.close()
