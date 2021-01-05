@@ -3,9 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <title>主页</title>
+    <script>
+        // (function() {
+        //     // var title = document.title
+        //     // window.onblur = function () {
+        //     //     document.title = '网页不活跃！'
+        //     // }
+        //     // window.onfocus = function () {
+        //     //     document.title = title
+        //     // }
+        //     window.addEventListener('blur', ()=>{
+        //         document.title = '放入后台';
+        //     }, true);
+        //
+        //     window.addEventListener('focus', ()=>{
+        //         document.title = '进入页面';
+        //     }, true);
+        // })()
+
+    </script>
 </head>
 <body>
 <h1>小工具合集</h1>
+<p id="now_time"></p>
 <table>
 <tr>
     <td>1</td>
@@ -25,5 +45,40 @@
 </tr>
 </table>
 
+<script>
+    function fresh_time() {
+        var now_date = new Date().toLocaleString()
+        document.getElementById('now_time').innerText=(now_date)
+    }
+    fresh_time()
+    var loop=setInterval(fresh_time,1000)
+    window.addEventListener('blur', ()=>{
+        document.title = document.title.split ('（')[0]+'（不活跃）';
+        clearInterval(loop)
+        // var loop=setInterval(high_freq_data,30000)
+
+    }, true);
+
+    window.addEventListener('focus', ()=>{
+        document.title = document.title.split ('（')[0]+'（活跃）';
+        clearInterval(loop)
+        loop=setInterval(fresh_time,1000)
+
+    }, true);
+
+    // var title = document.title
+    //  window.onblur = function () {
+    //     document.title = '网页不活跃！'
+    //      clearInterval(loop)
+    //
+    //      console.log('hello')
+    // }
+    // window.onfocus = function () {
+    // document.title = title
+    // clearInterval(loop)
+    // var loop=setInterval(fresh_time,1000)
+    // }
+
+</script>
 </body>
 </html>

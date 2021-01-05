@@ -150,7 +150,23 @@ function high_freq_data(){
 }
 
 high_freq_data();
-setInterval(high_freq_data,2000)
+var loop=setInterval(high_freq_data,2000)
+
+//如果窗口不活跃，则降低刷新评率
+window.addEventListener('blur', ()=>{
+    document.title = document.title.split ('（')[0]+'（窗口不活跃）';
+    clearInterval(loop)
+    loop=setInterval(high_freq_data,10000)
+
+}, true);
+
+window.addEventListener('focus', ()=>{
+    document.title = document.title.split ('（')[0]+'（窗口活跃）';
+    clearInterval(loop)
+    loop=setInterval(high_freq_data,2000)
+
+}, true);
+
 
 
 function au_day_price() {
