@@ -2,17 +2,11 @@
 此文件中最好只包括需要调用数据时用到的函数
 数据从文件中读取
 """
-import datetime
 import os
 
 import pandas as pd
 
-today = datetime.datetime.now()
-one_day = datetime.timedelta(days=1)
-if today.hour >= 17:
-    today_str = str(today + one_day)[:10]
-else:
-    today_str = str(today)[:10]
+from au_data_crawler import get_today_str
 
 
 def get_hist():
@@ -20,11 +14,19 @@ def get_hist():
         print(file)
 
 
-def high_freq(contract='AU2106'):
+def high_freq(contract: str):
+    day_dict = get_today_str()
     high_freq_path = './data/Au/high_freq/'
-    with open('{}{}_{}.txt'.format(high_freq_path, today_str, today.hour)) as f:
+    file_name = '{}_{}.txt'.format(day_dict['real_day'], day_dict['today'].hour)
+    if file_name in os.listdir(high_freq_path):
+        pass
+    else:
+        file_name = os.listdir(high_freq_path)[-1]
+
+    with open(high_freq_path + file_name) as f:
         line = f.readlines()[-1]
         f.close()
+
     full_df = pd.DataFrame(eval(line))
     tot_dict = dict({k: v for k, v in zip(['xh_buy_p', 'xh_sale_p', 'xh_now_p'], full_df.loc['AUTD'][1:4].tolist())})
     future_info = full_df.loc[contract]
@@ -38,6 +40,7 @@ def high_freq(contract='AU2106'):
                'zhengtao_bp': future_info['jiacha_zheng'],
                'fresh_time': future_info['time']}
     tot_dict.update(xh_dict)
+
     return tot_dict
 
 

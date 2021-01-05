@@ -67,18 +67,20 @@ def au_info():
                            au_price=df.to_html(classes="deal", table_id='hist_table', index=False))
 
 
-today = datetime.datetime.now()
-one_day = datetime.timedelta(days=1)
-if today.hour >= 17:
-    today_str = str(today + one_day)[:10]
-else:
-    today_str = str(today)[:10]
+# today = datetime.datetime.now()
+# one_day = datetime.timedelta(days=1)
+# if today.hour >= 20:
+#     today_str = str(today + one_day)[:10]
+# else:
+#     today_str = str(today)[:10]
+from au_data_crawler import get_today_str
 
 
 @app.route('/au_contract_list')
 def au_contract_list():
+    day_dict = get_today_str()
     contract_list_path = './data/Au/contract_info/'
-    qh_symbol_list = pd.read_csv(contract_list_path + '{}.csv'.format(today_str),
+    qh_symbol_list = pd.read_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
                                  encoding='gbk', index_col=0).index.tolist()
     # print(qh_symbol_list)
     contract_list_dict = {i: x for i, x in enumerate(qh_symbol_list)}
@@ -88,9 +90,11 @@ def au_contract_list():
 @app.route('/au_real_time', methods=['GET', 'POST'])
 def au_real_time():
     minutes_path = './data/Au/minutes/'
-    df = pd.read_csv(minutes_path + '{}.csv'.format(today_str),
+    day_dict = get_today_str()
+    df = pd.read_csv(minutes_path + '{}.csv'.format(day_dict['trade_day']),
                      encoding='gbk', index_col=0)
     df.dropna(axis=0, inplace=True)  # 不能有空值，需要处理
+    df = df.iloc[-120:]  # 只要最近两个小时的
     df_dict = {key: list(map(lambda x: round(x, 2), value.to_list())) for key, value in df.iteritems()}
     df_dict['times'] = df.index.tolist()
     return jsonify(df_dict)
@@ -130,7 +134,6 @@ def get_user_info():
 
 
 from au_data import high_freq
-
 
 @app.route('/au_high_freq', methods=['GET', 'POST'])
 def fetch_high_freq():

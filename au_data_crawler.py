@@ -11,18 +11,53 @@ import requests
 
 # 现货实时行情
 qh_symbol_list = []
-today_str = ''
 
 
 def is_trade_time():
     now = datetime.datetime.now()
     t = str(now)[11:19]
+
     # print(t)
-    if t >= '20:59:55' or t <= '02:30:05' or (t >= '09:29:55' and t <= '11:30:05') or (
-            t > '13:29:55' and t < '15:31:00'):
+    def qh_trade_time():
+        if t >= '20:59:55' or t <= '02:30:05' or (t >= '09:29:55' and t <= '11:30:05') or (
+                t > '13:29:55' and t < '15:32:00'):
+            return True
+        else:
+            return False
+
+    def xh_trade_time():
+        if t >= '19:59:55' or t <= '02:30:05' or (t >= '08:49:55' and t <= '11:30:05') or (
+                t > '13:29:55' and t < '15:32:00'):  # 下午收盘时间延长
+            return True
+        else:
+            return False
+
+    # 这样有个问题，如果没有一直开着，那么收盘后打开不更新
+    if qh_trade_time() or xh_trade_time():
         return True
     else:
         return False
+
+
+def get_today_str():
+    global real_today_str, trade_today_str
+    today = datetime.datetime.now()
+    one_day = datetime.timedelta(days=1)
+    real_today_str = str(today)[:10]
+    if today.hour >= 20:  # 晚上八点之后切换至下一天
+        trade_today_str = str(today + one_day)[:10]
+    else:
+        trade_today_str = str(today)[:10]
+    day_dict = {
+        'today': today,
+        'trade_day': trade_today_str,
+        'real_day': real_today_str
+    }
+
+    return day_dict
+
+
+day_dict = {}
 
 
 def au_real_time():
@@ -52,15 +87,17 @@ def one_future_real_time(symbol='AU2106'):
     return pd.DataFrame(df.price)
 
 
-def update_hist(au_and_future):
+def update_hist(au_and_future, symbol):
     close_data = au_and_future.loc['15:00'].tolist()
     date = str(datetime.datetime.now())[:10]
     with open('./data/Au/0_close_hist.csv', 'a') as f:
-        f.write(','.join([date] + [str(x) for x in close_data]) + '\n')
+        f.write(','.join([date] + [str(x) for x in close_data] + [symbol]) + '\n')  # 最后一列添加活跃券
         f.close()
 
+
 def get_both():
-    future_oneday_real_time = one_future_real_time(symbol='AU2106')
+    most_active_symbol = qh_symbol_list[0]
+    future_oneday_real_time = one_future_real_time(symbol=most_active_symbol)
     au_oneday_real_time = au_real_time()
     au_oneday_real_time = au_oneday_real_time[~au_oneday_real_time.index.duplicated(keep='first')]  # 因为可能有重复值，去重
     au_and_future = pd.concat([future_oneday_real_time, au_oneday_real_time], axis=1)
@@ -75,10 +112,13 @@ def get_both():
     today = datetime.datetime.today()
     day_to_delivery = (delivery_day - today).days + 1  # 补上半天的差
     au_and_future['ytm'] = au_and_future['diff'] * 365 / ((day_to_delivery) * au_and_future['Au_TD']) * 100
-    if str(datetime.datetime.now().time()) > '15:32':
-        if '.csv'.format(today_str) not in os.listdir('./data/Au/'):
-            au_and_future.to_csv('./data/Au/{}.csv'.format(today_str))
-            update_hist(au_and_future)
+    au_and_future = au_and_future.round(6)  # 设置小数位数
+    now_time = str(datetime.datetime.now().time())
+    global day_dict
+    if now_time > '15:32' and now_time < '19:55':  # 如果在下午收盘时间，保存当天数据
+        if '{}.csv'.format(day_dict['trade_day']) not in os.listdir('./data/Au/'):
+            au_and_future.to_csv('./data/Au/{}.csv'.format(day_dict['trade_day']))
+            update_hist(au_and_future, most_active_symbol)
     return au_and_future
 
 
@@ -206,7 +246,7 @@ def qh_high_freq(contract_list=('AU0', 'AU2110')):
     return data_df
 
 
-def high_freq():
+def web_high_freq():
     """
     获取高频数据
     改变global 参数所需的参数的字典
@@ -219,14 +259,15 @@ def high_freq():
         ytm = jiacha * 365 / ((day_to_delivery) * float(xh_now)) * 100
         return round(ytm, 2)
 
-    global qh_symbol_list, high_freq_data  # 全局参数
+    global qh_symbol_list, high_freq_data, day_dict  # 全局参数
 
-    # 获取期货数据
+    # 联网获取期货数据
     qh_df = qh_high_freq(contract_list=qh_symbol_list)
 
     [xh_buy, xh_sale, xh_now] = xh_high_freq().values()
     contract_list_path = './data/Au/contract_info/'
-    qh_df['delivery'] = pd.read_csv(contract_list_path + '{}.csv'.format(today_str),
+    # 合约列表，使用交易时间
+    qh_df['delivery'] = pd.read_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
                                     encoding='gbk', index_col=0).delivery_day.tolist()
 
     qh_df['jiacha0'] = qh_df.current_price - float(xh_now)
@@ -244,43 +285,41 @@ def high_freq():
 
 
 def main_fun():
-    global today_str
-    today = datetime.datetime.now()
-    one_day = datetime.timedelta(days=1)
-    if today.hour >= 17:
-        today_str = str(today + one_day)[:10]
-    else:
-        today_str = str(today)[:10]
-
+    global init, day_dict
+    day_dict = get_today_str()
     contract_list_path = './data/Au/contract_info/'
 
     # TODO 分天的间隔细节还需考虑
-    if '{}.csv'.format(today_str) not in os.listdir(contract_list_path):
+    if '{}.csv'.format(day_dict['trade_day']) not in os.listdir(contract_list_path):
         save_contract_list().sort_values('position', ascending=False) \
-            .to_csv(contract_list_path + '{}.csv'.format(today_str),
+            .to_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
                     encoding='gbk')
-        print('{}合约列表保存完毕'.format(today_str))
+        print('{}合约列表保存完毕'.format(day_dict['trade_day']))
     global qh_symbol_list
-    qh_symbol_list = pd.read_csv(contract_list_path + '{}.csv'.format(today_str),
+    qh_symbol_list = pd.read_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
                                  encoding='gbk', index_col=0).index.tolist()
 
     # 分钟序列，每次写入完整的
     # 200行0.3s,有点久。。。不过20s一次，还好吧
     now_time = int(time.time())
-    if now_time % 20 == 0:
+    if now_time % 20 < 2 or init:
         minutes_path = './data/Au/minutes/'
-        get_both().to_csv(minutes_path + '{}.csv'.format(today_str))
+        get_both().to_csv(minutes_path + '{}.csv'.format(day_dict['trade_day']))
 
-    # 高频数据，每次都要运行，每一个小时保存一个文件，否则文件太大了
-    with open('./data/Au/high_freq/{}_{}.txt'.format(today_str, today.hour), 'a') as f:
-        f.write(high_freq().to_json() + '\n')
-        f.close()
+    if is_trade_time() or init:  # 在交易时段才获取高频数据
+        # 高频数据，每次都要运行，每一个小时保存一个文件，否则文件太大了
+        # 高频数据使用真实时间数据
+        with open('./data/Au/high_freq/{}_{}.txt'.format(day_dict['real_day'], day_dict['today'].hour), 'a') as f:
+            f.write(web_high_freq().to_json() + '\n')
+            f.close()
+        init = False  # 启动时运行一次,后如果不在交易时段则不再运行
 
 
+init = True
 def crawler_loop():
+
     while True:
-        if is_trade_time():
-            main_fun()
+        main_fun()
         time.sleep(2)
 print('已开始运行')
 
