@@ -1,11 +1,12 @@
 # coding:utf-8
+
 import re
 
 import pandas as pd
 
 
-def deal_process_func(file_name='2020年06月25日周四'):
-    with open('./static/uploads/{}'.format(file_name)) as f:
+def deal_process_func(file_name='2020年06月25日周四.txt'):
+    with open('./static/uploads/{}'.format(file_name),encoding='gbk') as f:
         text = f.read()
         f.close()
     fenlei = {'短融': [],

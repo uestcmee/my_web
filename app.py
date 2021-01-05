@@ -138,7 +138,7 @@ from au_data import high_freq
 @app.route('/au_high_freq', methods=['GET', 'POST'])
 def fetch_high_freq():
     if request.method == 'POST':
-        contract_name = (dict(eval(request.get_data().decode('ANSI')))['name'])
+        contract_name = (dict(eval(request.get_data().decode('utf-8')))['name'])
         if len(contract_name) < 3:
             return jsonify({0: 0})
         return jsonify(high_freq(contract=contract_name))
@@ -158,7 +158,7 @@ def upload():
             return render_template('upload.html', message='未选择文件')
         basepath = os.path.dirname(__file__)  # 当前文件所在路径
         # secure_filename 只支持英文
-        upload_path = os.path.join(basepath, 'static\\uploads', (f.filename))  # 注意：没有的文件夹一定要先创建，不然会提示没有该路径
+        upload_path = os.path.join(basepath, 'static{}uploads'.format(os.sep), (f.filename))  # 注意：没有的文件夹一定要先创建，不然会提示没有该路径
         f.save(upload_path)
         # return redirect(url_for('upload'))
         if f.filename.split('.')[-1] == 'txt':
@@ -179,8 +179,6 @@ def upload():
     return render_template('upload.html', message='选择文件上传')
 
 
-app.config['DEBUG'] = True
-app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=1)
 
 # TODO 在黄金页面加入高频实时买卖盘信息
 # TODO 识别并切换主力合约
@@ -191,6 +189,11 @@ if __name__ == '__main__':
     t = threading.Thread(target=crawler_loop)
     t.start()
     print('爬虫已开始运行')
-    # print(app.url_map)
-    # app.run(host='0.0.0.0', port=8000)
-    app.run()
+    import platform
+    if platform.system()=='Windows':
+        app.config['DEBUG'] = True
+        app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=1)
+        app.run()
+    else:
+        # print(app.url_map)
+        app.run(host='0.0.0.0', port=8000)
