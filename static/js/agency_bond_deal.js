@@ -9,17 +9,19 @@ function getTdValue(bond_type)
     var ytm =  Array();
     var pred =  Array();
     var bond_name = Array();
+    var spread = Array();
 
     for(var i=1; i < tableId.rows.length;i++)
     {
         year.push(tableId.rows[i].cells[4].innerHTML)
         ytm.push(tableId.rows[i].cells[5].innerHTML)
         pred.push(tableId.rows[i].cells[6].innerHTML)
+        spread.push(tableId.rows[i].cells[7].innerHTML)
         bond_name.push(tableId.rows[i].cells[1].innerHTML)
 
     }
-    var real_data=[year,ytm,bond_name];
-    var pred_data=[year,pred,bond_name];
+    var real_data=[year,ytm,bond_name,spread];
+    var pred_data=[year,pred,bond_name,spread];
     //定义一个新的数组
     function array_t(arr){
         var arr2=[];
@@ -46,7 +48,7 @@ function getTdValue(bond_type)
     option_list[bond_type].series[0].data = real_data2;
 
     option_list[bond_type].tooltip.formatter = function (param){
-        console.log(param.data[2])
+
         return param.data[2]+'<br/>'+param.data[0]+'年：'+param.data[1];};
     eval(bond_type).setOption(option_list[bond_type]);
 }

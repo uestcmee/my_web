@@ -26,14 +26,15 @@ var zhongpiao_option = {
         left: 'right',
     },
     grid: {
-        left: '10%',
+        left: '20%',
         right: '6%',
         bottom: '10%',
         top: 50,
         containLabel: false
     },
     xAxis: [{
-        type: 'category',
+        // type: 'category',
+        type: 'value',
         // data: [1,2,3]
     }],
     yAxis:[{
@@ -55,6 +56,23 @@ var zhongpiao_option = {
             }
         }
     }],
+    dataZoom: [{
+        start:10,
+        type: "inside",
+    }],
+    visualMap:[{
+        type:'piecewise',
+        splitNumber:7,
+        min: 0.0,
+        max : 1.4,
+        minOpen: true,
+        maxOpen:true,
+        dimension:3,
+        text:['高利差','低利差'],
+        inRange: {
+            color: ["#313695", "#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027", "#a50026"]
+        }
+    }],
     series: [{
             name: '成交',
             type: 'scatter',
@@ -65,8 +83,12 @@ var zhongpiao_option = {
         name: '估值曲线(AAA)',
         type: 'line',
         smooth: true,
-        data: [2,1,2]
-    }]
+        data: [2,1,2],
+        symbol:"none",
+    }],
+    itemStyle: {
+        borderColor: "rgba(160, 160, 160, 1)"
+    }
 };
 // 指定图表的配置项和数据
 var qiyezhai_option = JSON.parse(JSON.stringify(zhongpiao_option));

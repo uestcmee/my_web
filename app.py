@@ -184,7 +184,11 @@ def upload():
             return render_template('upload.html', message='出错，请上传txt文件')
         # print(show_data )
     else:  # 非post
-        show_file = os.listdir('./static/uploads/')[-1]
+        file_list = os.listdir('./static/uploads/')
+        file_list.sort()
+        # 用来展示的file
+        show_file = file_list[-1]  # 选择最新的日期的文件
+
         tot_df_dict = deal_process_func(show_file)
         return render_template('upload.html', message='最新数据如下',
                                now_date=show_file.split('.')[0],

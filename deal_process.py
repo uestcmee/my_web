@@ -1,5 +1,6 @@
 # coding:utf-8
 
+import datetime
 import re
 
 import chardet
@@ -13,7 +14,7 @@ def get_encoding(file):
         return chardet.detect(data)['encoding']
 
 
-def pred_line(day='2021-01-05'):
+def pred_line(day: str):
     import akshare as ak
     # today=datetime.datetime.strptime('%Y-%m-%d',day)
     bond_china_yield_df = ak.bond_china_yield(start_date=day, end_date=day)
@@ -33,7 +34,7 @@ def pred_line(day='2021-01-05'):
     return day_line
 
 
-def plot_prepare(small_df, day='2021-01-05'):
+def plot_prepare(small_df, day: str):
     """
     :param small_df: 需要包括'收益率'和'day'（到期剩余天数）
     :param day: 当前日期
@@ -42,10 +43,10 @@ def plot_prepare(small_df, day='2021-01-05'):
     day_line = pred_line(day=day)
 
     def pred_rate(year):  # 计算预测收益率
-        if year < 1 and year < 0.5:
+        if year <= 1 and year < 0.5:
             y0 = 0.25
             y1 = 0.5
-        elif year < 1 and year > 0.5:
+        elif year <= 1 and year > 0.5:
             y0 = 0.5
             y1 = 1
         else:
@@ -72,7 +73,7 @@ def deal_process_func(file_name='2020年06月25日周四.txt'):
               '中票': [],
               '企业债': [],
               '其他': []}
-
+    the_day = str(datetime.datetime.strptime(file_name[:11], '%Y年%m月%d日'))[:10]
     need_flag = True  # 目前标题是否为我们所需要的
     for i, line in enumerate(text.split('\n')):
         line = re.split('[\t ]+', line.strip())
@@ -116,8 +117,8 @@ def deal_process_func(file_name='2020年06月25日周四.txt'):
         df.sort_values('year', inplace=True)
         df.index = [i for i in range(len(df))]
         df.to_excel('./data/BondDeal/{}.xlsx'.format(key))
-        df = plot_prepare(df)
-        fenlei_df[key] = df  #.drop('day', axis=1)  # 去掉辅助列
+        df = plot_prepare(df, day=the_day)
+        fenlei_df[key] = df  # .drop('day', axis=1)  # 去掉辅助列
 
     # tot_df=pd.concat([df for df in fenlei_df.values()])
     output_excel(file_name, fenlei_df)
