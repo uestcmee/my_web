@@ -13,6 +13,20 @@ import requests
 qh_symbol_list = []
 
 
+class my_requests:
+    def get(url):
+        i = 0
+        headers = {
+            'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36 Edg/87.0.664.66'
+        }
+        while i < 20:
+            try:
+                return requests.get(url, headers=headers)
+            except:
+                time.sleep(1)
+                i += 1
+
+
 def is_trade_time():
     now = datetime.datetime.now()
     t = str(now)[11:19]
@@ -31,7 +45,6 @@ def is_trade_time():
             return True
         else:
             return False
-
     # 这样有个问题，如果没有一直开着，那么收盘后打开不更新
     if qh_trade_time() or xh_trade_time():
         return True
@@ -79,7 +92,7 @@ def one_future_real_time(symbol='AU2106'):
     # 改为t5可获取5日的
     url = 'https://stock2.finance.sina.com.cn/futures/api/jsonp.php/' \
           'var%20t1nf_AU2106=/InnerFuturesNewService.getMinLine?symbol={}'.format(symbol)
-    res = requests.get(url)
+    res = my_requests.get(url)
     df = pd.DataFrame(eval(res.text[res.text.index('('):][1:-2]), columns=[
         'times', 'price', 'avg_price', 'deal_amount', 'open_interest', 'info', 'info'
     ]).set_index('times').iloc[:, :-2]
@@ -126,7 +139,7 @@ def contract_list_sina():  # sina,可以直接获取全合约，不用指定合�
     global qh_symbol_list
     url = 'http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/' \
           'Market_Center.getHQFuturesData?page=1&num=40&sort=symbol&asc=1&node=hj_qh&_s_r_a=init'
-    res = requests.get(url)
+    res = my_requests.get(url)
     info_list = []
     for one in re.findall('{.*?}', res.text):
         one_list = (dict(eval(one))).values()
@@ -143,7 +156,7 @@ def contract_list_sina():  # sina,可以直接获取全合约，不用指定合�
 def save_contract_list():  # 上海期货交易所数据，可以直接获取全合约，不用指定合约代码
 
     from bs4 import BeautifulSoup
-    au_jys_text = requests.get('http://www.shfe.com.cn/products/au/').text
+    au_jys_text = my_requests.get('http://www.shfe.com.cn/products/au/').text
     soup = BeautifulSoup(au_jys_text, 'html5lib')
     au_hy_list = soup.find_all('table', class_='listshuju')[0].find_all('tr')
     info_list = []
@@ -169,7 +182,7 @@ def save_contract_list():  # 上海期货交易所数据，可以直接获取全
 def xh_high_freq():
     td_high_freq_url = 'http://futsse.eastmoney.com/list/variety/118/0?' \
                        'orderBy=name&sort=desc&pageSize=12&pageIndex=0&callbackName=&cb=hh&_={time}'
-    res = requests.get(td_high_freq_url.format(time=int(time.time() * 1000)))
+    res = my_requests.get(td_high_freq_url.format(time=int(time.time() * 1000)))
     res_dict = dict(eval(res.text[1:-1]))
     for one in res_dict['list']:
         if (one['name'] == '黄金T+D'):
@@ -228,7 +241,7 @@ def xh_high_freq():
 
 def qh_high_freq(contract_list=('AU0', 'AU2110')):
     url = f"https://hq.sinajs.cn/rn={round(time.time() * 1000)}&list={','.join(contract_list)}"
-    res = requests.get(url)
+    res = my_requests.get(url)
     data_df = pd.DataFrame([item.strip().split("=")[1].split(
         ",") for item in res.text.split(";") if item.strip() != ""])  # 获取等号后的值
     data_df.iloc[:, 0] = data_df.iloc[:, 0].str.replace('"', "")  # 第一列处理
@@ -316,12 +329,15 @@ def main_fun():
 
 
 init = True
-def crawler_loop():
 
+
+def crawler_loop():
     while True:
         main_fun()
         time.sleep(2)
-print('已开始运行')
+
+
+# print('已开始运行')
 
 if __name__ == '__main__':
     crawler_loop()

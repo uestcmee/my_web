@@ -6,23 +6,34 @@
     <!--    使用post方法来提交txt文件，同时会刷新页面，存在一定的问题-->
     <!--    使用链接方式下载文件-->
     <!--TODO 使用js方法下载文件？-->
-    <!--TODO 直接可视化展示结果-->
-    <!--TODO 不上传文件直接可以看到相关结果-->
+
+    <link rel="icon" href="../static/img/favicon.ico" type="image/x-ico"/>
+
+    <link rel="stylesheet" href="../static/css/upload.css">
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="../static/css/upload.css">
+    <script src="../static/js/echarts.min.js"></script>
 
     <script>
-        function change_download(){
-            var file_name='./static/download/'+document.getElementById('now_date').innerText+'.xlsx'
-            console.log(file_name)
-            document.getElementById('download_file').href=file_name
-            document.getElementById('download_file').download=document.getElementById('now_date').innerText+'.xlsx'
-            document.getElementById('download_file').removeAttribute('hidden')
-        }
-        change_download()
+        // function change_download(){
+        //     var file_name='./static/download/'+document.getElementById('now_date').innerText+'.xlsx'
+        //     console.log(file_name)
+        //     document.getElementById('download_file').href=file_name
+        //     document.getElementById('download_file').download=document.getElementById('now_date').innerText+'.xlsx'
+        //     document.getElementById('download_file').removeAttribute('hidden')
+        // }
+        // change_download()
 
     </script>
+
+
 </head>
 <body>
 <h1>文件上传</h1>
+<div class="ecfig" id="zhongpiao">中票</div>
+
+<div class="ecfig" id="qiyezhai">企业债</div>
+
 <div>{{message}}
     <form action="\upload" enctype='multipart/form-data' method='POST'>
         <input type="file" name="file" id="filepicker">
@@ -51,20 +62,38 @@
     {{plain_data}}
     </pre>
 
+
+<script src="../static/js/ec_agency_bond_deal.js"></script>
+<script src="../static/js/agency_bond_deal.js"></script>
+
 <script>
-        function change_download(){
-            var now_date=document.getElementById('now_date').innerText
-            console.log(now_date)
-            if (now_date===""){
+    //隐藏不需要的行
+    function hide_table() {
+        for (var i =0;i < document.getElementsByClassName('deal')['length'];i++) {
+            tb = document.getElementsByClassName('deal')[i]
+            console.log('hello')
+            for (var j = 0; j < tb.rows.length; j++) {
+                for (var k = 4; k < 8; k++) {
+                    tb.rows[j].cells[k].style.display = 'None';
+                }
             }
-            else{
+        }
+    }
+    hide_table()
+
+
+    function change_download(){
+        var now_date=document.getElementById('now_date').innerText
+        console.log(now_date)
+        if (now_date===""){//如果当前没有获取数据，则不显示下载excel按钮
+        }
+        else{
             document.getElementById('download_file').href='./static/download/'+document.getElementById('now_date').innerText+'.xlsx'
             document.getElementById('download_file').download=document.getElementById('now_date').innerText+'.xlsx'
             document.getElementById('download_excel').removeAttribute('hidden')
-            }
         }
-        change_download()
-
+    }
+    change_download()
 </script>
 </body>
 </html>

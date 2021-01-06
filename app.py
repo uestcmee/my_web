@@ -4,6 +4,7 @@ import decimal
 import json
 import os
 import threading
+import traceback
 
 import flask.json
 import pandas as pd
@@ -162,21 +163,41 @@ def upload():
         f.save(upload_path)
         # return redirect(url_for('upload'))
         if f.filename.split('.')[-1] == 'txt':
-            tot_df_dict = deal_process_func(f.filename)
-            # show_data=tot_df.to_html(classes='deal_df')
-            return render_template('upload.html', message='整理完成',
-                                   now_date=f.filename.split('.')[0],
-                                   df_duanrong=tot_df_dict['短融'].to_html(),
-                                   df_zhongpiao=tot_df_dict['中票'].to_html(),
-                                   df_qiyezhai=tot_df_dict['企业债'].to_html(),
-                                   df_qita=tot_df_dict['其他'].to_html(),
-                                   )
-        else:
-            show_data = '格式不支持显示'
-            return render_template('upload.html', message='选择文件上传')
-        # print(show_data )
+            try:
+                tot_df_dict = deal_process_func(f.filename)
+                # show_data=tot_df.to_html(classes='deal_df')
+                return render_template('upload.html', message='整理完成',
+                                       now_date=f.filename.split('.')[0],
+                                       df_duanrong=tot_df_dict['短融'].to_html(
+                                           classes="deal", table_id='dr_data', index=False),
+                                       df_zhongpiao=tot_df_dict['中票'].to_html(
+                                           classes="deal", table_id='zp_data', index=False),
+                                       df_qiyezhai=tot_df_dict['企业债'].to_html(
+                                           classes="deal", table_id='qyz_data', index=False),
+                                       df_qita=tot_df_dict['其他'].to_html(
+                                           classes="deal", table_id='qt_data', index=False),
+                                       )
+            except:
+                return render_template('upload.html', message='出错：()'.format(traceback.format_exc()))
 
-    return render_template('upload.html', message='选择文件上传')
+        else:
+            return render_template('upload.html', message='出错，请上传txt文件')
+        # print(show_data )
+    else:  # 非post
+        show_file = os.listdir('./static/uploads/')[-1]
+        tot_df_dict = deal_process_func(show_file)
+        return render_template('upload.html', message='最新数据如下',
+                               now_date=show_file.split('.')[0],
+                               df_duanrong=tot_df_dict['短融'].to_html(
+                                   classes="deal", table_id='dr_data', index=False),
+                               df_zhongpiao=tot_df_dict['中票'].to_html(
+                                   classes="deal", table_id='zp_data', index=False),
+                               df_qiyezhai=tot_df_dict['企业债'].to_html(
+                                   classes="deal", table_id='qyz_data', index=False),
+                               df_qita=tot_df_dict['其他'].to_html(
+                                   classes="deal", table_id='qt_data', index=False),
+                               )
+        # return render_template('upload.html', message='选择文件上传')
 
 
 
@@ -190,7 +211,8 @@ if __name__ == '__main__':
     t.start()
     print('爬虫已开始运行')
     import platform
-    if platform.system()=='Windows':
+
+    if platform.system() == 'Windows':  # windows 为开发环境
         app.config['DEBUG'] = True
         app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=1)
         app.run()

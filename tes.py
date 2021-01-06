@@ -1,11 +1,30 @@
-# coding:utf-8
-# import platform
-# print(platform.system()=='Darwin')
+# -*- coding: UTF-8 -*-
+
+# from functools import wraps
+# def fun1(afunc):
+#     @wraps(afunc)
+#     def wrapfunction():
+#         print('a')
+#         afunc()
+#         print('b')
+#     return wrapfunction
 #
-# import os
-# print(os.sep)
-# print(os.listdir('/Users/zikepeng/PycharmProjects/my_web/static/uploads/'))
-file_name='2020年06月24日周三.txt'
-with open('./static/uploads/{}'.format(file_name),encoding='gbk') as f:
-    text = f.read()
-    f.close()
+#
+# @fun1
+# def my_fun():
+#     print('hello')
+#     return 0
+# my_fun()
+
+class Parent:  # 定义父类
+    def myMethod(self):
+        print('a')
+
+
+class Child(Parent):  # 定义子类
+    def myMethod(self):
+        print('b')
+
+
+c = Child()  # 子类实例
+c.myMethod()  # 子类调用重写方法
