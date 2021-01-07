@@ -30,20 +30,26 @@
 </head>
 <body>
 <h1>文件上传</h1>
-<div class="ecfig" id="zhongpiao">中票</div>
 
-<div class="ecfig" id="qiyezhai">企业债</div>
+<div id="fig_area">
 
-<div>{{message}}
+    <div class="ecfig" id="zhongpiao">中票</div>
+    <div class="ecfig" id="qiyezhai">企业债</div>
+
+</div>
+<div>
     <form action="\upload" enctype='multipart/form-data' method='POST'>
         <input type="file" name="file" id="filepicker">
         <input type="submit" value='提交'>
     </form>
 </div>
-<h2 id="now_date">{{now_date}}</h2>
+<p id="message">{{message}}</p>
+
+
 <!--    <a href="./static/download/页面模板.xlsx" download="页面模板.xlsx">下载xlsx</a>-->
 <p hidden id="download_excel">
-    <img src="./static/img/excel.gif" alt="">
+    <span id="now_date">{{now_date}}</span>
+    <img src="../static/img/excel.gif" alt="">
     <a download="页面模板.xlsx" id="download_file">下载xlsx文件</a>
 </p>
 

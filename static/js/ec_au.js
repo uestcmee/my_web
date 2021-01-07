@@ -2,7 +2,7 @@
 // 指定图表的配置项和数据
 var au_day_option = {
     title: {
-        text: '日内价格',
+        text: '近两小时价格',
         textStyle: {
             fontSize: 14,
         },
@@ -254,12 +254,15 @@ var au_hist_option = {
         data: [],
         markPoint: {
             data: [
-                    {type: 'max', name: '最大值'},
-                    {type: 'min', name: '最小值'}
-                ]
-            },
+                {type: 'max', name: '最大值'},
+                {type: 'min', name: '最小值'}
+            ]
+        },
     }]
 };
+
+
+// 指定图表的配置项和数据
 
 
 var au_day = echarts.init(document.getElementById('au_day'));
@@ -271,4 +274,4 @@ var au_hist = echarts.init(document.getElementById('au_hist'));
 au_day.setOption(au_day_option);
 au_delta.setOption(au_delta_option);
 au_ytm.setOption(au_ytm_option);
-au_hist.setOption(au_ytm_option);
+au_hist.setOption(au_hist_option);

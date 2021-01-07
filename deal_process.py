@@ -118,7 +118,7 @@ def deal_process_func(file_name='2020年06月25日周四.txt'):
         df.index = [i for i in range(len(df))]
         df.to_excel('./data/BondDeal/{}.xlsx'.format(key))
         df = plot_prepare(df, day=the_day)
-        fenlei_df[key] = df  # .drop('day', axis=1)  # 去掉辅助列
+        fenlei_df[key] = pd.DataFrame(df).drop_duplicates(keep='first')  # .drop('day', axis=1)  # 去掉辅助列
 
     # tot_df=pd.concat([df for df in fenlei_df.values()])
     output_excel(file_name, fenlei_df)

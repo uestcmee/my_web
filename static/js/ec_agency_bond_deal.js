@@ -22,7 +22,7 @@ var zhongpiao_option = {
         // },
     },
     legend: {
-        data: ['估值曲线(AAA)', '成交'],
+        data: ['中债中短票(AAA)', '成交'],
         left: 'right',
     },
     grid: {
@@ -80,12 +80,12 @@ var zhongpiao_option = {
             data: [3,3,3],
         },
         {
-        name: '估值曲线(AAA)',
-        type: 'line',
-        smooth: true,
-        data: [2,1,2],
-        symbol:"none",
-    }],
+            name: '中债中短票(AAA)',
+            type: 'line',
+            smooth: true,
+            data: [2, 1, 2],
+            symbol: "none",
+        }],
     itemStyle: {
         borderColor: "rgba(160, 160, 160, 1)"
     }
