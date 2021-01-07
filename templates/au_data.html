@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../static/css/au_data.css">
     <script src="../static/js/echarts.min.js"></script>
     <link rel="icon" href="../static/img/favicon.ico" type="image/x-ico"/>
+    <!--    以下代码用来刷新页面布局信息-->
 
 </head>
 <body>
@@ -15,22 +16,20 @@
 
 <h1>黄金价差数据</h1>
 
-<div id="fig_area">
-    <div id="au_day" class="js_pic">黄金日内走势图</div>
-    <div id="au_delta" class="js_pic">黄金价差走势图</div>
-    <div id="au_ytm" class="js_pic">隐含收益率走势图</div>
-</div>
-<h3><span>当前持仓量最大期货:</span><span id="most_active"></span></h3>
-<div id="high_freq">
-    <table border="1">
-        <tr>
-            <td class="biaoge_title">代码</td>
-            <td>AU(T+D).SGE</td>
-            <td id="dominant" >
-                <select name="qhhy" id="qhhy">
-                    <!--                    <option value="1">Au2106</option>-->
-                    <!--                    <option value="2">Au2108</option>-->
-                </select>
+<div id="main_body">
+
+    <div id="high_freq">
+        <h3><span>当前持仓量最大期货:</span><span id="most_active"></span></h3>
+
+        <table border="1">
+            <tr>
+                <td class="biaoge_title">代码</td>
+                <td>AU(T+D).SGE</td>
+                <td id="dominant">
+                    <select name="qhhy" id="qhhy">
+                        <!--                    <option value="1">Au2106</option>-->
+                        <!--                    <option value="2">Au2108</option>-->
+                    </select>
 
             </td>
             <!--            <td><button id="change_contract" onclick="history.go(0)">切换合约</button></td>-->
@@ -66,38 +65,41 @@
             <td id="jiacha_zheng">init</td>
             <td id="ytm_zheng">init</td>
         </tr>
-        <tr>
-            <td class="biaoge_title">反套</td>
-            <td id="jiacha_fan">init</td>
-            <td id="ytm_fan">init</td>
-        </tr>
-    </table>
+            <tr>
+                <td class="biaoge_title">反套</td>
+                <td id="jiacha_fan">init</td>
+                <td id="ytm_fan">init</td>
+            </tr>
+        </table>
+        <table>
+            <tr>
+                <td>更新频率：</td>
+                <td>活跃时2s,不活跃10s</td>
+            </tr>
+            <tr>
+                <td>上次更新时间：</td>
+                <td id="data_update_time"></td>
+            </tr>
+            <tr>
+                <td>现在时间：</td>
+                <td id="now_time"></td>
+            </tr>
+
+        </table>
+    </div>
+
+    <div id="high_freq_pic" class="js_pic">高频数据图</div>
+
+    <div id="au_day" class="js_pic">黄金日内走势图</div>
+
+
+    <div id="au_hist_data">
+        <h2>历史数据列表：</h2>
+        {{ au_price|safe }}
+    </div>
+    <div id="au_hist" class="js_hist_pic js_pic">历史数据图</div>
 </div>
-
-&nbsp;
-
-<table>
-    <tr>
-        <td>更新频率：</td>
-        <td>活跃时2s,不活跃10s</td>
-    </tr>
-    <tr>
-        <td>上次更新时间：</td>
-        <td id="data_update_time"></td>
-    </tr>
-    <tr>
-        <td>现在时间：</td>
-        <td id="now_time"></td>
-    </tr>
-
-</table>
-
-
-<h2>历史数据列表：</h2>
-<div id="au_hist" class="js_hist_pic">历史数据图</div>
-
-<div id="au_hist_data">{{ au_price|safe }}</div>
-
+</body>
 <script src="../static/js/ec_au.js"></script>
 <script src="../static/js/au_data.js"></script>
 <script>
@@ -108,6 +110,4 @@
     fresh_time()
     setInterval(fresh_time,1000)
 </script>
-</body>
-
 </html>

@@ -41,8 +41,9 @@ function getTdValue()
     au_hist_option.series[0].data = ytm;
     au_hist.setOption(au_hist_option);
 }
-
 getTdValue();
+
+
 function fade(){
 
     document.getElementById('qh_now').classList.remove('red','green')
@@ -56,13 +57,12 @@ function fade(){
 fade();
 setInterval(fade,1000)
 
+
 function high_freq_data(){
     var sleep = function(time) {
         var startTime = new Date().getTime() + parseInt(time, 10);
         while(new Date().getTime() < startTime) {}
     };
-
-
     $.ajax({
         type:"POST",
         url:'/au_high_freq',
@@ -130,17 +130,30 @@ function high_freq_data(){
            $('#qh_buy').html(data.qh_buy_p);
            $('#qh_sale').html(data.qh_sale_p);
            $('#xh_buy').html(data.xh_buy_p);
-           $('#xh_sale').html(data.xh_sale_p);
-           $('#qh_now').html(data.qh_now_p);
-           $('#xh_now').html(data.xh_now_p);
-           $('#ytm0').html(data.puretao);
-           $('#ytm_zheng').html(data.zhengtao);
-           $('#ytm_fan').html(data.fantao);
-           $('#jiacha0').html(data.puretao_bp);
-           $('#jiacha_zheng').html(data.zhengtao_bp);
-           $('#jiacha_fan').html(data.fantao_bp);
-           $('#data_update_time').html(data.fresh_time)
+            $('#xh_sale').html(data.xh_sale_p);
+            $('#qh_now').html(data.qh_now_p);
+            $('#xh_now').html(data.xh_now_p);
+            $('#ytm0').html(data.puretao);
+            $('#ytm_zheng').html(data.zhengtao);
+            $('#ytm_fan').html(data.fantao);
+            $('#jiacha0').html(data.puretao_bp);
+            $('#jiacha_zheng').html(data.zhengtao_bp);
+            $('#jiacha_fan').html(data.fantao_bp);
+            $('#data_update_time').html(data.fresh_time)
+            // 避免过长
+            if ((high_freq_pic_option.xAxis[0].data.length) > 30) {
+                high_freq_pic_option.xAxis[0].data.splice(0, 1);
+                high_freq_pic_option.series[0].data.splice(0, 1);
+                high_freq_pic_option.series[1].data.splice(0, 1);
+                high_freq_pic_option.series[2].data.splice(0, 1);
 
+            }
+            high_freq_pic_option.xAxis[0].data.push(data.fresh_time.toString());
+            high_freq_pic_option.series[0].data.push(Number(data.puretao));
+            high_freq_pic_option.series[1].data.push(Number(data.zhengtao));
+            high_freq_pic_option.series[2].data.push(Number(data.fantao));
+
+            high_freq_pic.setOption(high_freq_pic_option)
         },
         error: function (){
             console.log("高频数据获取失败");
@@ -148,25 +161,21 @@ function high_freq_data(){
     })
 
 }
-
 high_freq_data();
-var loop=setInterval(high_freq_data,2000)
 
+
+var loop=setInterval(high_freq_data,2000)
 //如果窗口不活跃，则降低刷新评率
 window.addEventListener('blur', ()=>{
     document.title = document.title.split ('（')[0]+'（窗口不活跃）';
     clearInterval(loop)
     loop=setInterval(high_freq_data,10000)
-
 }, true);
-
 window.addEventListener('focus', ()=>{
     document.title = document.title.split ('（')[0]+'（窗口活跃）';
     clearInterval(loop)
     loop=setInterval(high_freq_data,2000)
-
 }, true);
-
 
 
 function au_day_price() {
@@ -177,21 +186,15 @@ function au_day_price() {
         // contentType:'application/json',
         dataType:'json',
         success: function (data) {
-             au_day_option.xAxis[0].data = data.times;
-             au_day_option.series[0].data = data.future;
-             au_day_option.series[1].data = data.Au_TD;
+            au_day_option.xAxis[0].data = data.times;
+            au_day_option.xAxis[1].data = data.times;
+            au_day_option.xAxis[2].data = data.times;
+            au_day_option.series[0].data = data.future;
+            au_day_option.series[1].data = data.Au_TD;
+            au_day_option.series[2].data = data.diff;
+            au_day_option.series[3].data = data.ytm;
 
-             au_delta_option.xAxis[0].data = data.times;
-             au_delta_option.series[0].data = data.diff;
-
-             au_ytm_option.xAxis[0].data = data.times;
-             au_ytm_option.series[0].data = data.ytm;
-
-             au_day.setOption(au_day_option);
-             au_delta.setOption(au_delta_option);
-             au_ytm.setOption(au_ytm_option);
-
-             // var date=new Date().toLocaleString()
+            au_day.setOption(au_day_option);
 
         },
         error: function () {

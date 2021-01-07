@@ -1,62 +1,44 @@
-#fig_area {
+
+#main_body {
     position: absolute;
     display: grid;
-    grid-template-rows: repeat(3, 33.3%);
-    float: left;
-    left: 500px;
-    width: 400px;
-    height: 800px;
+    grid-template-rows: repeat(3, 33%);
+    grid-template-columns: repeat(2, 50%);
+    /*float: left;*/
+    alignment: center;
+    /*width: 90%;*/
+    width: 900px;
+    max-width: 1000px;
+    height: 1200px;
+    align-content: start; /*整个grid位于大框的左侧*/
+}
+
+#au_day {
+    grid-column-end: span 2;
 
 }
 
-.js_pic {
-    height: 250px;
-    /*left:500px;*/
-    /*align-content: center;*/
-    /*justify-content: center;*/
+#high_freq {
+    margin: auto;
 }
 
-/*#au_day{*/
-/*    float: right;*/
-/*    margin-top: 0;*/
+/*h2{*/
+/*    position: absolute;*/
+/*    top: 790px;*/
 /*}*/
-
-/*#au_delta{*/
-/*    float: right;*/
-/*    margin-top: 250px;*/
-
+/*#au_hist_data{*/
+/*    position: absolute;*/
+/*    top: 850px;*/
 /*}*/
-/*#au_ytm{*/
-/*    float: right;*/
-/*    margin-top: 500px;*/
-
-/*}*/
-
-
-#au_hist {
-
-    position: absolute;
-    width: 400px;
-    height: 200px;
-    left: 10px;
-    align-content: center;
-    justify-content: center;
-}
-
-.deal{
-    margin-top: 250px;
-}
-
 table {
     width: 400px;
-    /*margin-left: 30px;*/
 }
 
-.biaoge_title{
+.biaoge_title {
     font-weight: bold;
 }
 
-#qhhy{
+#qhhy {
     font-size: large;
 }
 .red{
