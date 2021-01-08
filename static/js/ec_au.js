@@ -2,7 +2,7 @@
 // 指定图表的配置项和数据
 var au_day_option = {
     title: {
-        text: '日内数据',
+        text: '日内数据(主力合约)',
         textStyle: {
             fontSize: 14,
         },
@@ -14,7 +14,7 @@ var au_day_option = {
             realtime: true,
             // start: 30,
             // end: 70,
-            xAxisIndex: [0, 1, 2]
+            xAxisIndex: [0, 1]
         },
         // {
         //     type: 'inside',
@@ -26,8 +26,8 @@ var au_day_option = {
     ],
     grid: [
         {width: '80%', height: '38%',},
-        {width: '80%', height: '14%', top: '60%'},
-        {width: '80%', height: '14%', top: '75%'},
+        {width: '80%', height: '30%', top: '60%'},
+        // {width: '80%', height: '14%', top: '75%'},
     ],
     tooltip: {
         trigger: 'axis',
@@ -36,15 +36,19 @@ var au_day_option = {
     },
     xAxis: [
         {gridIndex: 0, show: false, type: 'category',},
-        {gridIndex: 1, show: false, type: 'category',},
-        {gridIndex: 2, type: 'category',},
+        {gridIndex: 1,  type: 'category',},
+        // {gridIndex: 2, type: 'category',},
     ],
     yAxis: [
         {gridIndex: 0, name: '期货价格', nameLocation: 'middle', nameRotate: 90, min: 'dataMin', nameGap: 45},
         {gridIndex: 0, name: '现货价格', nameLocation: 'middle', nameRotate: 90, min: 'dataMin', nameGap: 45},
         {gridIndex: 1, name: '价差', nameLocation: 'middle', nameRotate: 90, min: 'dataMin', nameGap: 45},
-        {gridIndex: 2, name: '收益率', nameLocation: 'middle', nameRotate: 90, min: 'dataMin', nameGap: 45},
+        {gridIndex: 1, name: '收益率', nameLocation: 'middle', nameRotate: 90, min: 'dataMin', nameGap: 45},
     ],
+    legend: {
+        data: ['期货价格','现货价格','价差' ,'收益率'],
+        left: 'left',
+    },
     series: [{
         xAxisIndex: 0,
         yAxisIndex: 0,
@@ -69,7 +73,7 @@ var au_day_option = {
             data: [1, 2, 1]
         },
         {
-            xAxisIndex: 2,
+            xAxisIndex: 1,
             yAxisIndex: 3,
             name: '收益率',
             type: 'line',
@@ -155,6 +159,9 @@ var au_hist_option = {
                 {type: 'min', name: '最小值'}
             ]
         },
+        markLine: {
+            data: [
+                {type: 'average', name: '平均值'},]},
     }]
 };
 

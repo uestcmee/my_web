@@ -81,11 +81,15 @@ from au_data_crawler import get_today_str
 def au_contract_list():
     day_dict = get_today_str()
     contract_list_path = './data/Au/contract_info/'
-    qh_symbol_list = pd.read_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
-                                 encoding='gbk', index_col=0).index.tolist()
+    # qh_symbol_list = pd.read_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
+    #                              encoding='gbk', index_col=0).index.tolist()
     # print(qh_symbol_list)
-    contract_list_dict = {i: x for i, x in enumerate(qh_symbol_list)}
-    return contract_list_dict
+
+    df = pd.read_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
+                     encoding='gbk', index_col=0)['delivery_day']
+    # contract_list_dict = {i: x for i, x in enumerate(qh_symbol_list)}
+    contract_list_dict = pd.DataFrame(df).to_json()
+    return jsonify(contract_list_dict)
 
 
 @app.route('/au_real_time', methods=['GET', 'POST'])
@@ -95,7 +99,7 @@ def au_real_time():
     df = pd.read_csv(minutes_path + '{}.csv'.format(day_dict['trade_day']),
                      encoding='gbk', index_col=0)
     df.dropna(axis=0, inplace=True)  # 不能有空值，需要处理
-    df = df.iloc[-120:]  # 只要最近两个小时的
+    # df = df.iloc[-120:]  # 只要最近两个小时的
     df_dict = {key: list(map(lambda x: round(x, 2), value.to_list())) for key, value in df.iteritems()}
     df_dict['times'] = df.index.tolist()
     return jsonify(df_dict)
@@ -123,8 +127,8 @@ def get_user_info():
         print(date)
         info=get_date_list(date)
     else:
-        date='未输入日期'
-        info=pd.DataFrame()
+        date = '未输入日期'
+        info = pd.DataFrame()
         print('not a post')
 
     return render_template(
@@ -134,18 +138,19 @@ def get_user_info():
     )
 
 
-from au_data import high_freq
-
-@app.route('/au_high_freq', methods=['GET', 'POST'])
-def fetch_high_freq():
-    if request.method == 'POST':
-        contract_name = (dict(eval(request.get_data().decode('utf-8')))['name'])
-        if len(contract_name) < 3:
-            return jsonify({0: 0})
-        return jsonify(high_freq(contract=contract_name))
-    else:
-        # print('not a post')
-        return jsonify({0: 0})
+#
+# from au_data import high_freq
+#
+# @app.route('/au_high_freq', methods=['GET', 'POST'])
+# def fetch_high_freq():
+#     if request.method == 'POST':
+#         contract_name = (dict(eval(request.get_data().decode('utf-8')))['name'])
+#         if len(contract_name) < 3:
+#             return jsonify({0: 0})
+#         return jsonify(high_freq(contract=contract_name))
+#     else:
+#         # print('not a post')
+#         return jsonify({0: 0})
 
 
 from deal_process import deal_process_func

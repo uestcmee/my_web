@@ -26,7 +26,7 @@
                 <td class="biaoge_title">代码</td>
                 <td>AU(T+D).SGE</td>
                 <td id="dominant">
-                    <select name="qhhy" id="qhhy">
+                    <select name="qhhy" id="qhhy" onchange="change_contract(this.value)">
                         <!--                    <option value="1">Au2106</option>-->
                         <!--                    <option value="2">Au2108</option>-->
                     </select>
@@ -55,37 +55,29 @@
             <td id="xh_sale" >init</td>
             <td id="qh_sale" >init</td>
         </tr>
+            <tr>
+                <td class="biaoge_title">成交价（价差/收益率）</td>
+                <td id="jiacha_pure">init</td>
+                <td id="ytm_pure">init</td>
+            </tr>
         <tr>
-            <td class="biaoge_title">收益率</td>
-            <td id="jiacha0">init</td>
-            <td id="ytm0">init</td>
-        </tr>
-        <tr>
-            <td class="biaoge_title">正套</td>
+            <td class="biaoge_title">正套（价差/收益率）</td>
             <td id="jiacha_zheng">init</td>
             <td id="ytm_zheng">init</td>
         </tr>
             <tr>
-                <td class="biaoge_title">反套</td>
+                <td class="biaoge_title">反套（价差/收益率）</td>
                 <td id="jiacha_fan">init</td>
                 <td id="ytm_fan">init</td>
             </tr>
+            <tr>
+                <td class="biaoge_title">更新时间</td>
+                <td id="stock_time_xh">init</td>
+                <td id="stock_time_qh">init</td>
+            </tr>
         </table>
-        <table>
-            <tr>
-                <td>更新频率：</td>
-                <td>活跃时2s,不活跃10s</td>
-            </tr>
-            <tr>
-                <td>上次更新时间：</td>
-                <td id="data_update_time"></td>
-            </tr>
-            <tr>
-                <td>现在时间：</td>
-                <td id="now_time"></td>
-            </tr>
 
-        </table>
+
     </div>
 
     <div id="high_freq_pic" class="js_pic">高频数据图</div>
@@ -99,15 +91,11 @@
     </div>
     <div id="au_hist" class="js_hist_pic js_pic">历史数据图</div>
 </div>
-</body>
+
+
 <script src="../static/js/ec_au.js"></script>
 <script src="../static/js/au_data.js"></script>
-<script>
-    function fresh_time() {
-        var now_date = new Date().toLocaleString()
-        document.getElementById('now_time').innerText=(now_date)
-    }
-    fresh_time()
-    setInterval(fresh_time,1000)
-</script>
+
+</body>
+
 </html>
