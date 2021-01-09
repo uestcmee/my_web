@@ -12,12 +12,13 @@ $.ajax({
                 $('#most_active').html(key)
                 // 开始获取主力合约高频数据
                 init_high_freq=qh_high_freq(key)
-
                 i=1
             }
             var item = data[key]
             $('<option value='+key+' end_day='+item+'>'+key+'</option>').appendTo('#qhhy');
         }
+        fresh_delivery_day()
+
     },
     error:function(){
         console.log('合约列表获取失败')
@@ -67,9 +68,7 @@ var source=new EventSource("http://33.futsse.eastmoney.com/sse/118_AUTD_qt");
 
 source.onmessage=function(event)
 {
-
     var res=JSON.parse(event.data)
-
     renderHead(res['qt'],'xh')
 }
 
@@ -83,8 +82,21 @@ function qh_high_freq(contract){
     return source_qh
 }
 
+function fresh_delivery_day (){
+    var select_box=$('#qhhy')[0]
+    for (var i =0;i<select_box.length;i++){
+        if (select_box[i].selected===true){
+            day_str=select_box[i].getAttribute('end_day')
+            delivery_str=day_str.substring(0,4)+'-'+day_str.substring(4,6)+'-'+day_str.substring(6,8)
+            $('#delivery').text(delivery_str)
+        }
+    }
+
+}
+
 
 function change_contract(contract){
+    fresh_delivery_day()
     init_high_freq.close()
     init_high_freq=qh_high_freq(contract)
 }
@@ -209,10 +221,11 @@ function renderHead(items,product) {
     function get_ytm(jiacha){
         // TODO 获取列表中当前活跃项目
         // TODO 更新此处的时间
-        day_str=20210615
-        delivery_day=new Date('2021 6 15')
+        day_str=$('#delivery').text()
+        delivery_day=new Date(day_str.substring(0,4),day_str.substring(4,6),day_str.substring(6,8))
+
         today=new Date()
-        day_to_delivery=Math.floor((delivery_day.getTime()-today.getTime())/ (24 * 3600 * 1000))
+        day_to_delivery=Math.floor((delivery_day.getTime()-today.getTime())/ (24 * 3600 * 1000))+1
         // console.log(day_to_delivery)
 
         ytm = jiacha * 365 / ((day_to_delivery) * ($('#xh_now').text())) * 100
@@ -235,6 +248,7 @@ function renderHead(items,product) {
 // 高频数据图
 function high_freq_fig(){
     // 避免过长
+    if ($('#ytm_pure').text()=='init' )return false
     var d = new Date();
     var now_time = ("0" + (d.getHours())).slice(-2) + ':' + ("0" + (d.getMinutes())).slice(-2) + ':' + ("0" + (d.getSeconds())).slice(-2);
     if ((high_freq_pic_option.xAxis[0].data.length) > 60) {
@@ -287,7 +301,6 @@ function au_day_price() {
             au_day_option.series[1].data = data.Au_TD;
             au_day_option.series[2].data = data.diff;
             au_day_option.series[3].data = data.ytm;
-
             au_day.setOption(au_day_option);
 
         },
