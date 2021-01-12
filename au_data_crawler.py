@@ -308,11 +308,14 @@ def main_fun():
 
     # TODO 分天的间隔细节还需考虑
     if '{}.csv'.format(day_dict['trade_day']) not in os.listdir(contract_list_path):
-        save_contract_list().sort_values('position', ascending=False) \
+        contract_list=save_contract_list()
+        contract_list['position']=contract_list['position'].astype(float) # 浮点数才方便排序
+        contract_list.sort_values('position', ascending=False) \
             .to_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
                     encoding='gbk')
         print('{}合约列表保存完毕'.format(day_dict['trade_day']))
     global qh_symbol_list
+
     qh_symbol_list = pd.read_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
                                  encoding='gbk', index_col=0).index.tolist()
 

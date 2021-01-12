@@ -208,17 +208,21 @@ def upload():
                                )
         # return render_template('upload.html', message='选择文件上传')
 
+@app.route('/irs')
+def irs():
+    return render_template('irs.html',)
 
+@app.route('/irs_data')
+def irs_data():
+    data_dict={k:v.tolist() for k,v in pd.read_csv('./data/IRS/5yIRS.csv').iteritems()}
+    df = jsonify(data_dict)
+    return df
 
-# TODO 在黄金页面加入高频实时买卖盘信息
-# TODO 识别并切换主力合约
-# TODO 加入多期货合约序列支持
 if __name__ == '__main__':
     from au_data_crawler import crawler_loop
-
     t = threading.Thread(target=crawler_loop)
     t.start()
-    print('爬虫已开始运行')
+    print('黄金数据爬虫已开始运行')
     import platform
 
     if platform.system() == 'Windows':  # windows 为开发环境
