@@ -128,10 +128,13 @@ def get_both():
     au_and_future = au_and_future.round(6)  # 设置小数位数
     now_time = str(datetime.datetime.now().time())
     global day_dict
-    if now_time > '15:32' and now_time < '19:55':  # 如果在下午收盘时间，保存当天数据
+    if now_time > '15:03' and now_time < '19:55':  # 如果在下午收盘时间，保存当天数据
         if '{}.csv'.format(day_dict['trade_day']) not in os.listdir('./data/Au/'):
-            au_and_future.to_csv('./data/Au/{}.csv'.format(day_dict['trade_day']))
-            update_hist(au_and_future, most_active_symbol)
+            try:
+                au_and_future.to_csv('./data/Au/{}.csv'.format(day_dict['trade_day']))
+                update_hist(au_and_future, most_active_symbol)
+            except:
+                print('保存当天15：00成交失败')
     return au_and_future
 
 
@@ -334,9 +337,12 @@ init = True
 
 def crawler_loop():
     while True:
-        main_fun()
-        time.sleep(2)
-
+        try:
+            main_fun()
+            time.sleep(2)
+        except:
+            import traceback
+            traceback.print_exc()
 
 # print('已开始运行')
 

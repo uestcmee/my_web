@@ -222,7 +222,7 @@ function renderHead(items,product) {
         // TODO 获取列表中当前活跃项目
         // TODO 更新此处的时间
         day_str=$('#delivery').text()
-        delivery_day=new Date(day_str.substring(0,4),day_str.substring(4,6),day_str.substring(6,8))
+        delivery_day=new Date(day_str.substring(0,4),day_str.substring(5,7),day_str.substring(8,10))
 
         today=new Date()
         day_to_delivery=Math.floor((delivery_day.getTime()-today.getTime())/ (24 * 3600 * 1000))+1
