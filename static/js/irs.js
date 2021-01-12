@@ -12,10 +12,10 @@ function fetch_irs_data() {
             irs_hist_option.xAxis[0].data = data['Time'];
             irs_hist_option.xAxis[1].data = data['Time'];
 
-            irs_hist_option.series[0].data = data['2Y'];
-            irs_hist_option.series[1].data = data['3Y'];
-            irs_hist_option.series[2].data = data['5Y'];
-            irs_hist_option.series[3].data = data['FR007_5Y'];
+            irs_hist_option.series[3].data = data['2Y'];
+            irs_hist_option.series[4].data = data['3Y'];
+            irs_hist_option.series[5].data = data['5Y'];
+            irs_hist_option.series[6].data = data['FR007_5Y'];
 
             year_list = Array(2, 3, 5)
             for (i = 0; i < year_list.length; i++) {
@@ -23,7 +23,7 @@ function fetch_irs_data() {
                 for (j = 0; j < data['Time'].length; j++) {
                     spread.push((data[year_list[i] + 'Y'][j] - data['FR007_5Y'][j]).toFixed(4))
                 }
-                irs_hist_option.series[i + 4].data = spread
+                irs_hist_option.series[i].data = spread
             }
             // irs_hist_option.series[3].data = data.ytm;
             console.log(data['5Y'] - data['2Y'])

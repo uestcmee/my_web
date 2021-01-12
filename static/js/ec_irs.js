@@ -20,39 +20,24 @@ var irs_hist_option = {
         }
     ],
     grid: [
-        {width: '80%', height: '30%', top: '60%'},//收益率
         {width: '80%', height: '40%'},//利差
-        {
-            left: '10%',
-            right: '6%',
-            bottom: '10%',
-            top: '10%',
-            containLabel: false
-        }],
+        {width: '80%', height: '30%', top: '60%'},//收益率
+    ],
     tooltip: {
         trigger: 'axis',
     },
-    xAxis: [
-        {gridIndex: 0, type: 'category',},
-        {gridIndex: 1, show: false, type: 'category',},
-    ],
-    yAxis: [{
-        name: '收益率',
-        gridIndex: 0,
-        type: 'value',
-        axisLabel: {
-            show: true,
-            fontSize: 12,
-            formatter: function (value) {
-                return value + '%';
-            }
-        },
-        min: 1.2,
+    axisPointer: {
+        link: {xAxisIndex: 'all'}
     },
+    xAxis: [
+        {gridIndex: 0, show: false, type: 'category',},
+        {gridIndex: 1, type: 'category',},
+
+    ],
+    yAxis: [
         {
-            //利差
             name: '利差',
-            gridIndex: 1,
+            gridIndex: 0,
             type: 'value',
             axisLabel: {
                 show: true,
@@ -60,42 +45,31 @@ var irs_hist_option = {
                 formatter: function (value) {
                     return value * 100 + 'bp';
                 }
+            }
+        },
+        {
+            name: '收益率',
+            gridIndex: 1,
+            type: 'value',
+            axisLabel: {
+                show: true,
+                fontSize: 12,
+                formatter: function (value) {
+                    return value + '%';
+                }
             },
-            // min:'DataMin',
+            min: 1.2,
+        },
 
-        }
     ],
     legend: {
-        data: ['2Y国债', '3Y国债', '5Y国债', 'IRS_5Y', '2Y-IRS5Y', '3Y-IRS5Y', '5Y-IRS5Y'],
+        data: ['2Y-IRS5Y', '3Y-IRS5Y', '5Y-IRS5Y', '2Y国债', '3Y国债', '5Y国债', 'IRS_5Y'],
         left: 'right',
     },
-    series: [{
-        name: '2Y国债',
-        type: 'line',
-        smooth: true,
-        data: []
-    },
+    series: [
         {
-            name: '3Y国债',
-            type: 'line',
-            smooth: true,
-            data: []
-        },
-        {
-            name: '5Y国债',
-            type: 'line',
-            smooth: true,
-            data: []
-        },
-        {
-            name: 'IRS_5Y',
-            type: 'line',
-            smooth: true,
-            data: []
-        },
-        {
-            xAxisIndex: 1,
-            yAxisIndex: 1,
+            xAxisIndex: 0,
+            yAxisIndex: 0,
             name: '2Y-IRS5Y',
             type: 'line',
             smooth: false,
@@ -109,9 +83,23 @@ var irs_hist_option = {
 
         },
         {
-            xAxisIndex: 1,
-            yAxisIndex: 1,
+            xAxisIndex: 0,
+            yAxisIndex: 0,
             name: '3Y-IRS5Y',
+            type: 'line',
+            smooth: false,
+            data: [],
+            markPoint: {
+                data: [
+                    {type: 'max', name: '最大值'},
+                    {type: 'min', name: '最小值'}
+                ]
+            }
+        },
+        {
+            xAxisIndex: 0,
+            yAxisIndex: 0,
+            name: '5Y-IRS5Y',
             type: 'line',
             smooth: false,
             data: [],
@@ -125,16 +113,34 @@ var irs_hist_option = {
         {
             xAxisIndex: 1,
             yAxisIndex: 1,
-            name: '5Y-IRS5Y',
+            name: '2Y国债',
             type: 'line',
-            smooth: false,
-            data: [],
-            markPoint: {
-                data: [
-                    {type: 'max', name: '最大值'},
-                    {type: 'min', name: '最小值'}
-                ]
-            }
+            smooth: true,
+            data: []
+        },
+        {
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+            name: '3Y国债',
+            type: 'line',
+            smooth: true,
+            data: []
+        },
+        {
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+            name: '5Y国债',
+            type: 'line',
+            smooth: true,
+            data: []
+        },
+        {
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+            name: 'IRS_5Y',
+            type: 'line',
+            smooth: true,
+            data: []
         },
 
     ]
