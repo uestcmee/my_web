@@ -13,6 +13,11 @@ var irs_hist_option = {
             realtime: true,
             xAxisIndex: [0, 1]
         },
+        {
+            type: 'inside',
+            realtime: true,
+            xAxisIndex: [0, 1]
+        }
     ],
     grid: [
         {width: '80%', height: '30%', top: '60%'},//收益率
@@ -93,24 +98,43 @@ var irs_hist_option = {
             yAxisIndex: 1,
             name: '2Y-IRS5Y',
             type: 'line',
-            smooth: true,
-            data: []
+            smooth: false,
+            data: [],
+            markPoint: {
+                data: [
+                    {type: 'max', name: '最大值'},
+                    {type: 'min', name: '最小值'}
+                ]
+            },
+
         },
         {
             xAxisIndex: 1,
             yAxisIndex: 1,
             name: '3Y-IRS5Y',
             type: 'line',
-            smooth: true,
-            data: []
+            smooth: false,
+            data: [],
+            markPoint: {
+                data: [
+                    {type: 'max', name: '最大值'},
+                    {type: 'min', name: '最小值'}
+                ]
+            }
         },
         {
             xAxisIndex: 1,
             yAxisIndex: 1,
             name: '5Y-IRS5Y',
             type: 'line',
-            smooth: true,
-            data: []
+            smooth: false,
+            data: [],
+            markPoint: {
+                data: [
+                    {type: 'max', name: '最大值'},
+                    {type: 'min', name: '最小值'}
+                ]
+            }
         },
 
     ]
