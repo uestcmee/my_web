@@ -225,10 +225,19 @@ if __name__ == '__main__':
     print('黄金数据爬虫已开始运行')
     import platform
 
-    if platform.system() == 'Windows':  # windows 为开发环境
+    # if platform.system() == 'Windows':  # windows 为开发环境
+    #     app.config['DEBUG'] = True
+    #     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=1)
+    #     app.run()
+    # else:
+    #     # print(app.url_map)
+    #     app.run(host='0.0.0.0', port=8000)
+    from os import popen
+    if(popen('hostname').read()=='Momi'):
         app.config['DEBUG'] = True
         app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=1)
         app.run()
     else:
         # print(app.url_map)
         app.run(host='0.0.0.0', port=8000)
+
