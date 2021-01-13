@@ -1,6 +1,3 @@
-import os
-
-file_list = os.listdir('./static/uploads/')
-file_list[1] = 'hello'
-file_list.sort()
-print(file_list)
+from os import popen
+a=popen('hostname').read().strip()
+print (popen('hostname').read()=='Momi')

@@ -214,7 +214,7 @@ def irs():
 
 @app.route('/irs_data')
 def irs_data():
-    data_dict={k:v.tolist() for k,v in pd.read_csv('./data/IRS/5yIRS.csv').iteritems()}
+    data_dict={k:v.tolist() for k,v in pd.read_csv('./data/IRS/各基准利率数据.csv').iteritems()}
     df = jsonify(data_dict)
     return df
 
@@ -233,7 +233,9 @@ if __name__ == '__main__':
     #     # print(app.url_map)
     #     app.run(host='0.0.0.0', port=8000)
     from os import popen
-    if(popen('hostname').read()=='Momi'):
+    pc_name=popen('hostname').read().strip()
+
+    if(pc_name=='Momi'):
         app.config['DEBUG'] = True
         app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=1)
         app.run()
