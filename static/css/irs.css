@@ -1,19 +1,26 @@
 #main_body {
     position: absolute;
     display: grid;
-    grid-template-rows: repeat(4, 25%);
-    grid-template-columns: repeat(2, 50%);
+    grid-template-rows: 21% 16% 21% 21% 21% ;
+    grid-template-columns: repeat(4, 25%);
 
     /*grid-template-columns: repeat(2, 50%);*/
     /*float: left;*/
     alignment: center;
     /*width: 90%;*/
-    width: 90%;
-    min-width: 800px;
+    width: 1200px;
+    /*min-width: 1000px;*/
     height: 2000px;
     align-content: start; /*整个grid位于大框的左侧*/
 }
 
-#choice, #irs_hist, #box_fig {
+#gauge {
+
+}
+
+#choice, #irs_hist, #box_fig,#calender {
+    grid-column-end: span 4;
+}
+#time_spread,#type_spread {
     grid-column-end: span 2;
 }

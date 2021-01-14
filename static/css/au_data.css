@@ -7,8 +7,9 @@
     /*float: left;*/
     alignment: center;
     /*width: 90%;*/
-    width: 900px;
-    max-width: 1000px;
+    width: 80%;
+    min-width: 800px;
+
     height: 1200px;
     align-content: start; /*整个grid位于大框的左侧*/
 }

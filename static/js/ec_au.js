@@ -32,7 +32,9 @@ var au_day_option = {
     tooltip: {
         trigger: 'axis',
         // formatter: '{a}: ({c})'
-
+    },
+    axisPointer: {
+        link: {xAxisIndex: 'all'}
     },
     xAxis: [
         {gridIndex: 0, show: false, type: 'category',},
@@ -112,7 +114,7 @@ var au_hist_option = {
     },
     grid: {
         left: '10%',
-        right: '6%',
+        right: '10%',
         bottom: '10%',
         top: 50,
         containLabel: false
@@ -156,7 +158,13 @@ var au_hist_option = {
         markPoint: {
             data: [
                 {type: 'max', name: '最大值'},
-                {type: 'min', name: '最小值'}
+                {type: 'min', name: '最小值'},
+                {
+                     name: '当前分位数',
+                     coord: [],
+                     symbolRotate: -90,
+                     value: ''
+                }
             ]
         },
         markLine: {

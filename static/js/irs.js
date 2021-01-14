@@ -2,27 +2,34 @@
 
 function plot_irs_hist_line(data) {
     irs_hist_option.xAxis[0].data = data['Time'];
-    irs_hist_option.xAxis[1].data = data['Time'];
+    // irs_hist_option.xAxis[1].data = data['Time'];
 
     irs_hist_option.series[3].data = data['国债:2Y'];
     irs_hist_option.series[4].data = data['国债:3Y'];
     irs_hist_option.series[5].data = data['国债:5Y'];
     irs_hist_option.series[6].data = data['FR007:5Y'];
 
-    year_list = Array(2, 3, 5)
+    year_list = Array(2, 3, 5)//2年、3年、5年的国债收益率
     for (i = 0; i < year_list.length; i++) {
         spread = []
+        //计算利差
         for (j = 0; j < data['Time'].length; j++) {
             spread.push((data['国债:' + year_list[i] + 'Y'][j] - data['FR007:5Y'][j]).toFixed(4))
         }
         irs_hist_option.series[i].data = spread
+        let recent=spread.slice(-1)[0]
+        let quantile =(JSON.parse(JSON.stringify(spread)).sort().indexOf(recent) / spread.length * 100).toFixed(0)
+        if (i==2){
+            gauge_option_4.series[0].data[0].value=parseFloat(quantile)
+            gauge_4.setOption(gauge_option_4);
+        }
     }
     irs_hist.setOption(irs_hist_option);
+
 
 }
 
 //期货的日内分钟数据
-
 function prepareBoxData(box_data) {
     let box_data_copy = JSON.parse(JSON.stringify(box_data))
     let box_return = Array()
@@ -43,7 +50,6 @@ function plot_irs_box_line(data) {
     let opt = irs_box_option
     //箱型图
     let type_dict = {0: '国债', 1: '国开', 2: '口行'}
-
     let year_dict = {0: '1', 1: '2', 2: '3', 3: '5', 4: '7', 5: '10'}
     //债券种类
     for (let type = 0; type < Object.keys(type_dict).length; type++) {
@@ -62,13 +68,16 @@ function plot_irs_box_line(data) {
                 'value': [quantile, recent.toFixed(4) + '%'].join('\n')
             }
             irs_box_option.series[type].markPoint.data.push(a)
+            if (year===5 && type===0){
+                gauge_option_1.series[0].data[0].value=parseFloat(quantile)
+                gauge_1.setOption(gauge_option_1);
+            }
         }
         //一次压入一种债的所有数据
         irs_box_option.series[type].data = prepareBoxData(box_data)
     }
     //TODO 还需要设置一个分位数值
     irs_box_option.title[0].subtext = data['Time'].slice(-1)[0].substring(0, 10)
-
     box_fig.setOption(irs_box_option);
 
 }
@@ -108,7 +117,10 @@ function plot_time_spread(data) {
             box_data.push(spread)
             label_list.push(type_dict[type] + time_choice[time_twin][0] + '*' + time_choice[time_twin][1])
             x_label += 1
-
+            if (time_twin===3 && type===0){
+                gauge_option_2.series[0].data[0].value=parseFloat(quantile)
+                gauge_2.setOption(gauge_option_2);
+            }
         }
         //一次压入一种债的所有数据
     }
@@ -146,7 +158,10 @@ function plot_type_spread(data) {
         box_data.push(spread)
         label_list.push(year_dict[year] + 'Y')
         x_label += 1
-        //一次压入一种债的所有数据
+        if (year==5){
+            gauge_option_3.series[0].data[0].value=parseFloat(quantile)
+            gauge_3.setOption(gauge_option_3);
+        }
     }
     type_spread_option.series[0].data = prepareBoxData(box_data)
     type_spread_option.xAxis.data = label_list
@@ -157,6 +172,31 @@ function plot_type_spread(data) {
 }
 
 
+
+function plot_calender(data,type='国债'){
+    let calenderData_all =[];
+    let name_str=type+':'
+    if (type=='FR007'){
+        name_str+='5Y'
+    }else name_str+='10Y'
+
+    for (var i = 1; i < data['Time'].length; i++) {
+
+        calenderData_all.push([
+            data['Time'][i],//需要把需要heatmap的放在最后一项
+            parseFloat((data[name_str][i]).toFixed(4)),//国债收益率
+            parseFloat(((data[name_str][i]-data[name_str][i-1])*100).toFixed(0)),//涨跌bp
+        ]);
+    }
+
+    calender_option.series[0].data=calenderData_all
+    calender_option.series[1].data=calenderData_all
+    calender_option.title.text=name_str+' 涨跌日历图'
+    calender.setOption(calender_option)
+}
+
+var data_raw
+
 function fetch_irs_data() {
     $.ajax({
         // type:'GET',
@@ -165,17 +205,85 @@ function fetch_irs_data() {
         // contentType:'application/json',
         dataType: 'json',
         success: function (data) {
+
             plot_irs_hist_line(data) //历史数据
             plot_irs_box_line(data) // 收益率分位数
             plot_time_spread(data)//利差分位数
-            plot_type_spread(data)
+            plot_type_spread(data)//品种利差
+            plot_calender(data)
+            data_raw=data
         },
         error: function () {
-            console.log("失败了")
+            console.log("数据获取失败")
         }
     })
+
 }
 
 fetch_irs_data();
 
 
+function change_date(start=1){
+    let start_date= new Date()
+    if (start===0){
+        start_date=new Date(2010,0,1)
+    }
+    if (start===1 || start===2 || start===3 ){
+        start_date=new Date().setFullYear((new Date().getFullYear()-start))
+    }
+    if (start===4){
+        start_date=new Date(2021,0,1)
+    }
+    else{
+        start_date=new Date(start.substring(0,4),start.substring(5,7),start.substring(8,10))
+
+        console.log(start)
+
+    }
+    start_date = new Date(start_date).format("yyyy-MM-dd");
+    let small_dict={}
+    for (var i = 1; i < data_raw['Time'].length; i++) {
+
+        if (data_raw['Time'][i]>start_date){
+            small_dict=JSON.parse(JSON.stringify(data_raw))
+            for ( key in data_raw ){
+                small_dict[key]=small_dict[key].slice(i,)
+            }
+            break
+        }//需要把需要heatmap的放在最后一项
+    }
+    plot_irs_hist_line(small_dict) //历史数据
+    plot_irs_box_line(small_dict) // 收益率分位数
+    plot_time_spread(small_dict)//利差分位数
+    plot_type_spread(small_dict)//品种利差
+    // plot_calender(small_dict)
+    return small_dict
+}
+// change_date(data_raw)
+
+
+Date.prototype.format = function(fmt) {
+    var o = {
+        "M+" : this.getMonth()+1,                 //月份
+        "d+" : this.getDate(),                    //日
+        "h+" : this.getHours(),                   //小时
+        "m+" : this.getMinutes(),                 //分
+        "s+" : this.getSeconds(),                 //秒
+        "q+" : Math.floor((this.getMonth()+3)/3), //季度
+        "S"  : this.getMilliseconds()             //毫秒
+    };
+    if(/(y+)/.test(fmt)) {
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+    }
+    for(var k in o) {
+        if(new RegExp("("+ k +")").test(fmt)){
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));
+        }
+    }
+    return fmt;
+}
+
+function update_calendar(start){
+    let type_dict = {0: '国债', 1: '国开', 2: '口行','3':'FR007'}
+    plot_calender(data_raw,type=type_dict[start])
+}

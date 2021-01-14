@@ -27,6 +27,7 @@ $.ajax({
 }
 get_contract()
 
+//更新历史数据
 function getTdValue()
 {
     var sleep = function(time) {
@@ -47,6 +48,10 @@ function getTdValue()
     }
     au_hist_option.xAxis[0].data = times;
     au_hist_option.series[0].data = ytm;
+    console.log([times.length-1,ytm[ytm.length-1]])
+    au_hist_option.series[0].markPoint.data[2].coord=[times.length-1,parseFloat(ytm[ytm.length-1])]
+    au_hist_option.series[0].markPoint.data[2].value='最新\n'+ytm[times.length-1]
+
     au_hist.setOption(au_hist_option);
 }
 getTdValue();
