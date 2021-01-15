@@ -162,9 +162,11 @@ def upload():
         f = request.files['file']
         if (f.filename == ''):
             return render_template('upload.html', message='未选择文件')
-        basepath = os.path.dirname(__file__)  # 当前文件所在路径
+
+        basepath = os.path.dirname(__file__)  # 当前文件所在路径,也是为了避免系统版本问题
         # secure_filename 只支持英文
-        upload_path = os.path.join(basepath, 'static{}uploads'.format(os.sep), (f.filename))  # 注意：没有的文件夹一定要先创建，不然会提示没有该路径
+        upload_path = os.path.join(basepath, 'data{0}BondDeal{0}uploads'.format(os.sep),
+                                   (f.filename))  # 注意：没有的文件夹一定要先创建，不然会提示没有该路径
         f.save(upload_path)
         # return redirect(url_for('upload'))
         if f.filename.split('.')[-1] == 'txt':
@@ -189,7 +191,7 @@ def upload():
             return render_template('upload.html', message='出错，请上传txt文件')
         # print(show_data )
     else:  # 非post
-        file_list = os.listdir('./static/uploads/')
+        file_list = os.listdir('data/BondDeal/uploads/')
         file_list.sort()
         # 用来展示的file
         show_file = file_list[-1]  # 选择最新的日期的文件
@@ -223,7 +225,6 @@ if __name__ == '__main__':
     t = threading.Thread(target=crawler_loop)
     t.start()
     print('黄金数据爬虫已开始运行')
-    import platform
 
     # if platform.system() == 'Windows':  # windows 为开发环境
     #     app.config['DEBUG'] = True

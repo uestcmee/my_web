@@ -65,8 +65,9 @@ def plot_prepare(small_df, day: str):
 
 
 def deal_process_func(file_name='2020年06月25日周四.txt'):
-    encoding = get_encoding('./static/uploads/{}'.format(file_name))
-    with open('./static/uploads/{}'.format(file_name), encoding=encoding) as f:
+    file_path = './data/BondDeal/uploads/'
+    encoding = get_encoding(file_path + '{}'.format(file_name))  # 获取文件编码
+    with open(file_path + '{}'.format(file_name), encoding=encoding) as f:
         text = f.read()
         f.close()
     fenlei = {'短融': [],
@@ -116,7 +117,8 @@ def deal_process_func(file_name='2020年06月25日周四.txt'):
         # print(df)
         df.sort_values('year', inplace=True)
         df.index = [i for i in range(len(df))]
-        df.to_excel('./data/BondDeal/{}.xlsx'.format(key))
+        # 取消这一行，取消输出中间值（中票.xlsx）
+        # df.to_excel('./data/BondDeal/{}.xlsx'.format(key))
         df = plot_prepare(df, day=the_day)
         fenlei_df[key] = pd.DataFrame(df).drop_duplicates(keep='first')  # .drop('day', axis=1)  # 去掉辅助列
 
@@ -125,12 +127,13 @@ def deal_process_func(file_name='2020年06月25日周四.txt'):
     return fenlei_df
 
 
-def output_excel(file_name, fenlei_df):
+def output_excel(file_name: str, fenlei_df):
     from shutil import copyfile
     file_name = file_name.split('.')[0]
-    file_path = './static/download/'
+    file_path = 'data/BondDeal/download/'
     copyfile('{}页面模板.xlsx'.format(file_path), '{}{}.xlsx'.format(file_path, file_name))
     import openpyxl
+    # 打开需要输出的文件
     wb = openpyxl.load_workbook('{}{}.xlsx'.format(file_path, file_name))
     sht = wb['Sheet1']
 
@@ -181,7 +184,6 @@ def output_excel(file_name, fenlei_df):
                     print(cell)
 
     now_line = 0
-
     for one in fenlei_df:
         # 输入标签
         coor = get_excel_coor(now_line)
