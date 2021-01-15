@@ -130,7 +130,7 @@ def deal_process_func(file_name='2020年06月25日周四.txt'):
 def output_excel(file_name: str, fenlei_df):
     from shutil import copyfile
     file_name = file_name.split('.')[0]
-    file_path = 'data/BondDeal/download/'
+    file_path = 'static/download/'
     copyfile('{}页面模板.xlsx'.format(file_path), '{}{}.xlsx'.format(file_path, file_name))
     import openpyxl
     # 打开需要输出的文件

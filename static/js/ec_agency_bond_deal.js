@@ -78,6 +78,9 @@ var zhongpiao_option = {
             type: 'scatter',
             smooth: true,
             data: [3,3,3],
+            itemStyle: {
+                borderColor: "rgba(160, 160, 160, 1)"
+            }
         },
         {
             name: '中债中短票(AAA)',
@@ -86,9 +89,7 @@ var zhongpiao_option = {
             data: [2, 1, 2],
             symbol: "none",
         }],
-    itemStyle: {
-        borderColor: "rgba(160, 160, 160, 1)"
-    }
+
 };
 // 指定图表的配置项和数据
 var qiyezhai_option = JSON.parse(JSON.stringify(zhongpiao_option));

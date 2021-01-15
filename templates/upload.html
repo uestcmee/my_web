@@ -11,6 +11,7 @@
 
     <link rel="stylesheet" href="../static/css/upload.css">
     <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+
     <link rel="stylesheet" href="../static/css/upload.css">
     <script src="../static/js/echarts.min.js"></script>
 
@@ -94,7 +95,7 @@
         if (now_date===""){//如果当前没有获取数据，则不显示下载excel按钮
         }
         else{
-            document.getElementById('download_file').href='./static/download/'+document.getElementById('now_date').innerText+'.xlsx'
+            document.getElementById('download_file').href='../static/download/'+document.getElementById('now_date').innerText+'.xlsx'
             document.getElementById('download_file').download=document.getElementById('now_date').innerText+'.xlsx'
             document.getElementById('download_excel').removeAttribute('hidden')
         }
