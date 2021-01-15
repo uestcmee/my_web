@@ -217,7 +217,7 @@ function fetch_irs_data() {
     $.ajax({
         // type:'GET',
         url: "/irs_data",
-        timeout: 10000,
+        timeout: 30000,
         // contentType:'application/json',
         dataType: 'json',
         success: function (data) {
