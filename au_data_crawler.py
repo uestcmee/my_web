@@ -129,11 +129,13 @@ def get_both():
     now_time = str(datetime.datetime.now().time())
     global day_dict
     if now_time > '15:03' and now_time < '19:55':  # 如果在下午收盘时间，保存当天数据
-        if '{}.csv'.format(day_dict['trade_day']) not in os.listdir('./data/Au/'):
+        # 最后一行没有当日成交
+        if (day_dict['trade_day']) not in open('./data/Au/0_close_hist.csv', 'r').readlines()[-1]:
             try:
                 # 分钟数据已经保存了每日的成交，可以不用再单独保存日度成交了
                 # au_and_future.to_csv('./data/Au/{}.csv'.format(day_dict['trade_day']))
                 update_hist(au_and_future, most_active_symbol)
+                print('{} 15:00数据保存完成'.format(day_dict['trade_day']))
             except:
                 print('保存当天15：00成交失败')
     return au_and_future
