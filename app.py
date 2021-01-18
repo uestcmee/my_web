@@ -220,11 +220,15 @@ def irs_data():
     df = jsonify(data_dict)
     return df
 
+
+# 试试放在这里uwsgi能不能运行
+from au_data_crawler import crawler_loop
+t = threading.Thread(target=crawler_loop)
+t.start()
+print('黄金数据爬虫已开始运行')
+
 if __name__ == '__main__':
-    from au_data_crawler import crawler_loop
-    t = threading.Thread(target=crawler_loop)
-    t.start()
-    print('黄金数据爬虫已开始运行')
+
 
     # if platform.system() == 'Windows':  # windows 为开发环境
     #     app.config['DEBUG'] = True
@@ -241,6 +245,6 @@ if __name__ == '__main__':
         app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=1)
         app.run()
     else:
-        # print(app.url_map)
+        print(app.url_map)
         app.run(host='0.0.0.0', port=8000)
 
