@@ -1,29 +1,29 @@
 # coding:utf-8
 import datetime
-import decimal
+# import decimal
 import json
 import os
 import threading
 import traceback
 
-import flask.json
+# import flask.json
 import pandas as pd
 from flask import Flask, render_template
 from flask import jsonify
 from flask import request
 
 
-class MyJSONEncoder(flask.json.JSONEncoder):
-    def default(self, obj):
-        if isinstance(obj, decimal.Decimal):
-            # Convert decimal instances to strings.
-            return str(obj)
-        return super(MyJSONEncoder, self).default(obj)
+# class MyJSONEncoder(flask.json.JSONEncoder):
+#     def default(self, obj):
+#         if isinstance(obj, decimal.Decimal):
+#             # Convert decimal instances to strings.
+#             return str(obj)
+#         return super(MyJSONEncoder, self).default(obj)
 
 
 # 循环引用，解决方法，推迟一方的导入，让例外一方完成
 app = Flask(__name__)
-app.json_encoder = MyJSONEncoder
+# app.json_encoder = MyJSONEncoder
 
 @app.route('/')
 def index():
