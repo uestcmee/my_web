@@ -221,7 +221,7 @@ def irs_data():
     return df
 
 
-# 试试放在这里uwsgi能不能运行
+# 试试放在这里uwsgi能不能运行，经过测试，放在这里能运行，就不用单独跑爬虫了。但是有个问题是好像程序结束不了
 from au_data_crawler import crawler_loop
 t = threading.Thread(target=crawler_loop)
 t.start()

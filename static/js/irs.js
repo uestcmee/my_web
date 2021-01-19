@@ -188,7 +188,6 @@ function plot_type_spread(data) {
 }
 
 
-
 function plot_calender(data,type='国债'){
     let calenderData_all =[];
     let name_str=type+':'
