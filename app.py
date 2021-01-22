@@ -3,6 +3,7 @@ import datetime
 # import decimal
 import json
 import os
+import sqlite3
 import threading
 import traceback
 
@@ -11,7 +12,7 @@ import pandas as pd
 from flask import Flask, render_template
 from flask import jsonify
 from flask import request
-
+from sqlalchemy import create_engine
 
 # class MyJSONEncoder(flask.json.JSONEncoder):
 #     def default(self, obj):
@@ -68,36 +69,28 @@ def au_info():
                            au_price=df.to_html(classes="deal", table_id='hist_table', index=False))
 
 
-# today = datetime.datetime.now()
-# one_day = datetime.timedelta(days=1)
-# if today.hour >= 20:
-#     today_str = str(today + one_day)[:10]
-# else:
-#     today_str = str(today)[:10]
 from au_data_crawler import get_today_str
+
+engine_contract = create_engine(r'sqlite:///data/Au/黄金合约信息.db')
 
 
 @app.route('/au_contract_list')
 def au_contract_list():
-    day_dict = get_today_str()
-    contract_list_path = './data/Au/contract_info/'
-    # qh_symbol_list = pd.read_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
-    #                              encoding='gbk', index_col=0).index.tolist()
-    # print(qh_symbol_list)
+    date = get_today_str()['trade_day']
 
-    df = pd.read_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
-                     encoding='gbk', index_col=0)['delivery_day']
+    df = pd.read_sql(date, engine_contract, index_col='symbol')['delivery_day']
     # contract_list_dict = {i: x for i, x in enumerate(qh_symbol_list)}
     contract_list_dict = pd.DataFrame(df).to_json()
     return jsonify(contract_list_dict)
 
 
+engine_minutes = create_engine(r'sqlite:///data/Au/黄金分钟信息.db')
+
+
 @app.route('/au_real_time', methods=['GET', 'POST'])
 def au_real_time():
-    minutes_path = './data/Au/minutes/'
-    day_dict = get_today_str()
-    df = pd.read_csv(minutes_path + '{}.csv'.format(day_dict['trade_day']),
-                     encoding='gbk', index_col=0)
+    date = get_today_str()['trade_day']
+    df = pd.read_sql(date, engine_minutes, index_col='index')
     df.dropna(axis=0, inplace=True)  # 不能有空值，需要处理
     # df = df.iloc[-120:]  # 只要最近两个小时的
     df_dict = {key: list(map(lambda x: round(x, 2), value.to_list())) for key, value in df.iteritems()}
@@ -105,20 +98,39 @@ def au_real_time():
     return jsonify(df_dict)
 
 
-@app.route('/bond_deal',methods=['GET','POST'])
-def get_user_info():
+def GetTables(db_file='main.db'):
+    """
+    获取数据库的现有表名称
+    :param db_file: 数据库名称
+    :return:
+    """
+    try:
+        conn = sqlite3.connect(db_file)
+        cur = conn.cursor()
+        cur.execute("select name from sqlite_master where type='table' order by name")
+        return cur.fetchall()
+    except Exception as e:
+        print(e)
+        return []
 
-    def get_date_list(date='2020-12-25'):
-        import os
-        path=(r'D:\PycharmProjects\Fixed_income_internship\19_定时启动\csv\\')
-        file_list=os.listdir(path)
-        file_name=u'债券成交{}.csv'.format(date)
-        print(file_name)
-        if file_name not in file_list:
+
+@app.route('/bond_deal', methods=['GET', 'POST'])
+def get_user_info():
+    file_path = '../my_scheduled_app/'
+    file_name = '债券成交.db'
+    latest_day = [x[0] for x in GetTables(file_path + file_name)][-1]
+
+    def get_date_list(date=latest_day):
+
+        engine = create_engine(r'sqlite:///' + file_path + file_name)
+        pd.read_sql('2021-01-20', engine)
+
+        file_list = [x[0] for x in GetTables(file_path + file_name)];
+        if date not in file_list:
             print('无对应日期数据')
             return pd.DataFrame(['无对应日期数据'])
         else:
-            df=pd.read_csv(path+file_name,encoding='gbk')
+            df = pd.read_sql(date, engine)
             return df
 
     if request.method=='POST':
@@ -136,21 +148,6 @@ def get_user_info():
         deal_data=info.to_html(classes="deal", index=False),
         date=date
     )
-
-
-#
-# from au_data import high_freq
-#
-# @app.route('/au_high_freq', methods=['GET', 'POST'])
-# def fetch_high_freq():
-#     if request.method == 'POST':
-#         contract_name = (dict(eval(request.get_data().decode('utf-8')))['name'])
-#         if len(contract_name) < 3:
-#             return jsonify({0: 0})
-#         return jsonify(high_freq(contract=contract_name))
-#     else:
-#         # print('not a post')
-#         return jsonify({0: 0})
 
 
 from deal_process import deal_process_func

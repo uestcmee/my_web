@@ -12,7 +12,6 @@
     //窗口大小变化时候，进行刷新页面操作，防止样式混乱
 
 
-
     </script>
 </head>
 <body>
@@ -23,9 +22,10 @@
 <h1>银行同业交易中心成交数据</h1>
 <form action="" method="post">
 
-<label for="deal_date">选择日期：</label><input id="deal_date" type="date" name="date" value="2020-12-25"/>
-<!--<button type="submit" onclick="get_deal()">确认</button>-->
-    <button  value="Login" >确认</button>
+    <label for="deal_date">选择日期：</label><input id="deal_date" type="date" name="date"/>
+    <!--    上一句本想加入当前所选日期，但是加了好像效果不好，先这样了-->
+    <!--<button type="submit" onclick="get_deal()">确认</button>-->
+    <button value="Login">确认</button>
 </form>
 
 <h2>数据列表如下：{{date|safe}}</h2>

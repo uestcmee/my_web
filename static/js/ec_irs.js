@@ -672,3 +672,17 @@ calender_option = {
 
 var calender = echarts.init(document.getElementById('calender'));
 calender.setOption(calender_option);
+
+
+$(window).resize(function () {
+    irs_hist.resize()
+    time_spread.resize()
+    type_spread.resize()
+    box_fig.resize()
+    calender.resize()
+    gauge_1.resize()
+    gauge_2.resize()
+    gauge_3.resize()
+    gauge_4.resize()
+
+})

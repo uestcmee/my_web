@@ -10,13 +10,13 @@
     <script src="../static/js/echarts.min.js"></script>
     <!--    以下代码用来刷新页面布局信息-->
     <script>
+    // 静态网页可以用这样的方式刷新,ajax动态加载的网页会重载数据，不建议使用
     var x=window.innerWidth;
     function resizeFresh(){
         if (x !== window.innerWidth) {
             location.reload();
         }
     }
-
     </script>
 </head>
 <body onresize="resizeFresh()">

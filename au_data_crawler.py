@@ -1,20 +1,26 @@
 # coding:utf-8
 import datetime
 import json
-import os
 import re
 import time
 
 import numpy as np
 import pandas as pd
 import requests
+import schedule
+from sqlalchemy import create_engine
+
 
 # 现货实时行情
-qh_symbol_list = []
 
 
 class my_requests:
-    def get(url):
+    """
+    用来在获取失败时重复获取
+    TODO 好像这个类的写法有点问题，后面再看看
+    """
+
+    def get(url: str):
         i = 0
         headers = {
             'user_agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36 Edg/87.0.664.66'
@@ -61,10 +67,12 @@ def get_today_str():
         trade_today_str = str(today + one_day)[:10]
     else:
         trade_today_str = str(today)[:10]
+    next_day = str(today + one_day)[:10]
     day_dict = {
-        'today': today,
-        'trade_day': trade_today_str,
-        'real_day': real_today_str
+        'today': today,  # 日期类型
+        'trade_day': trade_today_str,  # 当前的对应交易日（晚八点切换）
+        'real_day': real_today_str,  # 实际日期
+        'next_day': next_day,
     }
 
     return day_dict
@@ -100,25 +108,39 @@ def one_future_real_time(symbol='AU2106'):
     return pd.DataFrame(df.price)
 
 
-def update_hist(au_and_future, symbol):
-    close_data = au_and_future.loc['15:00'].tolist()
-    date = str(datetime.datetime.now())[:10]
-    with open('./data/Au/0_close_hist.csv', 'a') as f:
-        f.write(','.join([date] + [str(x) for x in close_data] + [symbol]) + '\n')  # 最后一列添加活跃券
-        f.close()
+def update_hist():
+    """
+    保存15:00的数据到csv
+    :param au_and_future:期货新货的价格数据
+    :param symbol:当前最活跃期货
+    :return:
+    """
+    symbol = get_symbol_list()[0]
+    au_and_future = get_both()
+    day_dict = get_today_str()
+    try:
+        close_data = au_and_future.loc['15:00'].tolist()
+        date = str(datetime.datetime.now())[:10]
+        with open('./data/Au/0_close_hist.csv', 'a') as f:
+            f.write(','.join([date] + [str(x) for x in close_data] + [symbol]) + '\n')  # 最后一列添加活跃券
+            f.close()
+        print('{} 15:00数据保存完成'.format(day_dict['trade_day']))
+    except:
+        print('保存当天15：00成交失败')
 
 
 def get_both():
-    most_active_symbol = qh_symbol_list[0]
+    most_active_symbol = get_symbol_list()[0]
+
     future_oneday_real_time = one_future_real_time(symbol=most_active_symbol)
     au_oneday_real_time = au_real_time()
     au_oneday_real_time = au_oneday_real_time[~au_oneday_real_time.index.duplicated(keep='first')]  # 因为可能有重复值，去重
     au_and_future = pd.concat([future_oneday_real_time, au_oneday_real_time], axis=1)
     au_and_future.columns = ['future', 'Au_TD']
     # 排序
-    night_price = au_and_future.sort_index()['17:00':]
-    day_price = au_and_future.sort_index()[:'17:00']
-    au_and_future = pd.concat([night_price, day_price], axis=0)
+    night_price = au_and_future.sort_index()['17:00':]  # 夜盘数据
+    day_price = au_and_future.sort_index()[:'17:00']  # 日盘数据
+    au_and_future = pd.concat([night_price, day_price], axis=0)  # 拼接
     # 计算数据
     au_and_future['diff'] = au_and_future['future'] - au_and_future['Au_TD']
     delivery_day = datetime.datetime.strptime('2021-6-16', '%Y-%m-%d')  # 到期日
@@ -126,23 +148,23 @@ def get_both():
     day_to_delivery = (delivery_day - today).days + 1  # 补上半天的差
     au_and_future['ytm'] = au_and_future['diff'] * 365 / ((day_to_delivery) * au_and_future['Au_TD']) * 100
     au_and_future = au_and_future.round(6)  # 设置小数位数
-    now_time = str(datetime.datetime.now().time())
-    global day_dict
-    if now_time > '15:03' and now_time < '19:55':  # 如果在下午收盘时间，保存当天数据
-        # 最后一行没有当日成交
-        if (day_dict['trade_day']) not in open('./data/Au/0_close_hist.csv', 'r').read():
-            try:
-                # 分钟数据已经保存了每日的成交，可以不用再单独保存日度成交了
-                # au_and_future.to_csv('./data/Au/{}.csv'.format(day_dict['trade_day']))
-                update_hist(au_and_future, most_active_symbol)
-                print('{} 15:00数据保存完成'.format(day_dict['trade_day']))
-            except:
-                print('保存当天15：00成交失败')
+    # now_time = str(datetime.datetime.now().time())
+    # global day_dict
+    # if now_time > '15:03' and now_time < '19:55':  # 如果在下午收盘时间，保存当天数据
+    #     # 最后一行没有当日成交
+    #     if (day_dict['trade_day']) not in open('./data/Au/0_close_hist.csv', 'r').read():
+    #         try:
+    #             # 分钟数据已经保存了每日的成交，可以不用再单独保存日度成交了
+    #             # au_and_future.to_csv('./data/Au/{}.csv'.format(day_dict['trade_day']))
+    #             update_hist(au_and_future, most_active_symbol)
+    #             print('{} 15:00数据保存完成'.format(day_dict['trade_day']))
+    #         except:
+    #             print('保存当天15：00成交失败')
     return au_and_future
 
 
 def contract_list_sina():  # sina,可以直接获取全合约，不用指定合约代码，带有标签，所以数据量会大些，获取时间更长,AU2110标签有误
-    global qh_symbol_list
+
     url = 'http://vip.stock.finance.sina.com.cn/quotes_service/api/json_v2.php/' \
           'Market_Center.getHQFuturesData?page=1&num=40&sort=symbol&asc=1&node=hj_qh&_s_r_a=init'
     res = my_requests.get(url)
@@ -159,7 +181,7 @@ def contract_list_sina():  # sina,可以直接获取全合约，不用指定合�
 
 
 # TODO 合约信息包括部分行情最好在收市后更新一次，大约四点？
-def save_contract_list():  # 上海期货交易所数据，可以直接获取全合约，不用指定合约代码
+def get_contract_list():  # 上海期货交易所数据，可以直接获取全合约，不用指定合约代码
 
     from bs4 import BeautifulSoup
     au_jys_text = my_requests.get('http://www.shfe.com.cn/products/au/').text
@@ -179,178 +201,60 @@ def save_contract_list():  # 上海期货交易所数据，可以直接获取全
     contract_other_info = contract_list_sina()
     both_list = set(contract_other_info.index.tolist()).intersection(delivery_info.index.tolist())
     contract_other_info = contract_other_info.loc[both_list]
-    delivery_info = pd.concat([delivery_info, contract_other_info], axis=1).dropna()
-    # global qh_symbol_list #不能这样，这里不一定每次都运行
-    # qh_symbol_list=delivery_info.index.tolist()
-    return delivery_info
+    contract_list = pd.concat([delivery_info, contract_other_info], axis=1).dropna()
+    contract_list['position'] = contract_list['position'].astype(float)  # 浮点数才方便排序
+    contract_list = contract_list.sort_values('position', ascending=False)  # 按照持仓量进行一个排序
+    return contract_list
 
 
-#
-# def xh_high_freq():
-#     td_high_freq_url = 'http://futsse.eastmoney.com/list/variety/118/0?' \
-#                        'orderBy=name&sort=desc&pageSize=12&pageIndex=0&callbackName=&cb=hh&_={time}'
-#     res = my_requests.get(td_high_freq_url.format(time=int(time.time() * 1000)))
-#     res_dict = dict(eval(res.text[1:-1]))
-#     for one in res_dict['list']:
-#         if (one['name'] == '黄金T+D'):
-#             '''
-#             {'qrspj': 390.05,
-#              'spsj': 1609399800,
-#              'np': 2824,
-#              'rz': 870,
-#              'dm': 'AUTD',
-#              'zsjd': 2,
-#              'lx': 0,
-#              'ccl': 191972,
-#              'ly': 'c12',
-#              'kpsj': 1609329600,
-#              'dt': 347.5,
-#              'sc': 118,
-#              'uid': 'SGE|AUTD',
-#              'vol': 6058,
-#              'bpgs': 1,
-#              'jysj': 827,
-#              'mcj': 391.3,
-#              'cjbs': 0,
-#              'mcl': 6,
-#              'wp': 3234,
-#              'cje': 2367491024,
-#              'mrj': 391.26,
-#              'utime': 1609344507,
-#              'jjsj': '-',
-#              'mrl': 1,
-#              'h': 391.88,
-#              'j': 390.8,
-#              'zccl': 191102,
-#              'l': 389.38,
-#              'zf': '-',
-#              'mmpl': [0, 0, 0, 0, 6, 1, 0, 0, 0, 0],
-#              'o': 390.0,
-#              'p': 391.25,
-#              'cclbh': 20,
-#              'xsfx': 2,
-#              'lb': '-',
-#              'name': '黄金T+D',
-#              'zde': 0.79,
-#              'zt': 433.41,
-#              'jyzt': 0,
-#              'xs': 20,
-#              'spgs': 1,
-#              'zdf': 0.2,
-#              'mmpjg': [0.0, 0.0, 0.0, 0.0, 391.3, 391.26, 0.0, 0.0, 0.0, 0.0],
-#              'zjsj': 390.46}'''
-#             bid_price = float(one['mrj'])
-#             ask_price = float(one['mcj'])
-#             now_price = float(one['p'])
-#             break
-#     return {'xh_bid': bid_price, 'xh_ask': ask_price, 'xh_now': now_price}
-#
-#
-# def qh_high_freq(contract_list=('AU0', 'AU2110')):
-#     url = f"https://hq.sinajs.cn/rn={round(time.time() * 1000)}&list={','.join(contract_list)}"
-#     res = my_requests.get(url)
-#     data_df = pd.DataFrame([item.strip().split("=")[1].split(
-#         ",") for item in res.text.split(";") if item.strip() != ""])  # 获取等号后的值
-#     data_df.iloc[:, 0] = data_df.iloc[:, 0].str.replace('"', "")  # 第一列处理
-#     data_df.iloc[:, -1] = data_df.iloc[:, -1].str.replace('"', "")
-#     data_df.replace('', np.nan, inplace=True)
-#     data_df.dropna(axis=1, inplace=True)
-#     data_df.columns = [['name', 'info', 'open', 'high', 'low', 'settle', 'buy', 'sale', 'current_price',
-#                         'info2', 'pre_settle', 'buy_amount', 'sale_amount', 'open_interest', 'deal_amount',
-#                         ] + ['info'] * (len(data_df.columns) - 15)]
-#     data_df.index = contract_list
-#     data_df = data_df[['name', 'buy', 'sale', 'current_price']]
-#     for col in data_df.columns[1:]:
-#         data_df[col] = data_df[col].astype(float)
-#     data_df.columns = ['name', 'buy', 'sale', 'current_price']
-#     return data_df
-#
-#
-# def web_high_freq():
-#     """
-#     获取高频数据
-#     改变global 参数所需的参数的字典
-#     """
-#
-#     def get_ytm(jiacha, xh_now, date):
-#         delivery_day = date.apply(lambda date: datetime.datetime.strptime(str(int(date)), '%Y%m%d'))  # 到期日
-#         today = datetime.datetime.today()
-#         day_to_delivery = (delivery_day.apply(lambda x: (x - today).days + 1))  # 补上半天的差
-#         ytm = jiacha * 365 / ((day_to_delivery) * float(xh_now)) * 100
-#         return round(ytm, 2)
-#
-#     global qh_symbol_list, high_freq_data, day_dict  # 全局参数
-#
-#     # 联网获取期货数据
-#     qh_df = qh_high_freq(contract_list=qh_symbol_list)
-#
-#     [xh_buy, xh_sale, xh_now] = xh_high_freq().values()
-#     contract_list_path = './data/Au/contract_info/'
-#     # 合约列表，使用交易时间
-#     qh_df['delivery'] = pd.read_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
-#                                     encoding='gbk', index_col=0).delivery_day.tolist()
-#
-#     qh_df['jiacha0'] = qh_df.current_price - float(xh_now)
-#     qh_df['jiacha_fan'] = qh_df.sale - float(xh_buy)
-#     qh_df['jiacha_zheng'] = qh_df.buy - float(xh_sale)
-#     qh_df['puretao'] = get_ytm(jiacha=qh_df['jiacha0'], xh_now=xh_now, date=qh_df['delivery'])
-#     qh_df['fantao'] = get_ytm(jiacha=qh_df['jiacha_fan'], xh_now=xh_now, date=qh_df['delivery'])
-#     qh_df['zhengtao'] = get_ytm(jiacha=qh_df['jiacha_zheng'], xh_now=xh_now, date=qh_df['delivery'])
-#
-#     qh_df.loc['AUTD'] = ['黄金TD'] + [xh_buy, xh_sale, xh_now] + [0] * (qh_df.shape[1] - 4)  # 加入现货数据
-#     # TODO 这样会插入过多的time，信息冗余且不方便查找
-#     qh_df['time'] = str(datetime.datetime.now().time())[:8]
-#
-#     return qh_df
+engine_contract = create_engine(r'sqlite:///data/Au/黄金合约信息.db')
 
 
-def main_fun():
-    global init, day_dict
+def save_contract(init=False):
+    """
+    计划运行时间下午收盘后,保存次日的合约数据
+    :return:
+    """
+    date = get_today_str()['next_day']
+    if init:  # 初始化运行的时候保存到今日
+        date = get_today_str()['trade_day']
+    contract_list = get_contract_list()
+    contract_list.to_sql(date, engine_contract, if_exists='replace')
+    print('{}合约列表保存完毕'.format(date))
+
+
+def get_symbol_list():
+    """更新当前最活跃合约列表"""
+    date = get_today_str()['trade_day']
+    try:
+        contract_list = pd.read_sql(date, engine_contract, index_col='symbol')
+        qh_symbol_list = contract_list.index.tolist()
+    except:
+        qh_symbol_list = get_contract_list().index.tolist()
+    return qh_symbol_list
+
+
+engine_minutes = create_engine(r'sqlite:///data/Au/黄金分钟信息.db')
+
+
+def save_minutes_data():
+    """保存实时的分钟序列，每次写入完整的"""
     day_dict = get_today_str()
-    contract_list_path = './data/Au/contract_info/'
-
-    # TODO 分天的间隔细节还需考虑
-    if '{}.csv'.format(day_dict['trade_day']) not in os.listdir(contract_list_path):
-        contract_list=save_contract_list()
-        contract_list['position']=contract_list['position'].astype(float) # 浮点数才方便排序
-        contract_list.sort_values('position', ascending=False) \
-            .to_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
-                    encoding='gbk')
-        print('{}合约列表保存完毕'.format(day_dict['trade_day']))
-    global qh_symbol_list
-
-    qh_symbol_list = pd.read_csv(contract_list_path + '{}.csv'.format(day_dict['trade_day']),
-                                 encoding='gbk', index_col=0).index.tolist()
-
-    # 分钟序列，每次写入完整的
     # 200行0.3s,有点久。。。不过20s一次，还好吧
-    now_time = int(time.time())
-    if now_time % 20 < 2 or init:
-        minutes_path = './data/Au/minutes/'
-        get_both().to_csv(minutes_path + '{}.csv'.format(day_dict['trade_day']))
-
-    # if is_trade_time() or init:  # 在交易时段才获取高频数据
-    #     # 高频数据，每次都要运行，每一个小时保存一个文件，否则文件太大了
-    #     # 高频数据使用真实时间数据
-    #     with open('./data/Au/high_freq/{}_{}.txt'.format(day_dict['real_day'], day_dict['today'].hour), 'a') as f:
-    #         f.write(web_high_freq().to_json() + '\n')
-    #         f.close()
-    #     init = False  # 启动时运行一次,后如果不在交易时段则不再运行
-
-
-init = True
+    get_both().to_sql(day_dict['trade_day'], engine_minutes, if_exists='replace')
 
 
 def crawler_loop():
-    while True:
-        try:
-            main_fun()
-            time.sleep(2)
-        except:
-            import traceback
-            traceback.print_exc()
+    # 先初始化运行一次
+    save_minutes_data()
+    schedule.every().day.at("15:04").do(save_contract)  # 保存次日合约数据
+    schedule.every().day.at("15:03").do(update_hist)  # 保存当前
+    schedule.every(30).seconds.do(save_minutes_data)
 
-# print('已开始运行')
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
+
 
 if __name__ == '__main__':
     crawler_loop()
