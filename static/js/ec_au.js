@@ -260,3 +260,10 @@ var high_freq_pic = echarts.init(document.getElementById('high_freq_pic'));
 au_day.setOption(au_day_option);
 au_hist.setOption(au_hist_option);
 high_freq_pic.setOption(high_freq_pic_option)
+
+$(window).resize(function () {
+    au_day.resize()
+    au_hist.resize()
+    high_freq_pic.resize()
+
+})

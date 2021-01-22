@@ -148,18 +148,6 @@ def get_both():
     day_to_delivery = (delivery_day - today).days + 1  # 补上半天的差
     au_and_future['ytm'] = au_and_future['diff'] * 365 / ((day_to_delivery) * au_and_future['Au_TD']) * 100
     au_and_future = au_and_future.round(6)  # 设置小数位数
-    # now_time = str(datetime.datetime.now().time())
-    # global day_dict
-    # if now_time > '15:03' and now_time < '19:55':  # 如果在下午收盘时间，保存当天数据
-    #     # 最后一行没有当日成交
-    #     if (day_dict['trade_day']) not in open('./data/Au/0_close_hist.csv', 'r').read():
-    #         try:
-    #             # 分钟数据已经保存了每日的成交，可以不用再单独保存日度成交了
-    #             # au_and_future.to_csv('./data/Au/{}.csv'.format(day_dict['trade_day']))
-    #             update_hist(au_and_future, most_active_symbol)
-    #             print('{} 15:00数据保存完成'.format(day_dict['trade_day']))
-    #         except:
-    #             print('保存当天15：00成交失败')
     return au_and_future
 
 
@@ -199,11 +187,12 @@ def get_contract_list():  # 上海期货交易所数据，可以直接获取全�
     delivery_info.set_index('symbol', inplace=True)
 
     contract_other_info = contract_list_sina()
-    both_list = set(contract_other_info.index.tolist()).intersection(delivery_info.index.tolist())
+    both_list = set(contract_other_info.index.tolist()).intersection(delivery_info.index.tolist())  # 两个表都有的合约
     contract_other_info = contract_other_info.loc[both_list]
     contract_list = pd.concat([delivery_info, contract_other_info], axis=1).dropna()
     contract_list['position'] = contract_list['position'].astype(float)  # 浮点数才方便排序
     contract_list = contract_list.sort_values('position', ascending=False)  # 按照持仓量进行一个排序
+    contract_list.index.name = 'symbol'  # 好像不加这一句，index列的名字就会被改掉
     return contract_list
 
 
@@ -248,6 +237,7 @@ def save_minutes_data():
 
 def crawler_loop():
     # 先初始化运行一次
+    print('黄金数据爬虫已经开始运行')
     save_minutes_data()
     schedule.every().day.at("15:04").do(save_contract)  # 保存次日合约数据
     schedule.every().day.at("15:03").do(update_hist)  # 保存当前
@@ -258,7 +248,6 @@ def crawler_loop():
         time.sleep(1)
 
 
-print('黄金数据爬虫已经开始运行')
 
 if __name__ == '__main__':
     crawler_loop()

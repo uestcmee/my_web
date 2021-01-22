@@ -93,7 +93,7 @@ var zhongpiao_option = {
 };
 // 指定图表的配置项和数据
 var qiyezhai_option = JSON.parse(JSON.stringify(zhongpiao_option));
-qiyezhai_option.title.text='企业债'
+qiyezhai_option.title.text = '企业债'
 
 var zhongpiao = echarts.init(document.getElementById('zhongpiao'));
 var qiyezhai = echarts.init(document.getElementById('qiyezhai'));
@@ -101,3 +101,9 @@ var qiyezhai = echarts.init(document.getElementById('qiyezhai'));
 
 zhongpiao.setOption(zhongpiao_option);
 qiyezhai.setOption(qiyezhai_option);
+
+
+$(window).resize(function () {
+    zhongpiao.resize()
+    qiyezhai.resize()
+})
