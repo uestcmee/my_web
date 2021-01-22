@@ -222,7 +222,6 @@ def irs_data():
 from au_data_crawler import crawler_loop
 t = threading.Thread(target=crawler_loop)
 t.start()
-print('黄金数据爬虫已开始运行')
 
 if __name__ == '__main__':
 

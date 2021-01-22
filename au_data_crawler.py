@@ -239,6 +239,8 @@ engine_minutes = create_engine(r'sqlite:///data/Au/黄金分钟信息.db')
 
 def save_minutes_data():
     """保存实时的分钟序列，每次写入完整的"""
+    if not is_trade_time():
+        return 0
     day_dict = get_today_str()
     # 200行0.3s,有点久。。。不过20s一次，还好吧
     get_both().to_sql(day_dict['trade_day'], engine_minutes, if_exists='replace')
@@ -255,6 +257,8 @@ def crawler_loop():
         schedule.run_pending()
         time.sleep(1)
 
+
+print('黄金数据爬虫已经开始运行')
 
 if __name__ == '__main__':
     crawler_loop()
