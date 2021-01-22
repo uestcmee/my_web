@@ -28,19 +28,18 @@ $.ajax({
 get_contract()
 
 //更新历史数据
-function getTdValue()
-{
-    var sleep = function(time) {
+function getTdValue() {
+    var sleep = function (time) {
         var startTime = new Date().getTime() + parseInt(time, 10);
-        while(new Date().getTime() < startTime) {}
+        while (new Date().getTime() < startTime) {
+        }
     };
     sleep(1000);
     var tableId = document.getElementById("hist_table");
-    var times =  Array();
-    var ytm =  Array();
+    var times = Array();
+    var ytm = Array();
 
-    for(var i=1; i < tableId.rows.length;i++)
-    {
+    for (var i = 1; i < tableId.rows.length; i++) {
 
         times.push(tableId.rows[i].cells[0].innerHTML)
         ytm.push(tableId.rows[i].cells[4].innerHTML)
@@ -56,50 +55,52 @@ function getTdValue()
 }
 getTdValue();
 
-function fade(){
+//褪色
+function fade() {
 
-    document.getElementById('qh_now').classList.remove('red','green')
-    document.getElementById('xh_now').classList.remove('red','green')
-    document.getElementById('qh_buy').classList.remove('red','green')
-    document.getElementById('xh_buy').classList.remove('red','green')
-    document.getElementById('qh_sale').classList.remove('red','green')
-    document.getElementById('xh_sale').classList.remove('red','green')
+    document.getElementById('qh_now').classList.remove('red', 'green')
+    document.getElementById('xh_now').classList.remove('red', 'green')
+    document.getElementById('qh_buy').classList.remove('red', 'green')
+    document.getElementById('xh_buy').classList.remove('red', 'green')
+    document.getElementById('qh_sale').classList.remove('red', 'green')
+    document.getElementById('xh_sale').classList.remove('red', 'green')
 
 }
-setInterval(fade,1000)
 
+setInterval(fade, 1000)
 
-var source=new EventSource("http://33.futsse.eastmoney.com/sse/118_AUTD_qt");
-
-source.onmessage=function(event)
-{
-    var res=JSON.parse(event.data)
-    renderHead(res['qt'],'xh')
+//接受消息的EventSource
+var source = new EventSource("http://33.futsse.eastmoney.com/sse/118_AUTD_qt");
+//收到消息后的处理
+source.onmessage = function (event) {
+    var res = JSON.parse(event.data)
+    renderHead(res['qt'], 'xh')
 }
 
-function qh_high_freq(contract){
-    var source_qh=new EventSource("http://33.futsse.eastmoney.com/sse/113_"+contract+"_qt");
-    source_qh.onmessage=function(event)
-    {
-        var res=JSON.parse(event.data)
-        renderHead(res['qt'],'qh')
+//期货高频数据
+function qh_high_freq(contract) {
+    var source_qh = new EventSource("http://33.futsse.eastmoney.com/sse/113_" + contract + "_qt");
+    source_qh.onmessage = function (event) {
+        var res = JSON.parse(event.data)
+        renderHead(res['qt'], 'qh')
     }
     return source_qh
 }
 
-function fresh_delivery_day (){
-    var select_box=$('#qhhy')[0]
-    for (var i =0;i<select_box.length;i++){
-        if (select_box[i].selected===true){
-            day_str=select_box[i].getAttribute('end_day')
-            delivery_str=day_str.substring(0,4)+'-'+day_str.substring(4,6)+'-'+day_str.substring(6,8)
+//更新最后交割日值
+function fresh_delivery_day() {
+    var select_box = $('#qhhy')[0]
+    for (var i = 0; i < select_box.length; i++) {
+        if (select_box[i].selected === true) {//寻找被选中的值
+            day_str = select_box[i].getAttribute('end_day')
+            delivery_str = day_str.substring(0, 4) + '-' + day_str.substring(4, 6) + '-' + day_str.substring(6, 8)
             $('#delivery').text(delivery_str)
         }
     }
 
 }
 
-
+//改变合约
 function change_contract(contract){
     fresh_delivery_day()
     init_high_freq.close()
@@ -118,7 +119,6 @@ function getColor(str) {
         return "green";
     }
 }
-
 
 /**
  * 渲染头部
@@ -271,10 +271,7 @@ function high_freq_fig(){
     high_freq_pic.setOption(high_freq_pic_option)
 }
 
-
-setInterval(high_freq_fig,1000)
-
-
+//交易时间的处理
 function Dealjysj(val) {
     try {
 
@@ -288,7 +285,6 @@ function Dealjysj(val) {
     }
 
 }
-
 
 //期货的日内分钟数据
 function au_day_price() {
@@ -316,6 +312,7 @@ function au_day_price() {
 }
 
 au_day_price();
+setInterval(high_freq_fig, 1000)
 setInterval(au_day_price, 30000);
 
 
