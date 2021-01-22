@@ -90,7 +90,7 @@ engine_minutes = create_engine(r'sqlite:///data/Au/黄金分钟信息.db')
 @app.route('/au_real_time', methods=['GET', 'POST'])
 def au_real_time():
     date = get_today_str()['trade_day']
-    df = pd.read_sql(date, engine_minutes, index_col='index')
+    df = pd.read_sql(date, engine_minutes, index_col='symbol')
     df.dropna(axis=0, inplace=True)  # 不能有空值，需要处理
     # df = df.iloc[-120:]  # 只要最近两个小时的
     df_dict = {key: list(map(lambda x: round(x, 2), value.to_list())) for key, value in df.iteritems()}

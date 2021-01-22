@@ -253,7 +253,7 @@ function renderHead(items,product) {
 // 高频数据图
 function high_freq_fig(){
     // 避免过长
-    if ($('#ytm_pure').text()=='init' )return false
+    if ($('#stock_time_xh').text() == 'init' || $('#stock_time_qh').text() == 'init') return false
     var d = new Date();
     var now_time = ("0" + (d.getHours())).slice(-2) + ':' + ("0" + (d.getMinutes())).slice(-2) + ':' + ("0" + (d.getSeconds())).slice(-2);
     if ((high_freq_pic_option.xAxis[0].data.length) > 60) {
