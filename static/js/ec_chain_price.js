@@ -1,74 +1,74 @@
 // 指定图表的配置项和数据
-var price_fig_option = {
-    title: {
-        text: '中票',
-        textStyle: {
-            fontSize: 14,
-        },
-        left: 'left',
-    },
-    tooltip: {
-        trigger: 'item',
-        axisPointer: {
-            type: 'cross',
-            lineStyle: {}
-        },
-        formatter: ''
-        // formatter:'{@bond_name}<br/>期限:{c}<br/>收益率:{b}',
-        // formatter: function (param) {
-        //     return 'nihao'+param;
-        // },
-    },
-    legend: {
-        data: ['平均价格'],
-        left: 'right',
-    },
-    grid: {
-        left: '20%',
-        right: '6%',
-        bottom: '10%',
-        top: 50,
-        containLabel: false
-    },
-    xAxis: [{
-        // type: 'category',
-        type: 'value',
-        // data: [1,2,3]
-    }],
-    yAxis: [{
-        type: 'value',
-        min: 'dataMin',
-        axisLabel: {
-            show: true,
-            fontSize: 12,
-        },
-        axisLine: {
-            show: true
-        },
-        splitLine: {
-            show: true,
-            lineStyle: {
-
-                width: 1,
-                type: 'solid'
-            }
-        }
-    }],
-    dataZoom: [{
-        start: 10,
-        type: "inside",
-    }],
-
-    series: [
-        {
-            name: '平均价格',
-            type: 'line',
-            smooth: true,
-            data: [2, 1, 2],
-            symbol: "none",
-        }],
-
-};
+// var price_fig_option = {
+//     title: {
+//         text: '中票',
+//         textStyle: {
+//             fontSize: 14,
+//         },
+//         left: 'left',
+//     },
+//     tooltip: {
+//         trigger: 'item',
+//         axisPointer: {
+//             type: 'cross',
+//             lineStyle: {}
+//         },
+//         formatter: ''
+//         // formatter:'{@bond_name}<br/>期限:{c}<br/>收益率:{b}',
+//         // formatter: function (param) {
+//         //     return 'nihao'+param;
+//         // },
+//     },
+//     legend: {
+//         data: ['平均价格'],
+//         left: 'right',
+//     },
+//     grid: {
+//         left: '20%',
+//         right: '6%',
+//         bottom: '10%',
+//         top: 50,
+//         containLabel: false
+//     },
+//     xAxis: [{
+//         // type: 'category',
+//         type: 'value',
+//         // data: [1,2,3]
+//     }],
+//     yAxis: [{
+//         type: 'value',
+//         min: 'dataMin',
+//         axisLabel: {
+//             show: true,
+//             fontSize: 12,
+//         },
+//         axisLine: {
+//             show: true
+//         },
+//         splitLine: {
+//             show: true,
+//             lineStyle: {
+//
+//                 width: 1,
+//                 type: 'solid'
+//             }
+//         }
+//     }],
+//     dataZoom: [{
+//         start: 10,
+//         type: "inside",
+//     }],
+//
+//     series: [
+//         {
+//             name: '平均价格',
+//             type: 'line',
+//             smooth: true,
+//             data: [2, 1, 2],
+//             symbol: "none",
+//         }],
+//
+// };
 
 // var price_fig = echarts.init(document.getElementById('price_fig'));
 //
@@ -91,13 +91,11 @@ function fetch_chain_data() {
             // ec_lookback_option.xAxis[0].data = data.day;
             // ec_lookback_option.series[0].data = data.stg_r;
             // ec_lookback_option.series[1].data = data.idx_r;
-            //
             // ec_lookback.setOption(ec_lookback_option);
             update_wait('数据获取完成')
         },
         error: function () {
             update_wait('数据获取失败')
-            console.log("失败了")
         }
     })
 }

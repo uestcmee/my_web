@@ -229,7 +229,8 @@ def get_sql_data(product_type, product_name):
     file_name = '锂产业链价格.db'
     conn = sqlite3.connect(file_path + file_name)
     cursor = conn.cursor()
-    words = "select * from {} where 名称='{}'".format(product_type, product_name)
+    # 要加``才能够处理表名中有横杠-的情况
+    words = "select * from `{}` where 名称='{}'".format(product_type, product_name)
     cursor.execute(words)
 
     df = pd.DataFrame(cursor.fetchall())
