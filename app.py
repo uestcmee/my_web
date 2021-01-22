@@ -209,17 +209,54 @@ def upload():
 
 @app.route('/irs')
 def irs():
-    return render_template('irs.html',)
+    return render_template('irs.html', )
+
 
 @app.route('/irs_data')
 def irs_data():
-    data_dict={k:v.tolist() for k,v in pd.read_csv('./data/IRS/各基准利率数据.csv').iteritems()}
+    data_dict = {k: v.tolist() for k, v in pd.read_csv('./data/IRS/各基准利率数据.csv').iteritems()}
     df = jsonify(data_dict)
     return df
 
 
+@app.route('/chain_price')
+def chain_price():
+    return render_template('chain_price.html')
+
+
+def get_sql_data(product_type, product_name):
+    file_path = '../my_scheduled_app/'
+    file_name = '锂产业链价格.db'
+    conn = sqlite3.connect(file_path + file_name)
+    cursor = conn.cursor()
+    words = "select * from {} where 名称='{}'".format(product_type, product_name)
+    cursor.execute(words)
+
+    df = pd.DataFrame(cursor.fetchall())
+    df.columns = [0, '名称', '获取日期', '产品', '价格范围', '均价', '涨跌', '单位', '实际日期']
+    need_df = df.iloc[:, 1:].set_index('获取日期').sort_index()
+    need_df.index.name = None
+    cursor.close()
+    conn.close()
+    return need_df
+
+
+@app.route('/fetch_chain_data', methods=['POST', 'GET'])
+def fetch_chain_data():
+    if request.method == 'POST':
+        post_data = json.loads(request.get_data())
+        if post_data['type'] == '0':
+            return False
+
+        df = get_sql_data(post_data['type'], post_data['name'])
+        return df.to_html(classes="deal", table_id='hist_table')
+    else:
+        return '请使用post方法'
+
+
 # 试试放在这里uwsgi能不能运行，经过测试，放在这里能运行，就不用单独跑爬虫了。但是有个问题是好像程序结束不了
 from au_data_crawler import crawler_loop
+
 t = threading.Thread(target=crawler_loop)
 t.start()
 

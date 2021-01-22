@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>产业链产品价格</title>
+    <!--    使用post方法来提交txt文件，同时会刷新页面，存在一定的问题-->
+    <!--    使用链接方式下载文件-->
+    <!--TODO 使用js方法下载文件？-->
+
+    <link rel="icon" href="../static/img/favicon.ico" type="image/x-ico"/>
+
+    <link rel="stylesheet" href="../static/css/chain_price.css">
+    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="../static/js/echarts.min.js"></script>
+
+    <script>
+        // function change_download(){
+        //     var file_name='./static/download/'+document.getElementById('now_date').innerText+'.xlsx'
+        //     console.log(file_name)
+        //     document.getElementById('download_file').href=file_name
+        //     document.getElementById('download_file').download=document.getElementById('now_date').innerText+'.xlsx'
+        //     document.getElementById('download_file').removeAttribute('hidden')
+        // }
+        // change_download()
+
+    </script>
+
+
+</head>
+<body>
+<h1>产业链产品价格</h1>
+
+<!--<div id="fig_area">-->
+<!--    <div class="ecfig" id="price_fig">商品价格趋势图</div>-->
+<!--</div>-->
+
+<div>
+    <span>产品种类：</span>
+    <select id="type" ,name="type" onchange="add_name_list()">
+    </select>
+    <span>产品名称：</span>
+    <select id="name" ,name="name">
+        <option value="">请选择产品种类</option>
+    </select>
+
+    <button onclick="fetch_chain_data();update_wait('请稍后')">确定</button>
+</div>
+<p id="message"></p>
+
+
+<div>
+    <h3>数据:</h3>
+    <div id="df_data"></div>
+</div>
+
+
+<script src="../static/js/ec_chain_price.js"></script>
+<!--<script src="../static/js/agency_bond_deal.js"></script>-->
+
+<script>
+
+
+    function update_wait(word) {
+        document.getElementById('message').innerText = word
+    }
+
+    update_wait('请选择')
+</script>
+</body>
+</html>

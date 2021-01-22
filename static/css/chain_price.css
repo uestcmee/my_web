@@ -1,0 +1,82 @@
+#fig_area {
+    position: absolute;
+    display: grid;
+    grid-template-rows: 50% 50%;
+    float: left;
+    left: 600px;
+    height: 700px;
+
+}
+
+#message {
+    width: 800px;
+    padding: 2px;
+    border: solid 1px #4CAF50;
+    background-color: #cae8ca;
+
+    text-align: center;
+    /*border: #0f91dd;*/
+}
+
+#now_date {
+    font-size: 25px;
+    font-weight: bolder;
+}
+
+.ecfig {
+    /*position: absolute;*/
+    height: 300px;
+    width: 500px;
+    align-content: center;
+    justify-content: center;
+
+}
+
+/*#zhongpiao{*/
+/*    margin-top: 0;*/
+/*}*/
+/*#qiyezhai{*/
+/*    top:350px;*/
+/*}*/
+
+#df_data {
+    position: absolute;
+}
+
+table {
+    font-size: 14px;
+    width: 800px;
+    background: #ccc;
+    margin: 10px auto;
+    border-collapse: collapse; /*border-collapse:collapse合并内外边距(去除表格单元格默认的2个像素内外边距*/
+}
+
+th, td {
+    height: 16px; /*这个数要大于下面的line-height*/
+    line-height: 16px;
+    text-align: center;
+    border: 1px solid #ccc;
+}
+
+th {
+    background: #eee;
+    font-weight: normal;
+}
+
+tr {
+    background: #fff;
+}
+
+tr:hover {
+    background: #cc0;
+}
+
+td a {
+    color: #06f;
+    text-decoration: none;
+}
+
+td a:hover {
+    color: #06f;
+    text-decoration: underline;
+}
