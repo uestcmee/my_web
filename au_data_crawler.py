@@ -250,7 +250,7 @@ def get_contract_list():  # 上海期货交易所数据，可以直接获取全�
     return contract_list
 
 
-engine_contract = create_engine(r"sqlite:///data/Au/黄金合约信息.db")
+engine_contract = create_engine(r"sqlite:///../my_scheduled_app/Au/黄金合约信息.db")
 
 
 def save_contract(init=False):
@@ -277,7 +277,7 @@ def get_symbol_list():
     return qh_symbol_list
 
 
-engine_minutes = create_engine(r"sqlite:///data/Au/黄金分钟信息.db")
+engine_minutes = create_engine(r"sqlite:///../my_scheduled_app/Au/黄金分钟信息.db")
 
 
 def save_minutes_data(force=True):

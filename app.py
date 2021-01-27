@@ -3,7 +3,6 @@ import datetime
 import json
 import os
 import sqlite3
-import threading
 import traceback
 
 import pandas as pd
@@ -53,10 +52,10 @@ def fetch_lookback_data():
     [day, stg_r, idx_r] = data
     return jsonify({"day": day, "stg_r": stg_r, "idx_r": idx_r})
 
-
+au_hist_path = "../my_scheduled_app/Au/0_close_hist.csv"
 @app.route("/au_data", methods=["GET", "POST"])
 def au_info():
-    df = pd.read_csv("./data/Au/0_close_hist.csv", encoding="gbk")
+    df = pd.read_csv(au_hist_path, encoding="gbk")
     df["收益率"] = df["收益率"].apply(lambda x: round(x, 2))
     return render_template(
         "au_data.html",
@@ -66,7 +65,8 @@ def au_info():
 
 from au_data_crawler import get_today_str
 
-engine_contract = create_engine(r"sqlite:///data/Au/黄金合约信息.db")
+contract_db_path = "../my_scheduled_app/Au/黄金合约信息.db"
+engine_contract = create_engine(r"sqlite:///" + contract_db_path)
 
 
 @app.route("/au_contract_list")
@@ -85,13 +85,14 @@ def au_contract_list():
     return jsonify(contract_list_dict)
 
 
-engine_minutes = create_engine(r"sqlite:///data/Au/黄金分钟信息.db")
+minutes_db_path = "../my_scheduled_app/Au/黄金分钟信息.db"
+engine_minutes = create_engine(r"sqlite:///" + minutes_db_path)
 
 
 @app.route("/au_real_time", methods=["GET", "POST"])
 def au_real_time():
     date = get_today_str()["trade_day"]
-    if date not in GetTables("./data/Au/黄金分钟信息.db"):
+    if date not in GetTables(minutes_db_path):
         from au_data_crawler import save_minutes_data
 
         save_minutes_data(force=True)  # 就算是非交易时期也要强制获取
@@ -286,10 +287,10 @@ def fetch_chain_data():
 
 
 # 试试放在这里uwsgi能不能运行，经过测试，放在这里能运行，就不用单独跑爬虫了。但是有个问题是好像程序结束不了
-from au_data_crawler import crawler_loop
-
-t = threading.Thread(target=crawler_loop)
-t.start()
+# from au_data_crawler import crawler_loop
+#
+# t = threading.Thread(target=crawler_loop)
+# t.start()
 
 if __name__ == "__main__":
 
