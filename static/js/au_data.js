@@ -95,6 +95,10 @@ function fresh_delivery_day() {
             day_str = select_box[i].getAttribute('end_day')
             delivery_str = day_str.substring(0, 4) + '-' + day_str.substring(4, 6) + '-' + day_str.substring(6, 8)
             $('#delivery').text(delivery_str)
+            $('#qh_now').text('init')
+            $('#qh_buy').text('init')
+            $('#qh_sale').text('init')
+            $('#stock_time_qh').text('init')
         }
     }
 

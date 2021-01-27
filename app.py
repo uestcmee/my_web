@@ -72,8 +72,13 @@ engine_contract = create_engine(r"sqlite:///data/Au/黄金合约信息.db")
 @app.route("/au_contract_list")
 def au_contract_list():
     date = get_today_str()["trade_day"]
+    try:
+        df = pd.read_sql(date, engine_contract, index_col="symbol")["delivery_day"]
+    except:  # 如果没有找到对应的成交数据，重新获取一次
+        from au_data_crawler import save_contract
+        save_contract(init=True)
+        df = pd.read_sql(date, engine_contract, index_col="symbol")["delivery_day"]
 
-    df = pd.read_sql(date, engine_contract, index_col="symbol")["delivery_day"]
     # contract_list_dict = {i: x for i, x in enumerate(qh_symbol_list)}
     contract_list_dict = pd.DataFrame(df).to_json()
     return jsonify(contract_list_dict)
@@ -81,14 +86,15 @@ def au_contract_list():
 
 engine_minutes = create_engine(r"sqlite:///data/Au/黄金分钟信息.db")
 
-
 @app.route("/au_real_time", methods=["GET", "POST"])
 def au_real_time():
     date = get_today_str()["trade_day"]
-    try:  # 我实在不知道这里是怎么回事了。。。怎么一直变过来变过去的，都试试吧
-        df = pd.read_sql(date, engine_minutes, index_col="index")
-    except:
-        df = pd.read_sql(date, engine_minutes, index_col="times")
+    if date not in GetTables('./data/Au/黄金分钟信息.db'):
+        from au_data_crawler import save_minutes_data
+        save_minutes_data(force=True)  # 就算是非交易时期也要强制获取
+
+    df = pd.read_sql(date, engine_minutes, index_col="index")
+
     df.dropna(axis=0, inplace=True)  # 不能有空值，需要处理
     # df = df.iloc[-120:]  # 只要最近两个小时的
     df_dict = {
@@ -109,7 +115,8 @@ def GetTables(db_file="main.db"):
         conn = sqlite3.connect(db_file)
         cur = conn.cursor()
         cur.execute("select name from sqlite_master where type='table' order by name")
-        return cur.fetchall()
+        table_list = [x[0] for x in cur.fetchall()][-1]
+        return table_list
     except Exception as e:
         print(e)
         return []
@@ -119,7 +126,7 @@ def GetTables(db_file="main.db"):
 def get_user_info():
     file_path = "../my_scheduled_app/"
     file_name = "债券成交.db"
-    latest_day = [x[0] for x in GetTables(file_path + file_name)][-1]
+    latest_day = GetTables(file_path + file_name)[-1]
 
     def get_date_list(date=latest_day):
 

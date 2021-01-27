@@ -34,6 +34,10 @@ class my_requests:
 
 
 def is_trade_time():
+    """
+    这里之前考虑到高频数据获取频率高，所以时间卡的很死，但是分钟数据有几分钟延迟，这样会导致数据获取不完全
+    :return:
+    """
     now = datetime.datetime.now()
     t = str(now)[11:19]
 
@@ -178,7 +182,9 @@ def get_both():
             au_and_future["diff"] * 365 / ((day_to_delivery) * au_and_future["Au_TD"]) * 100
     )
     au_and_future = au_and_future.round(6)  # 设置小数位数
+    au_and_future.index.name = 'index'
     return au_and_future
+
 
 
 def contract_list_sina():  # sina,可以直接获取全合约，不用指定合约代码，带有标签，所以数据量会大些，获取时间更长,AU2110标签有误
@@ -261,7 +267,7 @@ def save_contract(init=False):
 
 
 def get_symbol_list():
-    """更新当前最活跃合约列表"""
+    """从db文件中获取，当前最活跃合约列表"""
     date = get_today_str()["trade_day"]
     try:
         contract_list = pd.read_sql(date, engine_contract, index_col="symbol")
@@ -274,10 +280,12 @@ def get_symbol_list():
 engine_minutes = create_engine(r"sqlite:///data/Au/黄金分钟信息.db")
 
 
-def save_minutes_data():
-    """保存实时的分钟序列，每次写入完整的"""
-    if not is_trade_time():
-        return 0
+def save_minutes_data(force=True):
+    """保存实时的分钟序列，每次写入完整的
+    force: 如果froce，就算非交易时间也要强制获取
+    """
+    # if not is_trade_time() and not force:
+    #     return 0
     day_dict = get_today_str()
     # 200行0.3s,有点久。。。不过20s一次，还好吧
     get_both().to_sql(day_dict["trade_day"], engine_minutes, if_exists="replace")
