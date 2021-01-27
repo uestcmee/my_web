@@ -142,14 +142,15 @@ def get_user_info():
             return df
 
     if request.method == "POST":
-        print("POST")
+        # 好像用print会导致报错，惊了
+        # print("POST")
         date = str(request.get_data()).split("=")[1][:-1]
-        print(date)
+        # print(date)
         info = get_date_list(date)
     else:
         date = "未输入日期"
-        info = pd.DataFrame()
-        print("not a post")
+        info = get_date_list(latest_day)
+        # print("not a post")
 
     return render_template(
         "bond_deal.html", deal_data=info.to_html(classes="deal", index=False), date=date
