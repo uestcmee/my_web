@@ -3,6 +3,7 @@ import datetime
 import json
 import os
 import sqlite3
+import sys
 import traceback
 
 import pandas as pd
@@ -11,6 +12,7 @@ from flask import jsonify
 from flask import request
 from sqlalchemy import create_engine
 
+sys.path.insert(0, '../my_scheduled_app/')  # 加入path，以便引用那边的函数
 # 循环引用，解决方法，推迟一方的导入，让例外一方完成
 app = Flask(__name__)
 
@@ -59,6 +61,7 @@ def au_info():
     df["收益率"] = df["收益率"].apply(lambda x: round(x, 2))
     return render_template(
         "au_data.html",
+        trade_day=get_today_str()['trade_day'],
         au_price=df.to_html(classes="deal", table_id="hist_table", index=False),
     )
 

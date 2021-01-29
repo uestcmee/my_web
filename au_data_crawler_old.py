@@ -186,7 +186,6 @@ def get_both():
     return au_and_future
 
 
-
 def contract_list_sina():  # sina,可以直接获取全合约，不用指定合约代码，带有标签，所以数据量会大些，获取时间更长,AU2110标签有误
 
     url = (
