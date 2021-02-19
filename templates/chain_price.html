@@ -11,8 +11,18 @@
 
     <link rel="stylesheet" href="../static/css/chain_price.css">
     <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
-<!--    <script src="../static/js/echarts.min.js"></script>-->
+    <!--    <script src="../static/js/echarts.min.js"></script>-->
 
+    <script>
+        // 快速选择
+        function fast_choose(product_name) {
+            // 默认为新能源品类
+            document.getElementById("type").value = 'new-energy'
+            add_name_list()
+            document.getElementById("name").value = product_name
+            fetch_chain_data()
+        }
+    </script>
 </head>
 <body>
 <a href="/">返回主页</a>
@@ -34,6 +44,15 @@
 
     <button onclick="fetch_chain_data();update_wait('请稍后')">确定</button>
 </div>
+
+<div>
+    <span>快速选择：</span>
+    <!--    TODO 把这个常用换成根据访问频率的？-->
+    <span>
+        <button onclick="fast_choose(this.innerText)">磷酸铁锂(动力型)</button>
+        <button onclick="fast_choose(this.innerText)">碳酸锂(99.5%电池级/国产)</button> </span>
+</div>
+
 <p id="message"></p>
 
 

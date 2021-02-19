@@ -138,6 +138,7 @@ for (let i = 0; i < type_list.length; i++) {
 
 }
 
+/* 根据选择的产品种类，修改产品名称 */
 function add_name_list() {
     let product_type = $('#type').val()
     document.getElementById('name').options.length = 0
