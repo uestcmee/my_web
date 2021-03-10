@@ -632,11 +632,11 @@ calender_option = {
     calendar: [{
         left: 'center',
         top: 'middle',
-        range: ['2020-07','2021-01-31'],
-        width:'90%',
+        range: ['2020-09', '2021-04'],
+        width: '90%',
         // height: '70%',
-        top:'20%',
-        bottom:'20%',
+        top: '20%',
+        bottom: '20%',
         dayLabel: {
             nameMap: "cn"
         }
