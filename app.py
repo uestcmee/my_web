@@ -1,15 +1,14 @@
 # coding:utf-8
 import json
 import os
-import sqlite3
 import sys
 import traceback
 
 import pandas as pd
+import pymongo
 from flask import Flask, render_template
 from flask import jsonify
 from flask import request
-from sqlalchemy import create_engine
 
 sys.path.insert(0, '../my_scheduled_app/')  # 加入path，以便引用那边的函数
 # 循环引用，解决方法，推迟一方的导入，让例外一方完成
@@ -53,11 +52,19 @@ def fetch_lookback_data():
     [day, stg_r, idx_r] = data
     return jsonify({"day": day, "stg_r": stg_r, "idx_r": idx_r})
 
-au_hist_path = "../my_scheduled_app/Au/0_close_hist.csv"
+
+# au_hist_path = "../my_scheduled_app/Au/0_close_hist.csv"
 @app.route("/au_data", methods=["GET", "POST"])
 def au_info():
-    df = pd.read_csv(au_hist_path, encoding="gbk")
-    df["收益率"] = df["收益率"].apply(lambda x: round(x, 2))
+    # df = pd.read_csv(au_hist_path, encoding="gbk")
+
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["au"]
+    mycol = mydb['day']
+    df = pd.DataFrame([one for one in mycol.find({}, {'_id': 0})])
+    df = df[['date', 'qihuo', 'xianhuo', 'diff', 'ytm', 'symbol']]
+    df.columns = [['日期', '期货', '现货', '价差', '收益率', '合约']]
+    # df["收益率"] = df["收益率"].apply(lambda x: round(x, 2))
     return render_template(
         "au_data.html",
         trade_day=get_today_str()['trade_day'],
@@ -65,43 +72,64 @@ def au_info():
     )
 
 
+# 这里因为前面修改了path，所以真的在引用schedule文件夹里的函数
 from au_data_crawler import get_today_str
 
-contract_db_path = "../my_scheduled_app/Au/黄金合约信息.db"
-engine_contract = create_engine(r"sqlite:///" + contract_db_path)
+
+# contract_db_path = "../my_scheduled_app/Au/黄金合约信息.db"
+# engine_contract = create_engine(r"sqlite:///" + contract_db_path)
 
 
 @app.route("/au_contract_list")
 def au_contract_list():
     date = get_today_str()["trade_day"]
+    # try:
+    #     df = pd.read_sql(date, engine_contract, index_col="symbol")["delivery_day"]
+    # except:  # 如果没有找到对应的成交数据，重新获取一次
+    #     from au_data_crawler import save_contract
+    #
+    #     save_contract(init=True)
+    #     df = pd.read_sql(date, engine_contract, index_col="symbol")["delivery_day"]
     try:
-        df = pd.read_sql(date, engine_contract, index_col="symbol")["delivery_day"]
-    except:  # 如果没有找到对应的成交数据，重新获取一次
-        from au_data_crawler import save_contract
-
-        save_contract(init=True)
-        df = pd.read_sql(date, engine_contract, index_col="symbol")["delivery_day"]
-
+        myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
+        mydb = myclient["au"]
+        mycol = mydb['contract']
+        df = pd.DataFrame([one for one in mycol.find({'date': date}, {'_id': 0})])  # .set_index('symbol')
+        df.set_index('symbol', inplace=True)
+        df = df['delivery_day']
+    except:
+        traceback.print_exc()
+        df = pd.DataFrame()
     # contract_list_dict = {i: x for i, x in enumerate(qh_symbol_list)}
     contract_list_dict = pd.DataFrame(df).to_json()
     return jsonify(contract_list_dict)
 
 
-minutes_db_path = "../my_scheduled_app/Au/黄金分钟信息.db"
-engine_minutes = create_engine(r"sqlite:///" + minutes_db_path)
+# minutes_db_path = "../my_scheduled_app/Au/黄金分钟信息.db"
+# engine_minutes = create_engine(r"sqlite:///" + minutes_db_path)
 
 
 @app.route("/au_real_time", methods=["GET", "POST"])
 def au_real_time():
     date = get_today_str()["trade_day"]
-    if date not in GetTables(minutes_db_path):
-        from au_data_crawler import save_minutes_data
+    # if date not in GetTables(minutes_db_path):
+    #     from au_data_crawler import save_minutes_data
+    #
+    #     save_minutes_data(force=True)  # 就算是非交易时期也要强制获取
+    myclient = pymongo.MongoClient("mongodb://8.131.59.241:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
+    mydb = myclient["au"]
+    mycol = mydb['minutes']
+    # df = pd.read_sql(date, engine_minutes, index_col="index")
+    df = pd.DataFrame([one for one in mycol.find({'trade_day': date}, {'_id': 0})])
+    df = df[['time', 'future', 'Au_TD', 'diff', 'ytm']]
+    df.set_index('time', inplace=True)
+    night_price = df.sort_index()["17:00":]  # 夜盘数据
+    day_price = df.sort_index()[:"17:00"]  # 日盘数据
+    df = pd.concat([night_price, day_price], axis=0)  # 拼接
 
-        save_minutes_data(force=True)  # 就算是非交易时期也要强制获取
-
-    df = pd.read_sql(date, engine_minutes, index_col="index")
-
+    # print(df)
     df.dropna(axis=0, inplace=True)  # 不能有空值，需要处理
+
     # df = df.iloc[-120:]  # 只要最近两个小时的
     df_dict = {
         key: list(map(lambda x: round(x, 2), value.to_list()))
@@ -111,21 +139,21 @@ def au_real_time():
     return jsonify(df_dict)
 
 
-def GetTables(db_file="main.db"):
-    """
-    获取数据库的现有表名称
-    :param db_file: 数据库名称
-    :return:
-    """
-    try:
-        conn = sqlite3.connect(db_file)
-        cur = conn.cursor()
-        cur.execute("select name from sqlite_master where type='table' order by name")
-        table_list = [x[0] for x in cur.fetchall()]
-        return table_list
-    except Exception as e:
-        print(e)
-        return []
+# def GetTables(db_file="main.db"):
+#     """
+#     获取数据库的现有表名称
+#     :param db_file: 数据库名称
+#     :return:
+#     """
+#     try:
+#         conn = sqlite3.connect(db_file)
+#         cur = conn.cursor()
+#         cur.execute("select name from sqlite_master where type='table' order by name")
+#         table_list = [x[0] for x in cur.fetchall()]
+#         return table_list
+#     except Exception as e:
+#         print(e)
+#         return []
 
 
 @app.route("/bond_deal", methods=["GET", "POST"])
