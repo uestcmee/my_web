@@ -1,5 +1,4 @@
 # coding:utf-8
-import datetime
 import json
 import os
 import sqlite3
@@ -131,21 +130,29 @@ def GetTables(db_file="main.db"):
 
 @app.route("/bond_deal", methods=["GET", "POST"])
 def get_user_info():
-    file_path = "../my_scheduled_app/"
-    file_name = "债券成交.db"
-    table_list = GetTables(file_path + file_name)
+    # file_path = "../my_scheduled_app/"
+    # file_name = "债券成交.db"
+
+    import pymongo
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
+    mydb = myclient["bond_deal"]
+    # pd.DataFrame([one for one in mycol.find({},{'_id':0})])#.drop('_id', axis=1)
+    # table_list = GetTables(file_path + file_name)
+    table_list = mydb.list_collection_names()
+    table_list.sort()
+    # table_list = GetTables(file_path + file_name)
     latest_day = table_list[-1]
 
     def get_date_list(date=latest_day):
 
-        engine = create_engine(r"sqlite:///" + file_path + file_name)
-
+        # engine = create_engine(r"sqlite:///" + file_path + file_name)
         if date not in table_list:
             print("无对应日期数据")
             return pd.DataFrame(["无对应日期数据"])
         else:
-
-            df = pd.read_sql(date, engine)
+            mycol = mydb[date]
+            df = pd.DataFrame([one for one in mycol.find({}, {'_id': 0})])  # .drop('_id', axis=1)
+            # df = pd.read_sql(date, engine)
             return df
 
     if request.method == "POST":
@@ -247,7 +254,7 @@ def irs():
 @app.route("/irs_data")
 def irs_data():
     data_dict = {
-        k: v.tolist() for k, v in pd.read_csv("./data/IRS/各基准利率数据.csv").iteritems()
+        k: v.tolist() for k, v in pd.read_csv("./data/IRS/各基准利率数据.csv").fillna(0).iteritems()
     }
     df = jsonify(data_dict)
     return df
@@ -259,20 +266,29 @@ def chain_price():
 
 
 def get_sql_data(product_type, product_name):
-    file_path = "../my_scheduled_app/"
-    file_name = "锂产业链价格.db"
-    conn = sqlite3.connect(file_path + file_name)
-    cursor = conn.cursor()
-    # 要加``才能够处理表名中有横杠-的情况
-    words = "select * from `{}` where 名称='{}'".format(product_type, product_name)
-    cursor.execute(words)
+    # file_path = "../my_scheduled_app/"
+    # file_name = "锂产业链价格.db"
+    import pymongo
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
+    mydb = myclient["chain_price"]
 
-    df = pd.DataFrame(cursor.fetchall())
-    df.columns = [0, "名称", "获取日期", "产品", "价格范围", "均价", "涨跌", "单位", "实际日期"]
-    need_df = df.iloc[:, 1:].set_index("获取日期").sort_index()
+    # conn = sqlite3.connect(file_path + file_name)
+    # cursor = conn.cursor()
+    # # 要加``才能够处理表名中有横杠-的情况
+    # words = "select * from `{}` where 名称='{}'".format(product_type, product_name)
+    # cursor.execute(words)
+
+    mycol = mydb[product_type]
+
+    df = pd.DataFrame([one for one in mycol.find({'名称': product_name}, {'_id': 0})])  # .drop('_id',axis=1)
+    # print(df)
+    df.columns = ["名称", "获取日期", "产品", "价格范围", "均价", "涨跌", "单位", "实际日期"]
+    # need_df = df.iloc[:, 1:].set_index("获取日期").sort_index()
+    # df.columns = [0, "名称", "获取日期", "产品", "价格范围", "均价", "涨跌", "单位", "实际日期"]
+    need_df = df.set_index("获取日期").sort_index()
     need_df.index.name = None
-    cursor.close()
-    conn.close()
+    # cursor.close()
+    # conn.close()
     return need_df
 
 
@@ -289,14 +305,7 @@ def fetch_chain_data():
         return "请使用post方法"
 
 
-# 试试放在这里uwsgi能不能运行，经过测试，放在这里能运行，就不用单独跑爬虫了。但是有个问题是好像程序结束不了
-# from au_data_crawler import crawler_loop
-#
-# t = threading.Thread(target=crawler_loop)
-# t.start()
-
 if __name__ == "__main__":
-
     # if platform.system() == 'Windows':  # windows 为开发环境
     #     app.config['DEBUG'] = True
     #     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=1)
@@ -304,14 +313,12 @@ if __name__ == "__main__":
     # else:
     #     # print(app.url_map)
     #     app.run(host='0.0.0.0', port=8000)
-    from os import popen
-
-    pc_name = popen("hostname").read().strip()
-
-    if pc_name == "Momi":
-        app.config["DEBUG"] = True
-        app.config["SEND_FILE_MAX_AGE_DEFAULT"] = datetime.timedelta(seconds=1)
-        app.run()
-    else:
-        print(app.url_map)
-        app.run(host="0.0.0.0", port=8000)
+    # from os import popen
+    # pc_name = popen("hostname").read().strip()
+    # if pc_name == "Momi":
+    #     app.config["DEBUG"] = True
+    #     app.config["SEND_FILE_MAX_AGE_DEFAULT"] = datetime.timedelta(seconds=1)
+    #     app.run()
+    # else:
+    # print(app.url_map)
+    app.run(host="0.0.0.0", port=8000)
