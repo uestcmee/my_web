@@ -284,39 +284,39 @@ function Dealjysj(val) {
 
         return jysj;
 
-    } catch(e) {
+    } catch (e) {
         return '-'
     }
 
 }
 
 //期货的日内分钟数据
-function au_day_price() {
-    $.ajax({
-        // type:'GET',
-        url: "/au_real_time",
-        timeout: 10000,
-        // contentType:'application/json',
-        dataType:'json',
-        success: function (data) {
-            au_day_option.xAxis[0].data = data.times;
-            au_day_option.xAxis[1].data = data.times;
-            // au_day_option.xAxis[2].data = data.times;
-            au_day_option.series[0].data = data.future;
-            au_day_option.series[1].data = data.Au_TD;
-            au_day_option.series[2].data = data.diff;
-            au_day_option.series[3].data = data.ytm;
-            au_day.setOption(au_day_option);
+// function au_day_price() {
+//     $.ajax({
+//         // type:'GET',
+//         url: "/au_real_time",
+//         timeout: 10000,
+//         // contentType:'application/json',
+//         dataType:'json',
+//         success: function (data) {
+//             au_day_option.xAxis[0].data = data.times;
+//             au_day_option.xAxis[1].data = data.times;
+//             // au_day_option.xAxis[2].data = data.times;
+//             au_day_option.series[0].data = data.future;
+//             au_day_option.series[1].data = data.Au_TD;
+//             au_day_option.series[2].data = data.diff;
+//             au_day_option.series[3].data = data.ytm;
+//             au_day.setOption(au_day_option);
+//
+//         },
+//         error: function () {
+//             console.log("失败了")
+//         }
+//     })
+// }
 
-        },
-        error: function () {
-            console.log("失败了")
-        }
-    })
-}
-
-au_day_price();
+// au_day_price();
 setInterval(high_freq_fig, 1000)
-setInterval(au_day_price, 30000);
+// setInterval(au_day_price, 30000);
 
-
+document.getElementById('hist_table').removeAttribute('border')

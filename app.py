@@ -66,9 +66,9 @@ def au_info():
     df.columns = [['日期', '期货', '现货', '价差', '收益率', '合约']]
     # df["收益率"] = df["收益率"].apply(lambda x: round(x, 2))
     return render_template(
-        "au_data.html",
+        "au.html",
         trade_day=get_today_str()['trade_day'],
-        au_price=df.to_html(classes="deal", table_id="hist_table", index=False),
+        au_price=df.to_html(classes="table table-hover table-striped", table_id="hist_table", index=False),
     )
 
 

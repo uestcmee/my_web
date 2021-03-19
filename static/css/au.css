@@ -1,0 +1,17 @@
+#au_hist {
+    min-height: 400px;
+
+}
+
+#high_freq_pic {
+    min-height: 400px;
+}
+
+
+.red {
+    background-color: lightcoral;
+}
+
+.green {
+    background-color: lightgreen;
+}

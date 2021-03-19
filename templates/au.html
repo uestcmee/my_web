@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../static/js/echarts.min.js"></script>
+    <link rel="icon" href="../static/img/favicon.ico" type="image/x-ico"/>
+    <link rel="stylesheet" href="../static/css/au.css">
+
+    <title>黄金价差数据</title>
+</head>
+<body>
+<div class="container">
+    <div class="row clearfix">
+        <div class="col-md-12 column">
+            <h2 class="text-center">
+                黄金期现价差数据
+            </h2>
+            <ul class="breadcrumb">
+                <li>
+                    <a href="#">主页</a>
+                </li>
+                <li class="active">
+                    黄金期货
+                </li>
+            </ul>
+            <div class="row clearfix">
+                <div class="col-md-6 column">
+                    <h4 class="text-center">
+                        实时数据
+                    </h4>
+                    <table class="table table-hover table-striped">
+                        <thead>
+                        <tr>
+                            <th>
+                                代码
+                            </th>
+                            <th>
+                                AU(T+D).SGE
+                            </th>
+                            <th id="dominant">
+
+                                <select name="qhhy" id="qhhy" onchange="change_contract(this.value)">
+                                    <!--                    <option value="1">Au2106</option>-->
+                                    <!--                    <option value="2">Au2108</option>-->
+                                </select></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td class="biaoge_title">最后交割日</td>
+                            <td>-</td>
+                            <td id="delivery">init</td>
+                        </tr>
+                        <tr class="warning">
+                            <td class="biaoge_title">最新成交价</td>
+                            <td id="xh_now">init</td>
+                            <td id="qh_now">init</td>
+                        </tr>
+                        <tr class="warning">
+                            <td class="biaoge_title">买价</td>
+                            <td id="xh_buy">init</td>
+                            <td id="qh_buy">init</td>
+                        </tr>
+                        <tr class="warning">
+                            <td class="biaoge_title">卖价</td>
+                            <td id="xh_sale">init</td>
+                            <td id="qh_sale">init</td>
+                        </tr>
+                        <tr>
+                            <td class="biaoge_title">成交价（价差/收益率）</td>
+                            <td id="jiacha_pure">init</td>
+                            <td id="ytm_pure">init</td>
+                        </tr>
+                        <tr>
+                            <td class="biaoge_title">正套（价差/收益率）</td>
+                            <td id="jiacha_zheng">init</td>
+                            <td id="ytm_zheng">init</td>
+                        </tr>
+                        <tr>
+                            <td class="biaoge_title">反套（价差/收益率）</td>
+                            <td id="jiacha_fan">init</td>
+                            <td id="ytm_fan">init</td>
+                        </tr>
+                        <tr class="info">
+                            <td class="biaoge_title">更新时间</td>
+                            <td id="stock_time_xh">init</td>
+                            <td id="stock_time_qh">init</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-md-6 column" id="high_freq_pic">
+                    实时数据图
+                </div>
+            </div>
+            <div class="row clearfix">
+
+                <div id="au_hist_data" class="col-md-6 column">
+                    <h4 class="text-center">
+                        历史数据
+                    </h4>
+                    {{ au_price|safe }}
+                </div>
+                <div id="au_hist" class="col-md-6 column">
+                    历史数据图
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../static/js/ec_au.js"></script>
+<script src="../static/js/au_data.js"></script>
+
+<script>
+
+</script>
+
+</body>
+</html>
