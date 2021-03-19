@@ -37,8 +37,8 @@ var au_day_option = {
         link: {xAxisIndex: 'all'}
     },
     xAxis: [
-        {gridIndex: 0, show: false, type: 'category', max: 780},
-        {gridIndex: 1, type: 'category', max: 780},
+        {gridIndex: 0, show: false, type: 'category', max: 558},
+        {gridIndex: 1, type: 'category', max: 558},
         // {gridIndex: 2, type: 'category',},
     ],
     yAxis: [
