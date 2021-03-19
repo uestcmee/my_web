@@ -37,8 +37,8 @@ var au_day_option = {
         link: {xAxisIndex: 'all'}
     },
     xAxis: [
-        {gridIndex: 0, show: false, type: 'category',},
-        {gridIndex: 1,  type: 'category',},
+        {gridIndex: 0, show: false, type: 'category', max: 780},
+        {gridIndex: 1, type: 'category', max: 780},
         // {gridIndex: 2, type: 'category',},
     ],
     yAxis: [
@@ -71,7 +71,7 @@ var au_day_option = {
             yAxisIndex: 2,
             name: '价差',
             type: 'line',
-            smooth: true,
+            smooth: false,
             data: [1, 2, 1]
         },
         {
@@ -79,8 +79,11 @@ var au_day_option = {
             yAxisIndex: 3,
             name: '收益率',
             type: 'line',
-            smooth: true,
+            smooth: false,
             data: [20, 1, 2],
+            // areaStyle: {
+            //     color: "rgba(186, 248, 252, 1)"
+            // },
             markPoint: {
                 data: [
                     {type: 'max', name: '最大值'},
