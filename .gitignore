@@ -1,4 +1,8 @@
 *.ipynb
+*.pyc
+*.swp
+*.xlsx
+*.xls
 #/data/Au/minutes/
 #/data/Au/contract_info/
 #/data/BondDeal/

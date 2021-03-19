@@ -60,6 +60,7 @@ function plot_irs_box_line(data) {
     let opt = irs_box_option
     //箱型图
     let type_dict = {0: '国债', 1: '国开', 2: '口行'}
+    //把两年删了吧。。。狗屎
     let year_dict = {0: '1', 1: '2', 2: '3', 3: '5', 4: '7', 5: '10'}
     //债券种类
     //重置一次标记点
