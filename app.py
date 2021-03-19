@@ -58,7 +58,7 @@ def fetch_lookback_data():
 def au_info():
     # df = pd.read_csv(au_hist_path, encoding="gbk")
 
-    myclient = pymongo.MongoClient("mongodb://cscficc.cn:27017/")
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
     mydb = myclient["au"]
     mycol = mydb['day']
     df = pd.DataFrame([one for one in mycol.find({}, {'_id': 0})])
@@ -91,7 +91,7 @@ def au_contract_list():
     #     save_contract(init=True)
     #     df = pd.read_sql(date, engine_contract, index_col="symbol")["delivery_day"]
     try:
-        myclient = pymongo.MongoClient("mongodb://cscficc.cn:27017/")  # 其实好像可以用cscficc.cn，正好本地云端分别用自己的数据库
+        myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
         mydb = myclient["au"]
         mycol = mydb['contract']
         df = pd.DataFrame([one for one in mycol.find({'date': date}, {'_id': 0})])  # .set_index('symbol')
@@ -116,7 +116,7 @@ def au_real_time():
     #     from au_data_crawler import save_minutes_data
     #
     #     save_minutes_data(force=True)  # 就算是非交易时期也要强制获取
-    myclient = pymongo.MongoClient("mongodb://cscficc.cn:27017/")  # 其实好像可以用cscficc.cn，正好本地云端分别用自己的数据库
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
     mydb = myclient["au"]
     mycol = mydb['minutes']
     # df = pd.read_sql(date, engine_minutes, index_col="index")
@@ -162,7 +162,7 @@ def get_user_info():
     # file_name = "债券成交.db"
 
     import pymongo
-    myclient = pymongo.MongoClient("mongodb://cscficc.cn:27017/")  # 其实好像可以用cscficc.cn，正好本地云端分别用自己的数据库
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
     mydb = myclient["bond_deal"]
     # pd.DataFrame([one for one in mycol.find({},{'_id':0})])#.drop('_id', axis=1)
     # table_list = GetTables(file_path + file_name)
@@ -281,8 +281,15 @@ def irs():
 
 @app.route("/irs_data")
 def irs_data():
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    mydb = myclient["irs"]
+    mycol = mydb['irs']
+
+    irs_df = pd.DataFrame([one for one in mycol.find({}, {'_id': 0})])
+    irs_df.set_index('Time', inplace=True)
+    irs_df = irs_df.fillna(0).sort_index()
     data_dict = {
-        k: v.tolist() for k, v in pd.read_csv("./data/IRS/各基准利率数据.csv").fillna(0).iteritems()
+        k: v.tolist() for k, v in irs_df.iteritems()
     }
     df = jsonify(data_dict)
     return df
@@ -297,7 +304,7 @@ def get_sql_data(product_type, product_name):
     # file_path = "../my_scheduled_app/"
     # file_name = "锂产业链价格.db"
     import pymongo
-    myclient = pymongo.MongoClient("mongodb://cscficc.cn:27017/")  # 其实好像可以用cscficc.cn，正好本地云端分别用自己的数据库
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
     mydb = myclient["chain_price"]
 
     # conn = sqlite3.connect(file_path + file_name)
