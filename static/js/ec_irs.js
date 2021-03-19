@@ -548,25 +548,25 @@ var gauge_option = {
 };
 gauge_option_1=JSON.parse(JSON.stringify(gauge_option))
 
-gauge_option_2=JSON.parse(JSON.stringify(gauge_option))
-gauge_option_2.title.text='国债1*10'
+gauge_option_2 = JSON.parse(JSON.stringify(gauge_option))
+gauge_option_2.title.text = '国债1*10'
 
-gauge_option_3=JSON.parse(JSON.stringify(gauge_option))
-gauge_option_3.title.text='国开-国债(10Y)'
+gauge_option_3 = JSON.parse(JSON.stringify(gauge_option))
+gauge_option_3.title.text = '国开-国债(10Y)'
 
-gauge_option_4=JSON.parse(JSON.stringify(gauge_option))
-gauge_option_4.title.text='国债-Repo(5Y)'
+gauge_option_4 = JSON.parse(JSON.stringify(gauge_option))
+gauge_option_4.title.text = '国债-Repo(5Y)'
 
 
-// gauges=document.getElementById('gauge').getElementsByClassName('gauge_fig')
-var gauge_1=echarts.init(document.getElementById('gauge_1'))
-gauge_1.setOption(gauge_option_1);
-var gauge_2=echarts.init(document.getElementById('gauge_2'))
-gauge_2.setOption(gauge_option_2);
-var gauge_3=echarts.init(document.getElementById('gauge_3'))
-gauge_3.setOption(gauge_option_3);
-var gauge_4=echarts.init(document.getElementById('gauge_4'))
-gauge_4.setOption(gauge_option_4);
+// // gauges=document.getElementById('gauge').getElementsByClassName('gauge_fig')
+// var gauge_1=echarts.init(document.getElementById('gauge_1'))
+// gauge_1.setOption(gauge_option_1);
+// var gauge_2=echarts.init(document.getElementById('gauge_2'))
+// gauge_2.setOption(gauge_option_2);
+// var gauge_3=echarts.init(document.getElementById('gauge_3'))
+// gauge_3.setOption(gauge_option_3);
+// var gauge_4=echarts.init(document.getElementById('gauge_4'))
+// gauge_4.setOption(gauge_option_4);
 
 
 var irs_hist = echarts.init(document.getElementById('irs_hist'));
@@ -680,9 +680,9 @@ $(window).resize(function () {
     type_spread.resize()
     box_fig.resize()
     calender.resize()
-    gauge_1.resize()
-    gauge_2.resize()
-    gauge_3.resize()
-    gauge_4.resize()
+    // gauge_1.resize()
+    // gauge_2.resize()
+    // gauge_3.resize()
+    // gauge_4.resize()
 
 })

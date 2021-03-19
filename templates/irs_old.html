@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IRS利差</title>
+    <!-- 新 Bootstrap 核心 CSS 文件 -->
+    <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+
+    <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <!--    <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>-->
+    <link rel="stylesheet" href="../static/css/irs.css">
+    <script src="../static/js/echarts.min.js"></script>
+    <link rel="icon" href="../static/img/favicon.ico" type="image/x-ico"/>
+    <!--    以下代码用来刷新页面布局信息-->
+
+</head>
+<body>
+<a href="/">返回主页</a>
+
+<h1>IRS利差</h1>
+<table id="choose">
+    <tobody>
+        <tr>
+            <td>切换分位数时间区间：</td>
+
+            <td>
+                <button onclick="change_date(start=0)"> 全部数据</button>
+                <button onclick="change_date(start=1)"> 近一年</button>
+                <button onclick="change_date(start=2)"> 近两年</button>
+                <button onclick="change_date(start=3)"> 近三年</button>
+                <button onclick="change_date(start=4)"> 年初至今</button>
+                <label>或选择日期：</label><input onchange="change_date(start=this.value)" type="date" name="date"
+                                            value="2020-01-01"/>
+            </td>
+
+        </tr>
+        <tr>
+            <td>切换日历图数据：</td>
+
+            <td>
+                <button onclick="update_calendar(start=0)"> 国债</button>
+                <button onclick="update_calendar(start=1)"> 国开</button>
+                <button onclick="update_calendar(start=2)"> 口行</button>
+                <button onclick="update_calendar(start=3)"> Repo</button>
+            </td>
+        </tr>
+        <tr>
+            <td>选择利率计算利差：</td>
+
+            <td>
+                <select id="type1" ,name="type1">
+                    <option value="国债" selected="selected">国债</option>
+                    <option value="国开">国开</option>
+                    <option value="口行">口行</option>
+                    <option value="FR007">IRS</option>
+                </select>
+                <select id="year1" ,name="year1">
+                    <option value="1Y">1Y</option>
+                    <option value="2Y">2Y</option>
+                    <option value="3Y">3Y</option>
+                    <option value="5Y" selected="selected">5Y</option>
+                    <option value="7Y">7Y</option>
+                    <option value="10Y">10Y</option>
+                </select>
+                <label>减去</label>
+                <select id="type2" ,name="type2">
+                    <option value="国债">国债</option>
+                    <option value="国开">国开</option>
+                    <option value="口行">口行</option>
+                    <option value="FR007" selected="selected">IRS</option>
+                </select>
+                <select id="year2" ,name="year2">
+                    <option value="1Y">1Y</option>
+                    <option value="2Y">2Y</option>
+                    <option value="3Y">3Y</option>
+                    <option value="5Y" selected="selected">5Y</option>
+                    <option value="7Y">7Y</option>
+                    <option value="10Y">10Y</option>
+                </select>
+                <button onclick="calc_spread(data_now)">确认</button>
+            </td>
+        </tr>
+    </tobody>
+</table>
+
+<div id="main_body">
+    <!--    初始数据也使用ajax方式来提高网页访问速度-->
+    <div id="irs_hist" class="js_pic">irs利差图</div>
+    <div id="calender" class="gauge_fig">日历图</div>
+
+    <div id="gauge_1" class="gauge_fig">国债收益率</div>
+    <div id="gauge_2" class="gauge_fig">国债1*10</div>
+    <div id="gauge_3" class="gauge_fig">国开-国债</div>
+    <div id="gauge_4" class="gauge_fig">国债-Repo</div>
+
+    <div id="box_fig" class="js_pic">利率分位数</div>
+    <div id="time_spread" class="js_pic">期限利差分位数</div>
+    <div id="type_spread" class="js_pic">品种利差分位数</div>
+
+
+</div>
+
+<!--<script>-->
+<!--    $("#type1").val("国债");-->
+<!--    $("#year1").val("5Y");-->
+<!--    $("#type2").val("IRS");-->
+<!--    $("#year2").val("5Y");-->
+<!--</script>-->
+
+<script src="../static/js/ec_irs.js"></script>
+<script src="../static/js/irs.js"></script>
+
+</body>
+
+</html>

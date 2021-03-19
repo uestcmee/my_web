@@ -81,10 +81,10 @@ function plot_irs_box_line(data) {
                 'value': [quantile, recent.toFixed(4) + '%'].join('\n')
             }
             irs_box_option.series[type].markPoint.data.push(a)
-            if (year===5 && type===0){
-                gauge_option_1.series[0].data[0].value=parseFloat(quantile)
-                gauge_1.setOption(gauge_option_1);
-            }
+            // if (year===5 && type===0){
+            //     gauge_option_1.series[0].data[0].value=parseFloat(quantile)
+            //     gauge_1.setOption(gauge_option_1);
+            // }
         }
         //一次压入一种债的所有数据
         irs_box_option.series[type].data = prepareBoxData(box_data)
@@ -133,10 +133,10 @@ function plot_time_spread(data) {
             box_data.push(spread)
             label_list.push(type_dict[type] + time_choice[time_twin][0] + '*' + time_choice[time_twin][1])
             x_label += 1
-            if (time_twin===3 && type===0){
-                gauge_option_2.series[0].data[0].value=parseFloat(quantile)
-                gauge_2.setOption(gauge_option_2);
-            }
+            // if (time_twin===3 && type===0){
+            //     gauge_option_2.series[0].data[0].value=parseFloat(quantile)
+            //     gauge_2.setOption(gauge_option_2);
+            // }
         }
         //一次压入一种债的所有数据
     }
@@ -175,10 +175,10 @@ function plot_type_spread(data) {
         box_data.push(spread)
         label_list.push(year_dict[year] + 'Y')
         x_label += 1
-        if (year==5){
-            gauge_option_3.series[0].data[0].value=parseFloat(quantile)
-            gauge_3.setOption(gauge_option_3);
-        }
+        // if (year==5){
+        //     gauge_option_3.series[0].data[0].value=parseFloat(quantile)
+        //     gauge_3.setOption(gauge_option_3);
+        // }
     }
     type_spread_option.series[0].data = prepareBoxData(box_data)
     type_spread_option.xAxis.data = label_list
@@ -310,18 +310,18 @@ function update_calendar(start=0){
 }
 
 //单独计算一下 国债-repo 的利差
-function calc_repo_spread(data){
-    let data_str_1='国债:5Y'
-    let data_str_2='FR007:5Y'
+function calc_repo_spread(data) {
+    let data_str_1 = '国债:5Y'
+    let data_str_2 = 'FR007:5Y'
     let spread = []
     //计算利差
     for (j = 0; j < data['Time'].length; j++) {
         spread.push((data[data_str_1][j] - data[data_str_2][j]).toFixed(4))
     }
-    let recent=spread.slice(-1)[0]
-    let quantile =(JSON.parse(JSON.stringify(spread)).sort().indexOf(recent) / spread.length * 100).toFixed(0)
-    gauge_option_4.series[0].data[0].value=parseFloat(quantile)
-    gauge_4.setOption(gauge_option_4);//更新分位数图
+    let recent = spread.slice(-1)[0]
+    let quantile = (JSON.parse(JSON.stringify(spread)).sort().indexOf(recent) / spread.length * 100).toFixed(0)
+    // gauge_option_4.series[0].data[0].value=parseFloat(quantile)
+    // gauge_4.setOption(gauge_option_4);//更新分位数图
 }
 
 function calc_spread(data){
