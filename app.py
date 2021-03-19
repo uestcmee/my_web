@@ -286,7 +286,7 @@ def irs_data():
     mycol = mydb['irs']
 
     irs_df = pd.DataFrame([one for one in mycol.find({}, {'_id': 0})])
-    irs_df.set_index('Time', inplace=True)
+    # irs_df.set_index('Time', inplace=True)
     irs_df = irs_df.fillna(0).sort_index()
     data_dict = {
         k: v.tolist() for k, v in irs_df.iteritems()
