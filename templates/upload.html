@@ -8,6 +8,8 @@
     <!--    使用post方法来提交txt文件，同时会刷新页面，存在一定的问题-->
     <!--    使用链接方式下载文件-->
     <!--TODO 使用js方法下载文件？-->
+    <link href="../static/css/public.css" rel="stylesheet">
+    <script src="../static/js/access_log.js"></script>
 
     <link rel="icon" href="../static/img/favicon.ico" type="image/x-ico"/>
 
@@ -81,13 +83,21 @@
     </pre>
 
 
+<div id="footer"></div>
+<script>
+    $(function () {
+        $("#footer").load("footer.html");
+    });
+</script>
+
+
 <script src="../static/js/ec_agency_bond_deal.js"></script>
 <script src="../static/js/agency_bond_deal.js"></script>
 
 <script>
     //隐藏不需要的行
     function hide_table() {
-        for (var i =0;i < document.getElementsByClassName('deal')['length'];i++) {
+        for (var i = 0; i < document.getElementsByClassName('deal')['length']; i++) {
             tb = document.getElementsByClassName('deal')[i]
             console.log('hello')
             for (var j = 0; j < tb.rows.length; j++) {
@@ -113,5 +123,6 @@
     }
     change_download()
 </script>
+
 </body>
 </html>

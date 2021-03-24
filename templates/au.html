@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,
                                      initial-scale=1.0">
+    <link href="../static/css/public.css" rel="stylesheet">
+    <script src="../static/js/access_log.js"></script>
+
     <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
@@ -119,6 +122,12 @@
         </div>
     </div>
 </div>
+<div id="footer"></div>
+<script>
+    $(function () {
+        $("#footer").load("footer.html");
+    });
+</script>
 <script src="../static/js/ec_au.js"></script>
 <script src="../static/js/au_data.js"></script>
 

@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title>动量策略回测</title>
+    <link href="../static/css/public.css" rel="stylesheet">
+
     <!-- 新 Bootstrap 核心 CSS 文件 -->
     <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 
@@ -61,24 +63,29 @@
 
         </select><br>
     </div>
-    <div  id="submit" onclick="get_lookback_data();update_wait('正在加载...') ">
-    <button>确定</button>
+    <div id="submit" onclick="get_lookback_data();update_wait('正在加载...') ">
+        <button>确定</button>
     </div>
-    <div id="wait" >
+    <div id="wait">
         请选择后点击确认按钮
     </div>
 
 </div>
-
+<div id="footer"></div>
+<script>
+    $(function () {
+        $("#footer").load("footer.html");
+    });
+</script>
 <script>
     function update_wait(text) {
-        document.getElementById("wait").innerText=text
+        document.getElementById("wait").innerText = text
     }
 
 </script>
 
 <script>
-    function add_select(id,k,b) {
+    function add_select(id, k, b) {
         // $('#LMA').empty();
         $.ajax({
             success: function () {

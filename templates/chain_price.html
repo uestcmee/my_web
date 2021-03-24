@@ -9,6 +9,8 @@
     <!--    使用post方法来提交txt文件，同时会刷新页面，存在一定的问题-->
     <!--    使用链接方式下载文件-->
     <!--TODO 使用js方法下载文件？-->
+    <link href="../static/css/public.css" rel="stylesheet">
+    <script src="../static/js/access_log.js"></script>
 
     <link rel="icon" href="../static/img/favicon.ico" type="image/x-ico"/>
 
@@ -73,7 +75,12 @@
     <div id="df_data"></div>
 </div>
 
-
+<div id="footer"></div>
+<script>
+    $(function () {
+        $("#footer").load("footer.html");
+    });
+</script>
 <script src="../static/js/ec_chain_price.js"></script>
 <!--<script src="../static/js/agency_bond_deal.js"></script>-->
 

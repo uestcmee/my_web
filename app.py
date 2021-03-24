@@ -20,6 +20,12 @@ def index():
     return render_template("main.html")
 
 
+# 使用html方式引用页尾，需要做一个route
+@app.route("/footer.html")
+def footer():
+    return render_template("footer.html")
+
+
 @app.route("/moment")
 def moment_main_page():
     return render_template("momentum.html")
@@ -341,19 +347,4 @@ def fetch_chain_data():
 
 
 if __name__ == "__main__":
-    # if platform.system() == 'Windows':  # windows 为开发环境
-    #     app.config['DEBUG'] = True
-    #     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = datetime.timedelta(seconds=1)
-    #     app.run()
-    # else:
-    #     # print(app.url_map)
-    #     app.run(host='0.0.0.0', port=8000)
-    # from os import popen
-    # pc_name = popen("hostname").read().strip()
-    # if pc_name == "Momi":
-    #     app.config["DEBUG"] = True
-    #     app.config["SEND_FILE_MAX_AGE_DEFAULT"] = datetime.timedelta(seconds=1)
-    #     app.run()
-    # else:
-    # print(app.url_map)
     app.run(host="0.0.0.0", port=8000)

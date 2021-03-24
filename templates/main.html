@@ -9,6 +9,9 @@
     <!--    <link rel="shortcut icon" href="favicon.ico" type="image/x-ico"/>-->
     <!--    <link rel="icon" href="/favicon.ico" type="image/x-ico"/>-->
     <!--    <link rel="icon" href="/favicon.ico"/>-->
+    <link href="../static/css/public.css" rel="stylesheet">
+    <script src="../static/js/access_log.js"></script>
+
     <!-- 新 Bootstrap 核心 CSS 文件 -->
     <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 
@@ -19,6 +22,7 @@
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
     <link rel="icon" href="../static/img/favicon.ico" type="image/x-ico"/>
+
 
 </head>
 <body>
@@ -35,25 +39,35 @@
 <tr>
     <td><a href="/au_data">黄金期现价差</a></td>
 </tr>
-<tr>
-    <td><a href="/upload">信用债中介成交</a></td>
-</tr>
-<tr>
-    <td><a href="/irs">IRS利差</a></td>
-</tr>
-<tr>
-    <td><a href="/chain_price">产业链商品价格</a></td>
-</tr>
+    <tr>
+        <td><a href="/upload">信用债中介成交</a></td>
+    </tr>
+    <tr>
+        <td><a href="/irs">IRS利差</a></td>
+    </tr>
+    <tr>
+        <td><a href="/chain_price">产业链商品价格</a></td>
+    </tr>
 </table>
+
+
+<div id="footer"></div>
+<script>
+    $(function () {
+        $("#footer").load("footer.html");
+    });
+</script>
+
 
 <script>
     function fresh_time() {
         var now_date = new Date().toLocaleString()
-        document.getElementById('now_time').innerText=(now_date)
+        document.getElementById('now_time').innerText = (now_date)
     }
+
     fresh_time()
-    var loop=setInterval(fresh_time,1000)
-    window.addEventListener('blur', ()=>{
+    var loop = setInterval(fresh_time, 1000)
+    window.addEventListener('blur', () => {
         document.title = document.title.split ('（')[0]+'（不活跃）';
         clearInterval(loop)
         // var loop=setInterval(high_freq_data,30000)
@@ -66,19 +80,6 @@
         loop=setInterval(fresh_time,1000)
 
     }, true);
-
-    // var title = document.title
-    //  window.onblur = function () {
-    //     document.title = '网页不活跃！'
-    //      clearInterval(loop)
-    //
-    //      console.log('hello')
-    // }
-    // window.onfocus = function () {
-    // document.title = title
-    // clearInterval(loop)
-    // var loop=setInterval(fresh_time,1000)
-    // }
 
 </script>
 </body>

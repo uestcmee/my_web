@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width,
                                      initial-scale=1.0">
     <title>银行同业交易中心成交数据</title>
+    <link href="../static/css/public.css" rel="stylesheet">
+    <script src="../static/js/access_log.js"></script>
+
     <link rel="icon" href="../static/img/favicon.ico" type="image/x-ico"/>
     <!-- 新 Bootstrap 核心 CSS 文件 -->
     <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -40,6 +43,11 @@
 <h2>数据列表如下：{{date|safe}}</h2>
 
 {{ deal_data|safe }}
-
+<div id="footer"></div>
+<script>
+    $(function () {
+        $("#footer").load("footer.html");
+    });
+</script>
 </body>
 </html>

@@ -7,6 +7,9 @@
     <!--                                     maximum-scale=1.0,-->
     <!--                                     user-scalable=no">-->
     <title>IRS利差</title>
+    <link href="../static/css/public.css" rel="stylesheet">
+    <script src="../static/js/access_log.js"></script>
+
     <!-- 新 Bootstrap 核心 CSS 文件 -->
     <link href="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
@@ -157,6 +160,14 @@
         </div>
     </div>
 </div>
+
+<div id="footer"></div>
+<script>
+    $(function () {
+        $("#footer").load("footer.html");
+    });
+</script>
+
 <script src="../static/js/ec_irs.js"></script>
 <script src="../static/js/irs.js"></script>
 
