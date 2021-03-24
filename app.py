@@ -69,8 +69,9 @@ def au_info():
     mycol = mydb['day']
     df = pd.DataFrame([one for one in mycol.find({}, {'_id': 0})])
     df = df[['date', 'qihuo', 'xianhuo', 'diff', 'ytm', 'symbol']]
+    df.sort_values(by='date', inplace=True)
+    df['ytm'] = df['ytm'].round(4)
     df.columns = [['日期', '期货', '现货', '价差', '收益率', '合约']]
-    df.sort_values('日期')
     # df["收益率"] = df["收益率"].apply(lambda x: round(x, 2))
     return render_template(
         "au.html",
