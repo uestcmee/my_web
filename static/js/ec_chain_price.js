@@ -1,81 +1,180 @@
-// 指定图表的配置项和数据
-// var price_fig_option = {
-//     title: {
-//         text: '中票',
-//         textStyle: {
-//             fontSize: 14,
-//         },
-//         left: 'left',
-//     },
-//     tooltip: {
-//         trigger: 'item',
-//         axisPointer: {
-//             type: 'cross',
-//             lineStyle: {}
-//         },
-//         formatter: ''
-//         // formatter:'{@bond_name}<br/>期限:{c}<br/>收益率:{b}',
-//         // formatter: function (param) {
-//         //     return 'nihao'+param;
-//         // },
-//     },
-//     legend: {
-//         data: ['平均价格'],
-//         left: 'right',
-//     },
-//     grid: {
-//         left: '20%',
-//         right: '6%',
-//         bottom: '10%',
-//         top: 50,
-//         containLabel: false
-//     },
-//     xAxis: [{
-//         // type: 'category',
-//         type: 'value',
-//         // data: [1,2,3]
-//     }],
-//     yAxis: [{
-//         type: 'value',
-//         min: 'dataMin',
-//         axisLabel: {
-//             show: true,
-//             fontSize: 12,
-//         },
-//         axisLine: {
-//             show: true
-//         },
-//         splitLine: {
-//             show: true,
-//             lineStyle: {
-//
-//                 width: 1,
-//                 type: 'solid'
-//             }
-//         }
-//     }],
-//     dataZoom: [{
-//         start: 10,
-//         type: "inside",
-//     }],
-//
-//     series: [
-//         {
-//             name: '平均价格',
-//             type: 'line',
-//             smooth: true,
-//             data: [2, 1, 2],
-//             symbol: "none",
-//         }],
-//
-// };
+function getTdValue() {
+    var sleep = function (time) {
+        var startTime = new Date().getTime() + parseInt(time, 10);
+        while (new Date().getTime() < startTime) {
+        }
+    };
+    sleep(1000);
+    var tableId = document.getElementById("hist_table");
+    var times = Array();
+    var ytm = Array();
+    var high = Array();
+    var low = Array();
 
-// var price_fig = echarts.init(document.getElementById('price_fig'));
-//
-// price_fig.setOption(price_fig_option);
+
+    function findnum(str) {
+        return str.slice(str.search(/\d/))
+    }
+
+    for (var i = 1; i < tableId.rows.length; i++) {
+        let now_time = tableId.rows[i].cells[0].innerHTML
+        if (times[times.length - 1] == now_time) {//去重
+
+        } else {
+            // console.log(now_time)
+            let now_ytm = findnum(tableId.rows[i].cells[4].innerHTML)
+            let l
+            let h
+            [l, h] = tableId.rows[i].cells[3].innerHTML.split("-")
+            times.push(now_time)
+            ytm.push(now_ytm)
+            low.push(findnum(l))
+            high.push(findnum(h))
+        }
+
+    }
+    // console.log(times)
+    price_fig_option.xAxis[0].data = times;
+    price_fig_option.series[0].data = ytm;
+    price_fig_option.series[1].data = low;
+    price_fig_option.series[2].data = high;
+
+    // console.log([times.length-1,ytm[ytm.length-1]])
+    price_fig_option.series[0].markPoint.data[2].coord = [times.length - 1, parseFloat(ytm[ytm.length - 1])]
+    price_fig_option.series[0].markPoint.data[2].value = '最新\n' + ytm[times.length - 1]
+    price_fig_option.series[1].markPoint.data[0].coord = [times.length - 1, parseFloat(low[low.length - 1])]
+    price_fig_option.series[1].markPoint.data[0].value = '' + low[times.length - 1]
+    price_fig_option.series[2].markPoint.data[0].coord = [times.length - 1, parseFloat(high[high.length - 1])]
+    price_fig_option.series[2].markPoint.data[0].value = '' + high[times.length - 1]
+    price_fig.setOption(price_fig_option);
+}
+
+// getTdValue();
+
+
+// 指定图表的配置项和数据
+var price_fig_option = {
+    title: {
+        text: '价格变化趋势图',
+        textStyle: {
+            fontSize: 14,
+        },
+        left: 'center',
+    },
+    tooltip: {
+        trigger: 'axis',
+        axisPointer: {
+            type: 'line',
+            // lineStyle: {}
+        },
+        // formatter: ''
+        // formatter:'{@bond_name}<br/>期限:{c}<br/>收益率:{b}',
+        // formatter: function (param) {
+        //     return 'nihao'+param;
+        // },
+    },
+    legend: {
+        data: ['均价', '低点', '高点'],
+        left: 'right',
+    },
+    grid: {
+        left: '5%',
+        right: '5%',
+        bottom: '10%',
+        top: 50,
+        containLabel: false
+    },
+    xAxis: [{
+        type: 'category',
+        // type: 'value',
+        data: []
+    }],
+    yAxis: [{
+        type: 'value',
+        min: 'dataMin',
+        axisLabel: {
+            show: true,
+            fontSize: 12,
+        },
+        axisLine: {
+            show: true
+        },
+        splitLine: {
+            show: true,
+            lineStyle: {
+
+                width: 1,
+                type: 'solid'
+            }
+        }
+    }],
+    dataZoom: [{
+        start: 10,
+        type: "inside",
+    }],
+
+    series: [
+        {
+            name: '平均价格',
+            type: 'line',
+            smooth: true,
+            data: [],
+            // symbol: "none",
+            markPoint: {
+                data: [
+                    {type: 'max', name: '最大值'},
+                    {type: 'min', name: '最小值'},
+                    {
+                        name: '最新',
+                        coord: [],
+                        symbolRotate: -90,
+                        value: ''
+                    }]
+            }
+        },
+        {
+            name: '低点',
+            type: 'line',
+            smooth: true,
+            data: [],
+            markPoint: {
+                data: [
+                    // {type: 'max', name: '最大值'},
+                    // {type: 'min', name: '最小值'},
+                    {
+                        name: '最新',
+                        coord: [],
+                        symbolRotate: 180,
+                        value: ''
+                    }]
+            }
+        },
+        {
+            name: '高点',
+            type: 'line',
+            smooth: true,
+            data: [],
+            markPoint: {
+                data: [
+                    // {type: 'max', name: '最大值'},
+                    // {type: 'min', name: '最小值'},
+                    {
+                        name: '最新',
+                        coord: [],
+                        symbolRotate: 0,
+                        value: ''
+                    }]
+            }
+        }
+    ],
+};
+
+var price_fig = echarts.init(document.getElementById('price_fig'));
+
+price_fig.setOption(price_fig_option);
 
 function fetch_chain_data() {
-
+    update_wait('加载中...');
     let product_type = $('#type').val()
     let product_name = $('#name').val()
 
@@ -93,6 +192,8 @@ function fetch_chain_data() {
             // ec_lookback_option.series[1].data = data.idx_r;
             // ec_lookback.setOption(ec_lookback_option);
             update_wait('数据获取完成')
+            getTdValue(); //画图
+
         },
         error: function () {
             update_wait('数据获取失败')
@@ -125,7 +226,6 @@ let type_name_dict = {
     'zinc': ['Zamak3锌合金（浙江）', 'SMM0#麒麟', 'Zamak3锌合金（江苏）', 'Zamak5锌合金福建加工费（周度）', 'Zamak5锌合金广东加工费（周度）', 'Zn50进口TC(月)', 'Zn50四川国产TC(周)', 'Zn50云南国产TC(周)', 'SMM0#葫锌', 'Zn50国产TC（周）', 'SMM0#南华', 'Zamak3锌合金', 'SMM1#锌锭', 'Zamak5锌合金浙江加工费（周度）', 'Zamak3锌合金福建加工费（周度）', 'Zamak3锌合金（福建）', '95%锌渣(华北)', 'Zn50广西国产TC(周)', 'Zn50国产TC(月)', 'Zamak5锌合金', '96%-97%锌渣(华北)', 'Zamak5锌合金（浙江）', 'Zn50湖南国产TC(周)', 'SMM1#锌锭溢价（广东）', 'SMM0#进口锌溢价(提单)', 'Zamak5锌合金（福建）', 'SMM0#锌锭溢价（广东）', 'SMM0#红鹭', '95%锌渣(华东)', '氧化锌≥99.7%', 'SMM0#锌锭', 'SMM0#岷山', 'Zn50陕西国产TC(周)', 'Zamak5锌合金江苏加工费（周度）', 'SMM0#江铜', '96%-97%锌渣(华东)', 'Zamak5锌合金（江苏）', 'SMM0#进口锌溢价(仓单)', 'Zn50内蒙古国产TC(周)', 'SMM0#锌锭溢价（天津）', 'SMM0#火炬', 'Zamak3锌合金江苏加工费（周度）', 'SMM0#锌锭溢价（宁波）', 'Zn50进口TC（周）', 'SMM0#双燕', 'Zamak5锌合金（广东）', 'Zamak3锌合金浙江加工费（周度）', 'SMM1#锌锭溢价（天津）', 'Zamak3锌合金（广东）', 'Zamak3锌合金广东加工费（周度）']
 }
 
-
 let type_list = ['0', 'copper', 'aluminum', 'lead', 'zinc', 'tin', 'nickel',
     'stainless-steel', 'chromium', 'precious-metals', 'steel',
     'manganese', 'silicon', 'new-energy', 'antimony', 'tungsten', 'in-ge-ga',
@@ -135,7 +235,6 @@ let type_chn_list = ['请选择', '铜', '铝', '铅', '锌',
     , '铟镓锗', '铋硒碲', '镁', '小金属', '稀土', '废金属']
 for (let i = 0; i < type_list.length; i++) {
     document.getElementById('type').options.add(new Option(type_chn_list[i], type_list[i]))
-
 }
 
 /* 根据选择的产品种类，修改产品名称 */
@@ -143,8 +242,12 @@ function add_name_list() {
     let product_type = $('#type').val()
     document.getElementById('name').options.length = 0
     let name_list = type_name_dict[product_type]
-
     for (let j = 0; j < name_list.length; j++) {
         document.getElementById('name').options.add(new Option(name_list[j], name_list[j]))
     }
 }
+
+
+$(window).resize(function () {
+    price_fig.resize()
+})

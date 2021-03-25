@@ -343,7 +343,7 @@ def fetch_chain_data():
             return False
 
         df = get_sql_data(post_data["type"], post_data["name"])
-        return df.to_html(classes="deal", table_id="hist_table")
+        return df.to_html(classes="deal table table-hover table-striped table-condensed", table_id="hist_table")
     else:
         return "请使用post方法"
 
