@@ -24,24 +24,26 @@
 
 </head>
 <body>
+{% raw %}
+
 <div class="container" id="app">
-    <h1 class="text-center">[[title]]</h1>
+    <h1 class="text-center">{{title}}</h1>
     <p id="now_time" class="text-center"></p>
 
     <ul class="text-center center big list-unstyled">
         <li v-for="(item,url) in url_dic" style="margin: 0 auto;">
 
-            <a v-bind:href="url">[[item]]</a>
+            <a :href="url">{{item}}</a>
         </li>
     </ul>
 </div>
+{% endraw %}
 
 <div id="footer"></div>
 
 <script>
     var app = new Vue({
         el: '#app',
-        delimiters: ['[[', ']]'],//解决flask 和 vue 的{{}}冲突
         data: {
             show_title: true,
             title: '小工具合集',
@@ -54,10 +56,6 @@
                 '/irs': 'IRS利差',
                 '/chain_price': '产业链商品价格',
             },
-            persons: {
-                name: "岚枫秋秋",
-                age: '29'
-            }
         },
         mounted() {
             //五秒更新一次笑话
