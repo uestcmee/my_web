@@ -43,22 +43,22 @@
     <div class="txt">短期均线</div>
     <div class="txt">长期乘数</div>
     <div class="txt">短期乘数</div>
-    <div  class="select">
+    <div class="select">
         <select id="LMA" name="LMA">
 
         </select><br>
     </div>
-    <div  class="select">
+    <div class="select">
         <select id="SMA" name="SMA">
 
         </select><br>
     </div>
-    <div  class="select">
+    <div class="select">
         <select id="LF" name="LF">
 
         </select><br>
     </div>
-    <div  class="select">
+    <div class="select">
         <select id="SF" name="SF">
 
         </select><br>
@@ -89,8 +89,8 @@
         // $('#LMA').empty();
         $.ajax({
             success: function () {
-                for(var i = 0; i < 10; i++){
-                    $(id).append("<option value='"+i+"'>"+(i*k+b)+"</option>");//新增
+                for (var i = 0; i < 10; i++) {
+                    $(id).append("<option value='" + i + "'>" + (i * k + b) + "</option>");//新增
                 }
             },
             fail: function (status) {

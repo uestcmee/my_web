@@ -9,7 +9,7 @@
     <!--    使用链接方式下载文件-->
     <!--TODO 使用js方法下载文件？-->
     <link href="../static/css/public.css" rel="stylesheet">
-    <script src="../static/js/access_log.js"></script>
+    <!--    <script src="../static/js/access_log.js"></script>-->
 
     <link rel="icon" href="../static/img/favicon.ico" type="image/x-ico"/>
 
@@ -107,20 +107,21 @@
             }
         }
     }
+
     hide_table()
 
 
-    function change_download(){
-        var now_date=document.getElementById('now_date').innerText
+    function change_download() {
+        var now_date = document.getElementById('now_date').innerText
         console.log(now_date)
-        if (now_date===""){//如果当前没有获取数据，则不显示下载excel按钮
-        }
-        else{
-            document.getElementById('download_file').href='../static/download/'+document.getElementById('now_date').innerText+'.xlsx'
-            document.getElementById('download_file').download=document.getElementById('now_date').innerText+'.xlsx'
+        if (now_date === "") {//如果当前没有获取数据，则不显示下载excel按钮
+        } else {
+            document.getElementById('download_file').href = '../static/download/' + document.getElementById('now_date').innerText + '.xlsx'
+            document.getElementById('download_file').download = document.getElementById('now_date').innerText + '.xlsx'
             document.getElementById('download_excel').removeAttribute('hidden')
         }
     }
+
     change_download()
 </script>
 
