@@ -109,8 +109,10 @@ var price_fig_option = {
         }
     }],
     dataZoom: [{
-        start: 10,
-        type: "inside",
+        // start: 10,
+        show: true,
+        realtime: true,
+        // type: "inside",
     }],
 
     series: [
