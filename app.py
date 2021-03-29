@@ -14,7 +14,10 @@ sys.path.insert(0, '../my_scheduled_app/')  # 加入path，以便引用那边的
 # 循环引用，解决方法，推迟一方的导入，让例外一方完成
 app = Flask(__name__)
 # 数据库
-myclient = pymongo.MongoClient("mongodb://cscficc.cn:27017/")
+myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+
+
+# myclient = pymongo.MongoClient("mongodb://cscficc.cn:27017/")
 
 
 @app.route("/")
