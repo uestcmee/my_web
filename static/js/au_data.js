@@ -30,13 +30,9 @@ function hist_ytm(table_info) {
     /*计算价差和收益率*/
     day_str = $('#delivery').text()
     delivery_day = new Date(day_str.substring(0, 4), day_str.substring(5, 7), day_str.substring(8, 10))
-    // let all_date = app['_data']['au_data']
     console.log(Object.keys(table_info).length)
     for (var i = 0; i < Object.keys(table_info).length; i++) {
         let info = table_info[i]
-        // console.log(i,info)
-
-        // if (info==NULL)
         let qh = info['qihuo']
         let xh = info['xianhuo']
         let jiacha = parseFloat((qh - xh).toFixed(2))
@@ -158,7 +154,6 @@ source.onmessage = function (event) {
 //期货高频数据
 function qh_high_freq(contract) {
     //先获取一个初始值
-
     var source_qh = new EventSource("http://33.futsse.eastmoney.com/sse/113_" + contract + "_qt");
     source_qh.onmessage = function (event) {
         var res = JSON.parse(event.data)

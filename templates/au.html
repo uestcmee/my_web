@@ -157,18 +157,14 @@
         data: {
             au_data: {
                 "0": {
-                    "Date": "2020-10-09",
-                    "xianhuo": 404.1,
-                    "qihuo": 410.9,
-                    "hold": 9346.0,
-                    "volume": 1798.0,
+                    "Date": "2018-10-05",
+                    "xianhuo": 0,
+                    "qihuo": 0,
+                    "hold": 0,
+                    "volume": 0,
                     'diff': 0,
                     'ytm': 0
                 },
-                "1": {"Date": "2020-10-12", "xianhuo": 408.5, "qihuo": 415.64, "hold": 10243.0, "volume": 2479.0},
-                "2": {"Date": "2020-10-13", "xianhuo": 406.86, "qihuo": 414.52, "hold": 10516.0, "volume": 1177.0},
-                "3": {"Date": "2020-10-14", "xianhuo": 402.37, "qihuo": 409.78, "hold": 13367.0, "volume": 6902.0},
-                "4": {"Date": "2020-10-15", "xianhuo": 401.91, "qihuo": 409.14, "hold": 13583.0, "volume": 3111.0}
             },
             table_name: {
                 "Date": '日期',
@@ -179,46 +175,9 @@
                 "diff": '价差',
                 "ytm": '收益率'
             },
-            au_data_old: {
-                'Date': ['2020-10-09',
-                    '2020-10-12',
-                    '2020-10-13',
-                    '2020-10-14',
-                    '2020-10-15'],
-                'xianhuo': [404.1, 408.5, 406.86, 402.37, 401.91],
-                'qihuo': [410.9, 415.64, 414.52, 409.78, 409.14],
-                'hold': [9346.0, 10243.0, 10516.0, 13367.0, 13583.0],
-                'volume': [1798.0, 2479.0, 1177.0, 6902.0, 3111.0]
-            }
         },
 
     })
-    //
-    // function hist_ytm() {
-    //     /*计算价差和收益率*/
-    //     day_str = $('#delivery').text()
-    //     delivery_day = new Date(day_str.substring(0, 4), day_str.substring(5, 7), day_str.substring(8, 10))
-    //     let date_list = app['_data']['au_data']['Date']
-    //     let qh_list = app['_data']['au_data']['qihuo']
-    //     let xh_list = app['_data']['au_data']['xianhuo']
-    //     let diff_list = []
-    //     let ytm_list = []
-    //     for (var i in date_list) {
-    //         let jiacha = (qh_list[i] - xh_list[i]).toFixed(2)
-    //         the_day_str = date_list[i]
-    //         the_day = new Date(the_day_str.substring(0, 4), the_day_str.substring(5, 7), the_day_str.substring(8, 10))
-    //         day_to_delivery = Math.floor((delivery_day.getTime() - the_day.getTime()) / (24 * 3600 * 1000)) + 1
-    //         let ytm = jiacha * 365 / ((day_to_delivery) * (xh_list[i])) * 100
-    //         ytm = ytm.toFixed(4)
-    //         diff_list.push(jiacha)
-    //         ytm_list.push(ytm)
-    //     }
-    //     app['_data']['au_data']['diff'] = diff_list
-    //     app['_data']['au_data']['ytm'] = ytm_list
-    // }
-    //
-    // hist_ytm()
-
 
 </script>
 <script>
