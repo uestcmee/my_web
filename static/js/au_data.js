@@ -1,59 +1,137 @@
-
-function get_contract(){
-$.ajax({
-    url:'/au_contract_list',
-    success: function(data){
-        $('#qhhy').contents().remove();
-        data=JSON.parse(data)['delivery_day']
-        console.log(data)
-        i=0
-        for (var key in data){
-            if (i===0){
-                $('#most_active').html(key)
-                // 开始获取主力合约高频数据
-                init_high_freq=qh_high_freq(key)
-                i=1
+function get_init_data(contract) {
+    let init_info = {}
+    let url = "http://futsse.eastmoney.com/static/113_" + contract + "_qt"
+    axios.get(url)
+        .then(function (response) {
+                init_info = (response['data'])
+                $('#qh_now').text(init_info['qt']['p'])
+                $('#qh_buy').text(init_info['qt']['mrj'])
+                $('#qh_sale').text(init_info['qt']['mcj'])
             }
-            var item = data[key]
-            $('<option value='+key+' end_day='+item+'>'+key+'</option>').appendTo('#qhhy');
-        }
-        fresh_delivery_day()
+            , function (err) {
+                err
+            })
+    url = "http://futsse.eastmoney.com/static/118_AUTD_qt"
+    axios.get(url)
+        .then(function (response) {
+                init_info = (response['data'])
+                $('#xh_now').text(init_info['qt']['p'])
+                $('#xh_buy').text(init_info['qt']['mrj'])
+                $('#xh_sale').text(init_info['qt']['mcj'])
+            }
+            , function (err) {
+                err
+            })
 
-    },
-    error:function(){
-        console.log('合约列表获取失败')
-    }
-})
 }
+
+// var all_date
+function hist_ytm(table_info) {
+    /*计算价差和收益率*/
+    day_str = $('#delivery').text()
+    delivery_day = new Date(day_str.substring(0, 4), day_str.substring(5, 7), day_str.substring(8, 10))
+    // let all_date = app['_data']['au_data']
+    console.log(Object.keys(table_info).length)
+    for (var i = 0; i < Object.keys(table_info).length; i++) {
+        let info = table_info[i]
+        // console.log(i,info)
+
+        // if (info==NULL)
+        let qh = info['qihuo']
+        let xh = info['xianhuo']
+        let jiacha = parseFloat((qh - xh).toFixed(2))
+        // console.log(info)
+        the_day_str = info['Date']
+        the_day = new Date(the_day_str.substring(0, 4), the_day_str.substring(5, 7), the_day_str.substring(8, 10))
+        day_to_delivery = Math.floor((delivery_day.getTime() - the_day.getTime()) / (24 * 3600 * 1000)) + 1
+        let ytm = jiacha * 365 / ((day_to_delivery) * (xh)) * 100
+        ytm = parseFloat(ytm.toFixed(4))
+        info['diff'] = jiacha
+        info['ytm'] = ytm
+        // console.log(jiacha)
+    }
+    return table_info
+
+}
+
+
+function get_hist_data(symbol) {
+    url = "/au_data/hist"
+    axios.post(url, {'symbol': symbol})
+        .then(function (response) {
+                let price_dict = eval(response)
+                all_date = price_dict['data']
+                let price_and_ytm = hist_ytm(all_date)
+                app['_data']['au_data'] = price_and_ytm
+                getTdValue()
+            }
+            , function (err) {
+                err
+            })
+
+}
+
+function get_contract() {
+    $.ajax({
+        url: '/au_contract_list',
+        success: function (data) {
+            $('#qhhy').contents().remove();
+            data = JSON.parse(data)['delivery_day']
+            console.log(data)
+            i = 0
+            for (var key in data) {
+                if (i === 0) {
+                    $('#most_active').html(key)
+                    // 开始获取主力合约高频数据
+
+                    get_init_data(key)
+                    get_hist_data(key)
+
+                    init_high_freq = qh_high_freq(key)
+                    i = 1
+                }
+                var item = data[key]
+                $('<option value=' + key + ' end_day=' + item + '>' + key + '</option>').appendTo('#qhhy');
+            }
+            fresh_delivery_day()
+
+        },
+        error: function () {
+            console.log('合约列表获取失败')
+        }
+    })
+}
+
 get_contract()
 
 //更新历史数据
-function getTdValue() {
+function getTdValue(col = 4) {
     var sleep = function (time) {
         var startTime = new Date().getTime() + parseInt(time, 10);
         while (new Date().getTime() < startTime) {
         }
     };
     sleep(1000);
-    var tableId = document.getElementById("hist_table");
+    let tableData = app['_data']['au_data']
+    // var tableId = document.getElementById("hist_table");
     var times = Array();
     var ytm = Array();
 
-    for (var i = 1; i < tableId.rows.length; i++) {
+    for (var i in Object.keys(tableData)) {
 
-        times.push(tableId.rows[i].cells[0].innerHTML)
-        ytm.push(tableId.rows[i].cells[4].innerHTML)
+        times.push(tableData[i]['Date'])
+        ytm.push(tableData[i]['ytm'])
 
     }
     au_hist_option.xAxis[0].data = times;
     au_hist_option.series[0].data = ytm;
-    console.log([times.length-1,ytm[ytm.length-1]])
-    au_hist_option.series[0].markPoint.data[2].coord=[times.length-1,parseFloat(ytm[ytm.length-1])]
-    au_hist_option.series[0].markPoint.data[2].value='最新\n'+ytm[times.length-1]
+    console.log([times.length - 1, ytm[ytm.length - 1]])
+    au_hist_option.series[0].markPoint.data[2].coord = [times.length - 1, parseFloat(ytm[ytm.length - 1])]
+    au_hist_option.series[0].markPoint.data[2].value = '最新\n' + ytm[times.length - 1]
 
     au_hist.setOption(au_hist_option);
 }
-getTdValue();
+
 
 //褪色
 function fade() {
@@ -79,11 +157,14 @@ source.onmessage = function (event) {
 
 //期货高频数据
 function qh_high_freq(contract) {
+    //先获取一个初始值
+
     var source_qh = new EventSource("http://33.futsse.eastmoney.com/sse/113_" + contract + "_qt");
     source_qh.onmessage = function (event) {
         var res = JSON.parse(event.data)
         renderHead(res['qt'], 'qh')
     }
+
     return source_qh
 }
 
@@ -105,10 +186,14 @@ function fresh_delivery_day() {
 }
 
 //改变合约
-function change_contract(contract){
+function change_contract(contract) {
     fresh_delivery_day()
+    get_init_data(contract)
+    get_hist_data(contract)
+    getTdValue();
+    // update_ytm()
     init_high_freq.close()
-    init_high_freq=qh_high_freq(contract)
+    init_high_freq = qh_high_freq(contract)
 }
 
 //处理数据颜色
@@ -153,54 +238,20 @@ function getColor(str) {
  * jzjs： 今结算价
  * zsjd：展示精度
  */
-function renderHead(items,product) {
-    // console.log(
-    //     items.p
-    // )
+function renderHead(items, product) {
     var list = [
-        { "name": product+"_now", "item": items.p  , "color": getColor(items.zdf) },
-        { "name": product+"_sale", "item": items.mcj  , "color": getColor(items.mcj - document.getElementById(product+'_sale').innerText)},
-        { "name": product+"_buy", "item": items.mrj , "color": getColor(items.mrj - document.getElementById(product+'_buy').innerText)},
+        {"name": product + "_now", "item": items.p, "color": getColor(items.zdf)},
+        {
+            "name": product + "_sale",
+            "item": items.mcj,
+            "color": getColor(items.mcj - document.getElementById(product + '_sale').innerText)
+        },
+        {
+            "name": product + "_buy",
+            "item": items.mrj,
+            "color": getColor(items.mrj - document.getElementById(product + '_buy').innerText)
+        },
     ];
-    // console.log(list)
-    // var list = [
-        // { "name": "zxj", "item": items.p  == "-" ? "-" : cancelZsjd(items.p, items.zsjd), "color": getColor(items.zdf) },
-        // { "name": "zde", "item": items.zde  == "-" ? "-" : cancelZsjd(items.zde, items.zsjd), "color": getColor(items.zdf) },
-        // { "name": "zdf", "item": items.zdf  == "-" ? "-" : (items.zdf).toFixed(2) + '%', "color": getColor(items.zdf) },
-        // { "name": "jkj", "item": items.o  == "-" ? "-" : cancelZsjd(items.o, items.zsjd), "color": getColor(items.o - items.zjsj) },
-        // { "name": "zjs", "item": items.zjsj  == "-" ? "-" : cancelZsjd(items.zjsj, items.zsjd) },
-        // { "name": "zgj", "item": items.h  == "-" ? "-" : cancelZsjd(items.h, items.zsjd), "color": getColor(items.h - items.zjsj) },
-        // { "name": "zdj", "item": items.l  == "-" ? "-" : cancelZsjd(items.l, items.zsjd), "color": getColor(items.l - items.zjsj) },
-        // { "name": "cjl", "item": items.vol == "-" ? "-" : NumbericFormat(items.vol) },
-        // { "name": "ccl", "item": items.ccl == "-" ? "-" : NumbericFormat(items.ccl) },
-        // { "name": "wp", "item": items.wp == "-" ? "-" : NumbericFormat(items.wp), "color": 'red' },
-        // { "name": "np", "item": items.np == "-" ? "-" : NumbericFormat(items.np), "color": 'green' },
-        // { "name": "cc", "item": items.cclbh == "-" ? "-" : NumbericFormat(items.cclbh) },
-        // { "name": "rz", "item": items.rz  == "-" ? "-" : items.rz, "color": getColor(items.rz) },
-        // { "name": "zsj", "item": items.qrspj  == "-" ? "-" : cancelZsjd(items.qrspj, items.zsjd)},
-        // { "name": "mcj", "item": items.mcj  == "-" ? "-" : cancelZsjd(items.mcj, items.zsjd), "color": getColor(items.mcj - items.zjsj)},
-        // { "name": "mcl", "item": items.mcl  == "-" ? "-" : items.mcl},
-        // { "name": "mrj", "item": items.mrj  == "-" ? "-" : cancelZsjd(items.mrj, items.zsjd), "color": getColor(items.mrj - items.zjsj)},
-        // { "name": "mrl", "item": items.mrl  == "-" ? "-" : items.mrl},
-        // { "name": "quote_title_0", "item": items.name  == "-" ? "-" : items.name},
-        // { "name": "quote_title_1", "item": items.dm  == "-" ? "-" : (items.dm).toUpperCase()}
-        // { "name": "zde", "item": items.f169 == "-" ? "-" : (items.f169), "color": getColor(items.zdf) },
-        // { "name": "zdf", "item": items.f170 == "-" ? "-" : (items.f170) + "%", "color": getColor(items.zdf) },
-        // { "name": "jk", "item": items.f46 == "-" ? "-" : (items.f46), "color": getColor(items.f46 - items.f60) },
-        // { "name": "zs", "item": items.f60 == "-" ? "-" : (items.f60)},
-        // { "name": "zg", "item": items.f44 == "-" ? "-" : (items.f44), "color": getColor(items.f44 - items.f60) },
-        // { "name": "zd", "item": items.f45 == "-" ? "-" : (items.f45), "color": getColor(items.f45 - items.f60) },
-        // { "name": "zt", "item": items.f51 == "-" ? "-" : (items.f51), "color": getColor(items.f51 - items.f60) },
-        // { "name": "dt", "item": items.f52 == "-" ? "-" : (items.f52), "color": getColor(items.f52 - items.f60) },
-        // { "name": "hs", "item": items.f168 == "-" ? "-" : items.f168 + "%" },
-        // { "name": "lb", "item": items.f50 == "-" ? "-" : (items.f50)},
-        // { "name": "cjl", "item": items.f47 == "-" ? "-" : NumbericFormat(items.f47) },
-        // { "name": "cje", "item": items.f48 == "-" ? "-" : NumbericFormat(items.f48) },
-        // { "name": "sy", "item": items.f162 == "-" ? "-" : (items.f162)},
-        // { "name": "sj", "item": items.f167 == "-" ? "-" : (items.f167)},
-        // { "name": "zsz", "item": items.f116 == "-" ? "-" : NumbericFormat(items.f116) },
-        // { "name": "ltsz", "item": items.f117 == "-" ? "-" : NumbericFormat(items.f117) }
-    // ];
     for (var i = 0; i < list.length; i++) {
         var name = $("#" + list[i].name);
         name.text(list[i].item);
@@ -209,55 +260,54 @@ function renderHead(items,product) {
 
     //时间
     var now_time
-    if(items.jyzt == 0) {
-
-        if(items.utime) {
-            var jysj =  Dealjysj(items.utime, "-");
-            now_time=jysj
-            $("#stock_time_"+product).html(jysj );
+    if (items.jyzt == 0) {
+        if (items.utime) {
+            var jysj = Dealjysj(items.utime, "-");
+            now_time = jysj
+            $("#stock_time_" + product).html(jysj);
         }
-
-    }else {
-
-        if(items.spsj) {
+    } else {
+        if (items.spsj) {
             var spsj = Dealjysj(items.spsj, "-");
-            now_time=spsj
-            $("#stock_time_"+product).html( spsj );
+            now_time = spsj
+            $("#stock_time_" + product).html(spsj);
         }
     }
+}
 
+function update_ytm() {
     /*计算价差和收益率*/
-    function get_ytm(jiacha){
+    function get_ytm(jiacha) {
         // TODO 获取列表中当前活跃项目
         // TODO 更新此处的时间
-        day_str=$('#delivery').text()
-        delivery_day=new Date(day_str.substring(0,4),day_str.substring(5,7),day_str.substring(8,10))
+        day_str = $('#delivery').text()
+        delivery_day = new Date(day_str.substring(0, 4), day_str.substring(5, 7), day_str.substring(8, 10))
 
-        today=new Date()
-        day_to_delivery=Math.floor((delivery_day.getTime()-today.getTime())/ (24 * 3600 * 1000))+1
-        // console.log(day_to_delivery)
+        today = new Date()
+        day_to_delivery = Math.floor((delivery_day.getTime() - today.getTime()) / (24 * 3600 * 1000)) + 1
 
         ytm = jiacha * 365 / ((day_to_delivery) * ($('#xh_now').text())) * 100
         return ytm
     }
-    var calc_dict=[
-        { "name": "pure", "price_diff": $('#qh_now').text()-$('#xh_now').text() },
-        { "name": "fan", "price_diff": $('#qh_sale').text()-$('#xh_buy').text() },
-        { "name": "zheng", "price_diff": $('#qh_buy').text()-$('#xh_sale').text() },
+
+    var calc_dict = [
+        {"name": "pure", "price_diff": $('#qh_now').text() - $('#xh_now').text()},
+        {"name": "fan", "price_diff": $('#qh_sale').text() - $('#xh_buy').text()},
+        {"name": "zheng", "price_diff": $('#qh_buy').text() - $('#xh_sale').text()},
     ]
     for (var i = 0; i < calc_dict.length; i++) {
-        calc_dict[i]['ytm']=get_ytm(calc_dict[i].price_diff)
+        calc_dict[i]['ytm'] = get_ytm(calc_dict[i].price_diff)
         $("#jiacha_" + calc_dict[i].name).text(calc_dict[i].price_diff.toFixed(2));
         $("#ytm_" + calc_dict[i].name).text(calc_dict[i].ytm.toFixed(2));
-
     }
-
 }
 
+setInterval(update_ytm, 1000)
+
 // 高频数据图
-function high_freq_fig(){
+function high_freq_fig() {
     // 避免过长
-    if ($('#stock_time_xh').text() == 'init' || $('#stock_time_qh').text() == 'init') return false
+    if ($('#stock_time_xh').text() == 'init' && $('#stock_time_qh').text() == 'init') return false
     var d = new Date();
     var now_time = ("0" + (d.getHours())).slice(-2) + ':' + ("0" + (d.getMinutes())).slice(-2) + ':' + ("0" + (d.getSeconds())).slice(-2);
     if ((high_freq_pic_option.xAxis[0].data.length) > 60) {
@@ -278,45 +328,15 @@ function high_freq_fig(){
 //交易时间的处理
 function Dealjysj(val) {
     try {
-
         var d = new Date(val * 1000);  //("0" + (d.getMonth() + 1)).slice(-2)    d.getMinutes()  d.getMinutes()  d.getSeconds()
         var jysj = ("0" + (d.getHours())).slice(-2) + ':' + ("0" + (d.getMinutes())).slice(-2) + ':' + ("0" + (d.getSeconds())).slice(-2);
-
         return jysj;
-
     } catch (e) {
         return '-'
     }
 
 }
 
-//期货的日内分钟数据
-// function au_day_price() {
-//     $.ajax({
-//         // type:'GET',
-//         url: "/au_real_time",
-//         timeout: 10000,
-//         // contentType:'application/json',
-//         dataType:'json',
-//         success: function (data) {
-//             au_day_option.xAxis[0].data = data.times;
-//             au_day_option.xAxis[1].data = data.times;
-//             // au_day_option.xAxis[2].data = data.times;
-//             au_day_option.series[0].data = data.future;
-//             au_day_option.series[1].data = data.Au_TD;
-//             au_day_option.series[2].data = data.diff;
-//             au_day_option.series[3].data = data.ytm;
-//             au_day.setOption(au_day_option);
-//
-//         },
-//         error: function () {
-//             console.log("失败了")
-//         }
-//     })
-// }
-
-// au_day_price();
 setInterval(high_freq_fig, 1000)
-// setInterval(au_day_price, 30000);
 
-document.getElementById('hist_table').removeAttribute('border')
+// document.getElementById('hist_table').removeAttribute('border')

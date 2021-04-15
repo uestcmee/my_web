@@ -14,7 +14,7 @@ sys.path.insert(0, "../my_scheduled_app/")  # 加入path，以便引用那边的
 # 循环引用，解决方法，推迟一方的导入，让例外一方完成
 app = Flask(__name__)
 # 数据库
-myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+myclient = pymongo.MongoClient("mongodb://cscficc.cn:27017/")
 
 
 # myclient = pymongo.MongoClient("mongodb://cscficc.cn:27017/")
@@ -64,36 +64,62 @@ def fetch_lookback_data():
     return jsonify({"day": day, "stg_r": stg_r, "idx_r": idx_r})
 
 
-# au_hist_path = "../my_scheduled_app/Au/0_close_hist.csv"
+@app.route("/au_data/hist", methods=["GET", "POST"])
+def au_hist():
+    def get_contract_hist(symbol='AU2106'):
+        import akshare as ak
+        futures_zh_daily_sina_df = ak.futures_zh_daily_sina(symbol=symbol)
+        qh_df = futures_zh_daily_sina_df.set_index('date')[['close', 'hold', 'volume']]
+        qh_df.columns = ['qihuo', 'hold', 'volume']
+        qh_df = qh_df.astype({'qihuo': float,
+                              'hold': int,
+                              'volume': int})
+        mydb = myclient["au"]
+        mycol = mydb["day"]
+        xh_df = pd.DataFrame([one for one in mycol.find({}, {"date": 1, 'xianhuo': 1, '_id': 0})])
+        xh_df = xh_df.set_index('date')['xianhuo']
+        df_all = pd.concat([xh_df, qh_df], axis=1).dropna()
+        df_all.sort_index(inplace=True)
+        df_all.insert(0, 'Date', df_all.index)
+        df_all.index = [i for i in range(len(df_all))]
+        return df_all
+
+    if request.method == "POST":
+        post_data = (request.get_data(as_text=True))
+        symbol = json.loads(request.get_data(as_text=True))['symbol']
+        df = get_contract_hist(symbol)
+    else:
+        df = get_contract_hist()
+
+    return df.T.to_json()
+
+
 @app.route("/au_data", methods=["GET", "POST"])
 def au_info():
-    # df = pd.read_csv(au_hist_path, encoding="gbk")
-
-    mydb = myclient["au"]
-    mycol = mydb["day"]
-    df = pd.DataFrame([one for one in mycol.find({}, {"_id": 0})])
-    df = df[["date", "qihuo", "xianhuo", "diff", "ytm", "symbol"]]
-    df.sort_values(by="date", inplace=True)
-    df["ytm"] = df["ytm"].round(4)
-    df.columns = [["日期", "期货", "现货", "价差", "收益率", "合约"]]
-    # df["收益率"] = df["收益率"].apply(lambda x: round(x, 2))
+    # # df = pd.read_csv(au_hist_path, encoding="gbk")
+    # mydb = myclient["au"]
+    # mycol = mydb["day"]
+    # df = pd.DataFrame([one for one in mycol.find({}, {"_id": 0})])
+    # df = df[["date", "qihuo", "xianhuo", "diff", "ytm", "symbol"]]
+    # df.sort_values(by="date", inplace=True)
+    # df["ytm"] = df["ytm"].round(4)
+    # df.columns = [["日期", "期货", "现货", "价差", "收益率", "合约"]]
+    # # df["收益率"] = df["收益率"].apply(lambda x: round(x, 2))
+    # return render_template(
+    #     "au.html",
+    #     trade_day=get_today_str()["trade_day"],
+    #     au_price=df.to_html(
+    #         classes="table table-hover table-striped",
+    #         table_id="hist_table",
+    #         index=False,
+    #     ),
+    # )
     return render_template(
-        "au.html",
-        trade_day=get_today_str()["trade_day"],
-        au_price=df.to_html(
-            classes="table table-hover table-striped",
-            table_id="hist_table",
-            index=False,
-        ),
-    )
+        "au.html")
 
 
 # 这里因为前面修改了path，所以真的在引用schedule文件夹里的函数
 from au_data_crawler import get_today_str
-
-
-# contract_db_path = "../my_scheduled_app/Au/黄金合约信息.db"
-# engine_contract = create_engine(r"sqlite:///" + contract_db_path)
 
 
 @app.route("/au_contract_list")
@@ -124,10 +150,6 @@ def au_contract_list():
     return jsonify(contract_list_dict)
 
 
-# minutes_db_path = "../my_scheduled_app/Au/黄金分钟信息.db"
-# engine_minutes = create_engine(r"sqlite:///" + minutes_db_path)
-
-
 @app.route("/au_real_time", methods=["GET", "POST"])
 def au_real_time():
     date = get_today_str()["trade_day"]
@@ -156,23 +178,6 @@ def au_real_time():
     }
     df_dict["times"] = df.index.tolist()
     return jsonify(df_dict)
-
-
-# def GetTables(db_file="main.db"):
-#     """
-#     获取数据库的现有表名称
-#     :param db_file: 数据库名称
-#     :return:
-#     """
-#     try:
-#         conn = sqlite3.connect(db_file)
-#         cur = conn.cursor()
-#         cur.execute("select name from sqlite_master where type='table' order by name")
-#         table_list = [x[0] for x in cur.fetchall()]
-#         return table_list
-#     except Exception as e:
-#         print(e)
-#         return []
 
 
 @app.route("/bond_deal", methods=["GET", "POST"])

@@ -15,9 +15,19 @@
     <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
     <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="../static/js/echarts.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
     <link rel="icon" href="../static/img/favicon.ico" type="image/x-ico"/>
     <link rel="stylesheet" href="../static/css/au.css">
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <!--    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
+    <!--    <script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>-->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
 
+    <!--    Element引入-->
+    <!-- 引入样式 -->
+    <!--    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+    <!-- 引入组件库 -->
+    <!--    <script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
     <title>黄金价差数据</title>
 </head>
 <body>
@@ -105,24 +115,112 @@
                     实时数据图
                 </div>
             </div>
-            <div class="row clearfix">
 
+            <div class="row clearfix">
                 <div id="au_hist_data" class="col-md-6 column">
                     <h4 class="text-center">
                         历史数据
                     </h4>
-                    {{ au_price|safe }}
+                    <div id="app">
+                        <table id="hist_table" class="table-striped table table-hover">
+                            {% raw %}
+
+                            <thead>
+                            <th v-for="(key) in Object.keys(au_data['0'])">
+                                {{table_name[key]}}
+                            </th>
+                            </thead>
+                            <tr v-for="(info) in au_data">
+                                <th v-for="(col) in info">
+                                    {{col}}
+                                </th>
+                            </tr>
+                            {% endraw %}
+                        </table>
+                    </div>
                 </div>
                 <div id="au_hist" class="col-md-6 column">
                     历史数据图
                 </div>
-
-
             </div>
+
+
         </div>
     </div>
 </div>
+</div>
 <div id="footer"></div>
+
+<script>
+    var app = new Vue({
+        el: '#app',
+        data: {
+            au_data: {
+                "0": {
+                    "Date": "2020-10-09",
+                    "xianhuo": 404.1,
+                    "qihuo": 410.9,
+                    "hold": 9346.0,
+                    "volume": 1798.0,
+                    'diff': 0,
+                    'ytm': 0
+                },
+                "1": {"Date": "2020-10-12", "xianhuo": 408.5, "qihuo": 415.64, "hold": 10243.0, "volume": 2479.0},
+                "2": {"Date": "2020-10-13", "xianhuo": 406.86, "qihuo": 414.52, "hold": 10516.0, "volume": 1177.0},
+                "3": {"Date": "2020-10-14", "xianhuo": 402.37, "qihuo": 409.78, "hold": 13367.0, "volume": 6902.0},
+                "4": {"Date": "2020-10-15", "xianhuo": 401.91, "qihuo": 409.14, "hold": 13583.0, "volume": 3111.0}
+            },
+            table_name: {
+                "Date": '日期',
+                "xianhuo": '现货价格',
+                "qihuo": '期货价格',
+                "hold": '持仓量',
+                "volume": '交易量',
+                "diff": '价差',
+                "ytm": '收益率'
+            },
+            au_data_old: {
+                'Date': ['2020-10-09',
+                    '2020-10-12',
+                    '2020-10-13',
+                    '2020-10-14',
+                    '2020-10-15'],
+                'xianhuo': [404.1, 408.5, 406.86, 402.37, 401.91],
+                'qihuo': [410.9, 415.64, 414.52, 409.78, 409.14],
+                'hold': [9346.0, 10243.0, 10516.0, 13367.0, 13583.0],
+                'volume': [1798.0, 2479.0, 1177.0, 6902.0, 3111.0]
+            }
+        },
+
+    })
+    //
+    // function hist_ytm() {
+    //     /*计算价差和收益率*/
+    //     day_str = $('#delivery').text()
+    //     delivery_day = new Date(day_str.substring(0, 4), day_str.substring(5, 7), day_str.substring(8, 10))
+    //     let date_list = app['_data']['au_data']['Date']
+    //     let qh_list = app['_data']['au_data']['qihuo']
+    //     let xh_list = app['_data']['au_data']['xianhuo']
+    //     let diff_list = []
+    //     let ytm_list = []
+    //     for (var i in date_list) {
+    //         let jiacha = (qh_list[i] - xh_list[i]).toFixed(2)
+    //         the_day_str = date_list[i]
+    //         the_day = new Date(the_day_str.substring(0, 4), the_day_str.substring(5, 7), the_day_str.substring(8, 10))
+    //         day_to_delivery = Math.floor((delivery_day.getTime() - the_day.getTime()) / (24 * 3600 * 1000)) + 1
+    //         let ytm = jiacha * 365 / ((day_to_delivery) * (xh_list[i])) * 100
+    //         ytm = ytm.toFixed(4)
+    //         diff_list.push(jiacha)
+    //         ytm_list.push(ytm)
+    //     }
+    //     app['_data']['au_data']['diff'] = diff_list
+    //     app['_data']['au_data']['ytm'] = ytm_list
+    // }
+    //
+    // hist_ytm()
+
+
+</script>
 <script>
     $(function () {
         $("#footer").load("footer.html");
@@ -131,9 +229,6 @@
 <script src="../static/js/ec_au.js"></script>
 <script src="../static/js/au_data.js"></script>
 
-<script>
-
-</script>
 
 </body>
 </html>
