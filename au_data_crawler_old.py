@@ -182,7 +182,7 @@ def get_both():
             au_and_future["diff"] * 365 / ((day_to_delivery) * au_and_future["Au_TD"]) * 100
     )
     au_and_future = au_and_future.round(6)  # 设置小数位数
-    au_and_future.index.name = 'index'
+    au_and_future.index.name = "index"
     return au_and_future
 
 

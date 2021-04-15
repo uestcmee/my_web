@@ -10,7 +10,7 @@ from flask import Flask, render_template
 from flask import jsonify
 from flask import request
 
-sys.path.insert(0, '../my_scheduled_app/')  # 加入path，以便引用那边的函数
+sys.path.insert(0, "../my_scheduled_app/")  # 加入path，以便引用那边的函数
 # 循环引用，解决方法，推迟一方的导入，让例外一方完成
 app = Flask(__name__)
 # 数据库
@@ -70,17 +70,21 @@ def au_info():
     # df = pd.read_csv(au_hist_path, encoding="gbk")
 
     mydb = myclient["au"]
-    mycol = mydb['day']
-    df = pd.DataFrame([one for one in mycol.find({}, {'_id': 0})])
-    df = df[['date', 'qihuo', 'xianhuo', 'diff', 'ytm', 'symbol']]
-    df.sort_values(by='date', inplace=True)
-    df['ytm'] = df['ytm'].round(4)
-    df.columns = [['日期', '期货', '现货', '价差', '收益率', '合约']]
+    mycol = mydb["day"]
+    df = pd.DataFrame([one for one in mycol.find({}, {"_id": 0})])
+    df = df[["date", "qihuo", "xianhuo", "diff", "ytm", "symbol"]]
+    df.sort_values(by="date", inplace=True)
+    df["ytm"] = df["ytm"].round(4)
+    df.columns = [["日期", "期货", "现货", "价差", "收益率", "合约"]]
     # df["收益率"] = df["收益率"].apply(lambda x: round(x, 2))
     return render_template(
         "au.html",
-        trade_day=get_today_str()['trade_day'],
-        au_price=df.to_html(classes="table table-hover table-striped", table_id="hist_table", index=False),
+        trade_day=get_today_str()["trade_day"],
+        au_price=df.to_html(
+            classes="table table-hover table-striped",
+            table_id="hist_table",
+            index=False,
+        ),
     )
 
 
@@ -105,10 +109,12 @@ def au_contract_list():
     try:
         # myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
         mydb = myclient["au"]
-        mycol = mydb['contract']
-        df = pd.DataFrame([one for one in mycol.find({'date': date}, {'_id': 0})])  # .set_index('symbol')
-        df.set_index('symbol', inplace=True)
-        df = df['delivery_day']
+        mycol = mydb["contract"]
+        df = pd.DataFrame(
+            [one for one in mycol.find({"date": date}, {"_id": 0})]
+        )  # .set_index('symbol')
+        df.set_index("symbol", inplace=True)
+        df = df["delivery_day"]
     except:
         traceback.print_exc()
         df = pd.DataFrame()
@@ -131,11 +137,11 @@ def au_real_time():
     #     save_minutes_data(force=True)  # 就算是非交易时期也要强制获取
     # myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
     mydb = myclient["au"]
-    mycol = mydb['minutes']
+    mycol = mydb["minutes"]
     # df = pd.read_sql(date, engine_minutes, index_col="index")
-    df = pd.DataFrame([one for one in mycol.find({'trade_day': date}, {'_id': 0})])
-    df = df[['time', 'future', 'Au_TD', 'diff', 'ytm']]
-    df.set_index('time', inplace=True)
+    df = pd.DataFrame([one for one in mycol.find({"trade_day": date}, {"_id": 0})])
+    df = df[["time", "future", "Au_TD", "diff", "ytm"]]
+    df.set_index("time", inplace=True)
     night_price = df.sort_index()["17:00":]  # 夜盘数据
     day_price = df.sort_index()[:"17:00"]  # 日盘数据
     df = pd.concat([night_price, day_price], axis=0)  # 拼接
@@ -191,7 +197,9 @@ def get_user_info():
             return pd.DataFrame(["无对应日期数据"])
         else:
             mycol = mydb[date]
-            df = pd.DataFrame([one for one in mycol.find({}, {'_id': 0})])  # .drop('_id', axis=1)
+            df = pd.DataFrame(
+                [one for one in mycol.find({}, {"_id": 0})]
+            )  # .drop('_id', axis=1)
             # df = pd.read_sql(date, engine)
             return df
 
@@ -295,14 +303,12 @@ def irs():
 def irs_data():
     # myclient = pymongo.MongoClient("mongodb://localhost:27017/")
     mydb = myclient["irs"]
-    mycol = mydb['irs']
+    mycol = mydb["irs"]
 
-    irs_df = pd.DataFrame([one for one in mycol.find({}, {'_id': 0})])
+    irs_df = pd.DataFrame([one for one in mycol.find({}, {"_id": 0})])
     # irs_df.set_index('Time', inplace=True)
-    irs_df = irs_df.fillna(0).sort_values('Time')
-    data_dict = {
-        k: v.tolist() for k, v in irs_df.iteritems()
-    }
+    irs_df = irs_df.fillna(0).sort_values("Time")
+    data_dict = {k: v.tolist() for k, v in irs_df.iteritems()}
     df = jsonify(data_dict)
     return df
 
@@ -326,7 +332,9 @@ def get_sql_data(product_type, product_name):
 
     mycol = mydb[product_type]
 
-    df = pd.DataFrame([one for one in mycol.find({'名称': product_name}, {'_id': 0})])  # .drop('_id',axis=1)
+    df = pd.DataFrame(
+        [one for one in mycol.find({"名称": product_name}, {"_id": 0})]
+    )  # .drop('_id',axis=1)
     # print(df)
     df.columns = ["名称", "获取日期", "产品", "价格范围", "均价", "涨跌", "单位", "实际日期"]
     # need_df = df.iloc[:, 1:].set_index("获取日期").sort_index()
@@ -346,7 +354,10 @@ def fetch_chain_data():
             return False
 
         df = get_sql_data(post_data["type"], post_data["name"])
-        return df.to_html(classes="deal table table-hover table-striped table-condensed", table_id="hist_table")
+        return df.to_html(
+            classes="deal table table-hover table-striped table-condensed",
+            table_id="hist_table",
+        )
     else:
         return "请使用post方法"
 
