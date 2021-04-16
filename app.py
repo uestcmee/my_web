@@ -17,7 +17,7 @@ app = Flask(__name__)
 if os.name == 'nt':
     myclient = pymongo.MongoClient("mongodb://cscficc.cn:27017/")
 else:
-    myclient = pymongo.MongoClient("mongodb://localhost.cn:27017/")
+    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 
 
 # myclient = pymongo.MongoClient("mongodb://cscficc.cn:27017/")
