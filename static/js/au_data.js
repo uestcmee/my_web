@@ -102,14 +102,16 @@ get_contract()
 
 //更新历史数据
 function getTdValue(col = 4) {
-    var sleep = function (time) {
-        var startTime = new Date().getTime() + parseInt(time, 10);
-        while (new Date().getTime() < startTime) {
-        }
-    };
-    sleep(1000);
+    // var sleep = function (time) {
+    //     var startTime = new Date().getTime() + parseInt(time, 10);
+    //     while (new Date().getTime() < startTime) {
+    //     }
+    // };
+    // sleep(2000);
     let tableData = app['_data']['au_data']
     // var tableId = document.getElementById("hist_table");
+    // var times = tableData['Date'];
+    // var ytm = tableData['ytm'];
     var times = Array();
     var ytm = Array();
 
@@ -121,7 +123,7 @@ function getTdValue(col = 4) {
     }
     au_hist_option.xAxis[0].data = times;
     au_hist_option.series[0].data = ytm;
-    console.log([times.length - 1, ytm[ytm.length - 1]])
+    // console.log([times.length - 1, ytm[ytm.length - 1]])
     au_hist_option.series[0].markPoint.data[2].coord = [times.length - 1, parseFloat(ytm[ytm.length - 1])]
     au_hist_option.series[0].markPoint.data[2].value = '最新\n' + ytm[times.length - 1]
 
