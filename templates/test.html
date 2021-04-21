@@ -3,32 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <!-- import CSS -->
-    <!--  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">-->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
 </head>
 <body>
-<div></div>
-<div>
-    <div>
-        <div id="app">
-            <table>
-                <tr v-for="(one) in tableData">
-                    <th v-for="(row) in one">
-                        {{row}}
-                    </th>
-                    <!--        {{one}}-->
-                </tr>
-            </table>
-        </div>
-    </div>
+<div id="app">
+    <template>
+        <el-table
+                :data="tableData"
+                stripe
+                style="width: 100%"
+                max-height="400"
+
+        >
+            <el-table-column
+                    prop="date"
+                    label="日期"
+                    sortable
+                    width="180">
+            </el-table-column>
+            <el-table-column
+                    prop="name"
+                    label="姓名"
+                    sortable
+                    width="180">
+
+            </el-table-column>
+            <el-table-column
+                    prop="address"
+                    label="地址">
+            </el-table-column>
+        </el-table>
+    </template>
+
 </div>
-<div></div>
-</body>
-<!-- import Vue before Element -->
-<!--  <script src="https://unpkg.com/vue/dist/vue.js"></script>-->
-<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<!-- 开发环境版本，包含了有帮助的命令行警告 -->
+<!--<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
+<!-- 生产环境版本，优化了尺寸和速度 -->
+<!--<script src="https://cdn.jsdelivr.net/npm/vue"></script>-->
+<!--<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>-->
+<script src="https://unpkg.com/vue/dist/vue.min.js"></script>
 
 <!--  &lt;!&ndash; import JavaScript &ndash;&gt;-->
-<!--  <script src="https://unpkg.com/element-ui/lib/index.js"></script>-->
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
 <script>
     var app = new Vue({
         el: '#app',
@@ -50,7 +67,11 @@
                 name: '王小虎',
                 address: '上海市普陀区金沙江路 1516 弄'
             }]
-        },
+        }
     })
 </script>
+
+
+</body>
+
 </html>
