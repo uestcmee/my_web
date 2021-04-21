@@ -25,7 +25,12 @@ else:
 
 @app.route("/")
 def index():
-    return render_template("main.html")
+    return render_template("main_elementUI.html")
+
+
+@app.route("/intro")
+def intro():
+    return render_template("intro.html")
 
 
 # 使用html方式引用页尾，需要做一个route

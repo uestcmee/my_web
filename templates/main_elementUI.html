@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>小工具合集</title>
+    <!-- 开发环境版本，包含了有帮助的命令行警告 -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!--    <script src="https://cdn.staticfile.org/vue/2.6.12/vue.min.js"></script>-->
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+<div id="app" style="height: auto">
+
+    <el-container>
+        <el-aside width="200px">
+            <el-menu :default-openeds="['1','2','3']">
+                <el-menu-item index="1-1" onclick="change_iframe('/intro')">
+                    <i class="el-icon-info"></i>介绍</template>
+                </el-menu-item>
+                <el-submenu index="1">
+                    <template slot="title"><i class="el-icon-s-opportunity"></i>期货</template>
+                    <el-menu-item-group>
+                        <el-menu-item index="1-1" onclick="change_iframe('/au_data')">黄金期现价差</el-menu-item>
+                        <el-menu-item index="1-2">
+                            <el-link :underline="false" href="https://www.jiaoyifamen.com/tools/"
+                                     target="_blank">交易法门
+                            </el-link>
+                        </el-menu-item>
+
+                    </el-menu-item-group>
+
+                </el-submenu>
+                <el-submenu index="2">
+                    <template slot="title"><i class="el-icon-s-order"></i>债券</template>
+                    <el-menu-item-group>
+                        <el-menu-item index="2-1" onclick="change_iframe('/irs')">IRS利差</el-menu-item>
+
+                        <el-menu-item index="2-2" onclick="change_iframe('/bond_deal')">CFETS成交</el-menu-item>
+                        <el-menu-item index="2-3" onclick="change_iframe('/upload')">中介成交（legacy）</el-menu-item>
+
+                    </el-menu-item-group>
+                </el-submenu>
+
+                <el-submenu index="3">
+                    <template slot="title"><i class="el-icon-s-marketing"></i>转债</template>
+                    <el-menu-item-group>
+                        <el-menu-item index="3-1" onclick="change_iframe('/chain_price')">产业链价格
+                        </el-menu-item>
+                    </el-menu-item-group>
+
+                </el-submenu>
+                </el-menu-item>
+            </el-menu>
+        </el-aside>
+        <el-main>
+            <iframe src="">
+            </iframe>
+        </el-main>
+    </el-container>
+
+</div>
+<style>
+    iframe {
+        height: 99%;
+        width: 100%;
+        border: 0;
+    }
+
+    .el-main {
+        top: 0;
+        bottom: 0;
+        position: absolute;
+        left: 200px;
+        right: 0;
+        padding: 0;
+    }
+
+    .el-menu {
+        border-right: 0;
+    }
+
+    .el-aside {
+        display: block;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        border: 0;
+        border-right: solid 1px #e6e6e6;
+    }
+
+    .el-aside el-menu {
+
+        background-color: transparent;
+    }
+</style>
+
+<script>
+    function change_iframe(url) {
+        document.getElementsByTagName('iframe')[0].src = url
+    }
+
+    // export default {
+    var app = new Vue({
+        el: '#app',
+        // data: {
+        data() {
+            const item = {
+                date: '2016-05-02',
+                name: '王小虎',
+                address: '上海市普陀区金沙江路 1518 弄'
+            };
+            return {
+                tableData: Array(20).fill(item)
+            }
+            // }
+        }
+    });
+</script>
+
+
+</body>
+</html>
