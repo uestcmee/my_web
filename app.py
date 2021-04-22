@@ -27,6 +27,9 @@ else:
 def index():
     return render_template("main_elementUI.html")
 
+@app.route("/stg_return")
+def stg_return():
+    return render_template("stg_return.html")
 
 @app.route("/intro")
 def intro():
@@ -86,7 +89,8 @@ def au_hist():
         mycol = mydb["day"]
         xh_df = pd.DataFrame([one for one in mycol.find({}, {"date": 1, 'xianhuo': 1, '_id': 0})])
         xh_df = xh_df.set_index('date')['xianhuo']
-        df_all = pd.concat([xh_df, qh_df], axis=1).dropna()
+        df_all = pd.merge(xh_df, qh_df, on='date').dropna()
+        # df_all = pd.concat([xh_df, qh_df], axis=1).dropna()
         df_all.sort_index(inplace=True)
         df_all.insert(0, 'Date', df_all.index)
         df_all.index = [i for i in range(len(df_all))]
