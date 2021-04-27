@@ -19,17 +19,15 @@ if os.name == 'nt':
 else:
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 
-
-# myclient = pymongo.MongoClient("mongodb://cscficc.cn:27017/")
-
-
 @app.route("/")
 def index():
     return render_template("main_elementUI.html")
 
+
 @app.route("/stg_return")
 def stg_return():
     return render_template("stg_return.html")
+
 
 @app.route("/intro")
 def intro():
@@ -194,28 +192,21 @@ def au_real_time():
 
 @app.route("/bond_deal", methods=["GET", "POST"])
 def get_user_info():
-    # file_path = "../my_scheduled_app/"
-    # file_name = "债券成交.db"
+    mydb = myclient["Bond"]
+    mycol_ouput_date = mydb['chinamoney_deal_date']  # 存储日期的collection
+    mycol_ouput = mydb['chinamoney_deal']  # 存储数据的collection
+    df_find_res = pd.DataFrame(mycol_ouput_date.find({}, {'date': 1, '_id': 0}))
+    print(df_find_res)
+    date_list = df_find_res['date'].tolist()
+    date_list.sort()
 
-    # myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
-    mydb = myclient["bond_deal"]
-    # pd.DataFrame([one for one in mycol.find({},{'_id':0})])#.drop('_id', axis=1)
-    # table_list = GetTables(file_path + file_name)
-    table_list = mydb.list_collection_names()
-    table_list.sort()
-    # table_list = GetTables(file_path + file_name)
-    latest_day = table_list[-1]
-
-    def get_date_list(date=latest_day):
-
-        # engine = create_engine(r"sqlite:///" + file_path + file_name)
-        if date not in table_list:
+    def get_date_list(date):
+        if date not in date_list:
             print("无对应日期数据")
             return pd.DataFrame(["无对应日期数据"])
         else:
-            mycol = mydb[date]
             df = pd.DataFrame(
-                [one for one in mycol.find({}, {"_id": 0})]
+                [one for one in mycol_ouput.find({'date': date}, {"_id": 0})]
             )  # .drop('_id', axis=1)
             # df = pd.read_sql(date, engine)
             return df
@@ -223,12 +214,12 @@ def get_user_info():
     if request.method == "POST":
         # 好像用print会导致报错，惊了
         # print("POST")
-        date = str(request.get_data()).split("=")[1][:-1]
+        date = str(request.get_data()).split("=")[1][:-1]  # 传入日期
         # print(date)
         info = get_date_list(date)
     else:
+        latest_day = date_list[-1]  # 最近的交易日
         date = latest_day
-        # print(date)
         info = get_date_list(date)
 
     return render_template(
