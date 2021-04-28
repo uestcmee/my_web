@@ -98,7 +98,7 @@ def deal_process_func(file_name="2020年06月25日周四.txt"):
             year = line[0]
             try:
                 rating = line[
-                    [re.search("AAA|(A\-1)", i) != None for i in line].index(True)
+                    [re.search("AA|(A\-1)", i) != None for i in line].index(True)
                 ]  # 找评级
                 ytm = line[
                     [
@@ -117,7 +117,7 @@ def deal_process_func(file_name="2020年06月25日周四.txt"):
                 fenlei[now_list].append([year, name, ytm, rating])
             except:
                 pass
-        else:
+        else:  # 为无数据的行
             pass
 
     fenlei_df = {

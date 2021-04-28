@@ -240,7 +240,7 @@ def upload():
         basepath = os.path.dirname(__file__)  # 当前文件所在路径,也是为了避免系统版本问题
         # secure_filename 只支持英文
         upload_path = os.path.join(
-            basepath, "data{0}BondDeal{0}uploads".format(os.sep), (f.filename)
+            basepath, "data{0}BondDeal{0}uploads".format(os.sep), (f.filename)  # 使用对应系统的分隔符os.sep
         )  # 注意：没有的文件夹一定要先创建，不然会提示没有该路径
         f.save(upload_path)
         # return redirect(url_for('upload'))
@@ -347,6 +347,7 @@ def get_sql_data(product_type, product_name):
     df.columns = ["名称", "获取日期", "产品", "价格范围", "均价", "涨跌", "单位", "实际日期"]
     # need_df = df.iloc[:, 1:].set_index("获取日期").sort_index()
     # df.columns = [0, "名称", "获取日期", "产品", "价格范围", "均价", "涨跌", "单位", "实际日期"]
+    df = df[df['价格范围'] != '未登录']
     need_df = df.set_index("获取日期").sort_index()
     need_df.index.name = None
     # cursor.close()
