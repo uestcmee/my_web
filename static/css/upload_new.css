@@ -1,0 +1,14 @@
+#fig_area {
+    position: fixed;
+    height: 500px;
+
+}
+
+
+.el-table td, .el-table th {
+    padding: 0;
+}
+
+.el-table {
+    margin: auto;
+}

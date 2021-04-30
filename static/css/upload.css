@@ -48,10 +48,10 @@ table {
     width: 500px;
     background: #ccc;
     margin: 10px auto;
-    border-collapse: collapse; /*border-collapse:collapseºÏ²¢ÄÚÍâ±ß¾à(È¥³ı±í¸ñµ¥Ôª¸ñÄ¬ÈÏµÄ2¸öÏñËØÄÚÍâ±ß¾à*/
+    border-collapse: collapse; /*border-collapse:collapseï¿½Ï²ï¿½ï¿½ï¿½ï¿½ï¿½ß¾ï¿½(È¥ï¿½ï¿½ï¿½ï¿½ï¿½Ôªï¿½ï¿½Ä¬ï¿½Ïµï¿½2ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¾ï¿½*/
 }
 th,td {
-    height: 16px; /*Õâ¸öÊıÒª´óÓÚÏÂÃæµÄline-height*/
+    height: 16px; /*ï¿½ï¿½ï¿½ï¿½ï¿½Òªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½line-height*/
     line-height: 16px;
     text-align: center;
     border: 1px solid #ccc;

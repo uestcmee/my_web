@@ -13,11 +13,13 @@ function getTdValue(bond_type)
 
     for(var i=1; i < tableId.rows.length;i++)
     {
-        year.push(tableId.rows[i].cells[4].innerHTML)
-        ytm.push(tableId.rows[i].cells[5].innerHTML)
-        pred.push(tableId.rows[i].cells[6].innerHTML)
-        spread.push(tableId.rows[i].cells[7].innerHTML)
-        bond_name.push(tableId.rows[i].cells[1].innerHTML)
+        if (parseFloat(tableId.rows[i].cells[5].innerHTML) < 10) {
+            year.push(tableId.rows[i].cells[4].innerHTML)
+            ytm.push(tableId.rows[i].cells[5].innerHTML)
+            pred.push(tableId.rows[i].cells[6].innerHTML)
+            spread.push(tableId.rows[i].cells[7].innerHTML)
+            bond_name.push(tableId.rows[i].cells[1].innerHTML)
+        }
 
     }
     var real_data=[year,ytm,bond_name,spread];

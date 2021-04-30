@@ -230,8 +230,86 @@ def get_user_info():
 from deal_process import deal_process_func
 
 
-@app.route("/upload", methods=["POST", "GET"])
+@app.route("/upload/files", methods=["GET"])
+def upload_files():
+    """
+    获取当前已有的文件
+    :return:
+    """
+    file_list = os.listdir('./data/BondDeal/uploads')
+    file_list.sort(reverse=True)
+    json_obj = {'files': [{i: v} for i, v in enumerate(file_list)]}
+    return json_obj
+
+
+@app.route("/upload/data", methods=["GET"])
+def upload_data():
+    """
+    获取当日的信用债成交数据
+    :return:
+    """
+    try:
+        txt_name = (request.args['txt_name'])
+    except:
+        txt_name = '2020年06月24日周三.txt'
+    print(txt_name)
+    if txt_name + '.json' in os.listdir('./data/BondDeal/processed'):
+        with open('./data/BondDeal/processed/{}.json'.format(txt_name))as f:
+            json_obj = json.load(f)
+    elif txt_name in os.listdir('./data/BondDeal/uploads'):
+        tot_df_dict = deal_process_func(txt_name)
+        json_obj = json.loads('{}', encoding='utf-8')
+        for k, df in tot_df_dict.items():
+            # json_obj[k] = ({k: v.tolist() for k, v in df.iteritems()}) # one col for one time
+            # json_obj[k] = (df.to_dict()) # simple version
+            json_obj[k] = ([i for i in df.T.to_dict().values()])  # one row one time  # the size is twice of the orgin
+
+        with open('./data/BondDeal/processed/{}.json'.format(txt_name), 'w')as f:  # 保存到文件中
+            json.dump(json_obj, f)
+    else:  # 无数据
+        return 0
+
+    # print(json_obj)
+    return json_obj
+
+
+@app.route("/upload", methods=["GET"])
 def upload():
+    file_list = os.listdir("data/BondDeal/uploads/")
+    file_list.sort()
+    # 用来展示的file
+    show_file = file_list[-1]  # 选择最新的日期的文件
+
+    # tot_df_dict = deal_process_func(show_file)
+    return render_template(
+        "upload_new.html",
+        # message="最新数据如下",
+        # now_date=show_file.split(".")[0],
+
+    )
+    # return render_template('upload.html', message='选择文件上传')
+
+
+@app.route("/upload/upload", methods=["POST", "GET"])
+def upload_upload():
+    if request.method == "POST":
+        f = request.files["file"]
+        print(f)
+        if f.filename == "":
+            return "未选择文件"
+        basepath = os.path.dirname(__file__)  # 当前文件所在路径,也是为了避免系统版本问题
+        # secure_filename 只支持英文
+        upload_path = os.path.join(
+            basepath, "data{0}BondDeal{0}uploads".format(os.sep), (f.filename)  # 使用对应系统的分隔符os.sep
+        )  # 注意：没有的文件夹一定要先创建，不然会提示没有该路径
+        f.save(upload_path)
+        return '上传成功'
+    else:
+        return '请使用post上传数据'
+
+
+@app.route("/upload_old", methods=["POST", "GET"])
+def upload_old():
     if request.method == "POST":
         f = request.files["file"]
         if f.filename == "":
