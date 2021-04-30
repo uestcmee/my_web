@@ -19,14 +19,7 @@ function revert(table_data) {
     return new_table
 }
 
-// var all_data
 var url = '/upload/data'
-// var zhongpiao_pic
-// var qiyezhai_pic
-// var zhongpiao_option
-// var qiyezhai_option
-// var fig = echarts.init(document.getElementById('fig'))
-
 const cityOptions = ['短融', '中票', '企业债', '其他'];
 var app = new Vue({
         el: '#app',
@@ -106,6 +99,14 @@ var app = new Vue({
             filterTag(value, row) {
                 return row.tag === value;
             },
+            filterHandler_N(value, row, column) {
+                const property = column['property'];
+                if (value === 'N') {//如果选择永续债
+                    return row[property].search('N') !== -1;
+                } else {
+                    return row[property].search('N') === -1
+                }
+            },
             filterHandler(value, row, column) {
                 const property = column['property'];
                 return row[property] === value;
@@ -159,139 +160,6 @@ var app = new Vue({
                     }
                 )
             },
-            // update_fig(bond_type) {
-            //     var pred = [];
-            //     var real = [];
-            //     for (row in eval(bond_type)) {
-            //         pred.push(row['pred'])
-            //         real.push(row['real_ytm'])
-            //     }
-            //     console.log(pred)
-            //     console.log('hello')
-            //     console.log(real)
-            //     //成功！遍历arr2就是一个成功的数组
-            //     var option_list = {
-            //         'zhongpiao': zhongpiao_option,
-            //         'qiyezhai': qiyezhai_option
-            //     }
-            //     // zhongpiao_option.xAxis[0].data = arr2[0];
-            //     option_list[bond_type].series[1].data = pred;
-            //     option_list[bond_type].series[0].data = real;
-            //     option_list[bond_type].tooltip.formatter = function (param) {
-            //
-            //         return param.data[2] + '<br/>' + param.data[0] + '年：' + param.data[1];
-            //     };
-            //     eval(bond_type).setOption(option_list[bond_type]);
-            // }
-            // 指定图表的配置项和数据
-            init_pic() {
-                zhongpiao_option = {
-                    title: {
-                        text: '中票',
-                        textStyle: {
-                            fontSize: 14,
-                        },
-                        left: 'left',
-                    },
-                    tooltip: {
-                        trigger: 'item',
-                        axisPointer: {
-                            type: 'cross',
-                            lineStyle: {}
-                        },
-                        formatter: ''
-                        // formatter:'{@bond_name}<br/>期限:{c}<br/>收益率:{b}',
-                        // formatter: function (param) {
-                        //     return 'nihao'+param;
-                        // },
-                    },
-                    legend: {
-                        data: ['中债中短票(AAA)', '成交'],
-                        left: 'right',
-                    },
-                    grid: {
-                        left: '20%',
-                        right: '6%',
-                        bottom: '10%',
-                        top: 50,
-                        containLabel: false
-                    },
-                    xAxis: [{
-                        // type: 'category',
-                        type: 'value',
-                        // data: [1,2,3]
-                    }],
-                    yAxis: [{
-                        type: 'value',
-                        min: 'dataMin',
-                        axisLabel: {
-                            show: true,
-                            fontSize: 12,
-                        },
-                        axisLine: {
-                            show: true
-                        },
-                        splitLine: {
-                            show: true,
-                            lineStyle: {
-
-                                width: 1,
-                                type: 'solid'
-                            }
-                        }
-                    }],
-                    dataZoom: [{
-                        start: 10,
-                        type: "inside",
-                    }],
-                    visualMap: [{
-                        type: 'piecewise',
-                        splitNumber: 7,
-                        min: 0.0,
-                        max: 1.4,
-                        minOpen: true,
-                        maxOpen: true,
-                        dimension: 3,
-                        text: ['高利差', '低利差'],
-                        inRange: {
-                            color: ["#313695", "#4575b4", "#74add1", "#abd9e9", "#e0f3f8", "#ffffbf", "#fee090", "#fdae61", "#f46d43", "#d73027", "#a50026"]
-                        }
-                    }],
-                    series: [{
-                        name: '成交',
-                        type: 'scatter',
-                        smooth: true,
-                        data: [3, 3, 3],
-                        itemStyle: {
-                            borderColor: "rgba(160, 160, 160, 1)"
-                        }
-                    },
-                        {
-                            name: '中债中短票(AAA)',
-                            type: 'line',
-                            smooth: true,
-                            data: [2, 1, 2],
-                            symbol: "none",
-                        }],
-
-                };
-                // 指定图表的配置项和数据
-                qiyezhai_option = JSON.parse(JSON.stringify(zhongpiao_option));
-                qiyezhai_option.title.text = '企业债'
-
-                zhongpiao_pic = echarts.init(document.getElementById('zhongpiao'));
-                qiyezhai_pic = echarts.init(document.getElementById('qiyezhai'));
-
-                //
-                zhongpiao_pic.setOption(zhongpiao_option);
-                qiyezhai_pic.setOption(qiyezhai_option);
-
-                //
-                $(window).resize(function () {
-                    zhongpiao_pic.resize()
-                    qiyezhai_pic.resize()
-                })
-            }
         },
         watch: {
             file_value(new_file_name, old_file_name) {
@@ -305,9 +173,6 @@ var app = new Vue({
         mounted() {
             this.get_file()
             this.get_data(this.file_name)
-            // this.update_table_data();
-
         }
-
     })
 ;
