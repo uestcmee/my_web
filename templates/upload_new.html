@@ -12,8 +12,8 @@
     <link rel="stylesheet" href="../static/css/upload_new.css">
     <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
     <script src="../static/js/echarts.min.js"></script>
-    <!--    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>-->
-    <script src="https://cdn.staticfile.org/vue/2.6.12/vue.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!--    <script src="https://cdn.staticfile.org/vue/2.6.12/vue.min.js"></script>-->
     <!-- 引入样式 -->
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
     <!-- 引入组件库 -->
@@ -51,15 +51,13 @@
             <div style="text-align: center">
                 <ul>
                     <li>
+                        <!--upload不要on-preview:点击文件列表中已上传文件的钩子-->
                         <el-upload
                                 class="upload-demo"
                                 action="/upload/upload"
-                                :on-preview="handlePreview"
-                                :on-remove="handleRemove"
-                                :before-remove="beforeRemove"
-                                multiple
-                                :limit="3"
-                                :on-exceed="handleExceed"
+
+                                :on-success="handleSuccess"
+                                :show-file-list=false
                                 :file-list="fileList">
                             <el-button type="primary">上传txt</el-button>
                             <!--                <div slot="tip" class="el-upload__tip">上传txt文件</div>-->
@@ -91,11 +89,13 @@
             </div>
             <!--                </el-col>-->
             <!--            </el-row>-->
-            <el-alert
-                    title="可以点击下面按钮选择债券种类，表格中点击剩余期限可筛选是否为永续债"
-                    type="info"
-                    style="margin-top:  20px;margin-bottom: 20px">
-            </el-alert>
+            <div id="alert_area">
+                <el-alert v-for="one_info in alter_infos"
+                          :title="one_info['text']"
+                          :type="one_info['type']"
+                          style="margin-top:  20px;margin-bottom: 20px">
+                </el-alert>
+            </div>
 
             <div style="margin-top:  20px;margin-bottom: 20px;text-align: center">
                 <!--                <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选-->
@@ -166,5 +166,6 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="../static/js/upload_new.js"></script>
 <script src="../static/js/ec_agency_bond_deal_new.js"></script>
+
 </body>
 </html>

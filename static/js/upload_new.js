@@ -1,24 +1,3 @@
-function revert(table_data) {
-    var table_len = table_data['year'].length
-    var new_table = Array(table_len)//.fill(cols)
-    for (var i = 0; i < table_len; i++) { //length of the table
-        let cols = {
-            'real_ytm': '',
-            'spread': '',
-            'year': '',
-            '剩余期限': '',
-            '收益率': '',
-            '简称': '',
-            '评级': ''
-        }
-        for (var name in table_data) {
-            cols[name] = table_data[name][i]
-        }
-        new_table[i] = cols
-    }
-    return new_table
-}
-
 var url = '/upload/data'
 const cityOptions = ['短融', '中票', '企业债', '其他'];
 var app = new Vue({
@@ -37,6 +16,7 @@ var app = new Vue({
             checkedCities: ['中票'],
             cities: cityOptions,
             isIndeterminate: true,
+            alter_infos: [{type: 'info', text: '可以点击下面按钮选择债券种类，表格中点击剩余期限可筛选是否为永续债'}]
         },
         methods: {
             update_fig() {
@@ -117,6 +97,10 @@ var app = new Vue({
             },
             handlePreview(file) {
                 console.log(file);
+            },
+            handleSuccess(file) {
+                console.log(file);
+                this.alter_infos.push({type: 'success', text: '文件上传成功'})
             },
             handleExceed(files, fileList) {
                 this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
