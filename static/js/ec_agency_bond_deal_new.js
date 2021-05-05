@@ -90,17 +90,8 @@ var init_option = {
 
 };
 // 指定图表的配置项和数据
-// var qiyezhai_option = JSON.parse(JSON.stringify(init_option));
-// qiyezhai_option.title.text = '企业债'
-//
 var fig = echarts.init(document.getElementById('fig_area'));
-// var qiyezhai_pic = echarts.init(document.getElementById('qiyezhai'));
-//
-//
-fig.setOption(init_option);
-// qiyezhai.setOption(qiyezhai_option);
-//
-//
+// fig.setOption(init_option);
 $(window).resize(function () {
     fig.resize()
 })

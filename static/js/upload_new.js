@@ -131,13 +131,14 @@ var app = new Vue({
                     function (response) {
                         // console.log(response)
                         all_file = response['data']['files']
-                        console.log(all_file)
+                        // console.log(all_file)
                         for (var i in all_file) {
                             key = Object.keys(all_file[i])[0] //数据键值
                             val = all_file[i][key] //数据值
-                            console.log(i, key, val)
+                            // console.log(i, key, val)
                             that.days.push({value: val, label: val}) //都只使用了数据值
                         }
+                        console.log('获取文件列表成功')
                     },
                     function (err) {
                         err

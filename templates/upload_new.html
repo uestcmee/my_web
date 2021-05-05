@@ -66,12 +66,12 @@
                         </el-upload>
                     </li>
                     <li>
-                        <!--                </el-col>-->
-                        <!--                <el-col :xs="8" :sm="8">-->
-
-                        <el-button type="success" :download="file_name.slice(0,-4)+'.xlsx'" id="download_file"
-                                   :href="'../static/download/' +file_name.slice(0,-4)+ '.xlsx'">下载xlsx
-                        </el-button>
+                        <!--在这里需要用a标签来产生链接，直接用el-button点击无反应-->
+                        <a :href="'../static/download/' +file_name.slice(0,-4)+ '.xlsx'">
+                            <el-button type="success" :download="file_name.slice(0,-4)+'.xlsx'" id="download_file">
+                                下载xlsx
+                            </el-button>
+                        </a>
 
                         <!--                </el-col>-->
                     </li>
@@ -165,12 +165,6 @@
 
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script src="../static/js/upload_new.js"></script>
-<script>
-
-</script>
-
 <script src="../static/js/ec_agency_bond_deal_new.js"></script>
-
-
 </body>
 </html>

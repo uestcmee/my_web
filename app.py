@@ -275,19 +275,9 @@ def upload_data():
 
 @app.route("/upload", methods=["GET"])
 def upload():
-    file_list = os.listdir("data/BondDeal/uploads/")
-    file_list.sort()
-    # 用来展示的file
-    show_file = file_list[-1]  # 选择最新的日期的文件
-
-    # tot_df_dict = deal_process_func(show_file)
     return render_template(
         "upload_new.html",
-        # message="最新数据如下",
-        # now_date=show_file.split(".")[0],
-
     )
-    # return render_template('upload.html', message='选择文件上传')
 
 
 @app.route("/upload/upload", methods=["POST", "GET"])
