@@ -122,6 +122,7 @@ var app = new Vue({
                             // console.log(i, key, val)
                             that.days.push({value: val, label: val}) //都只使用了数据值
                         }
+                        that.file_name = that.days[0].label
                         console.log('获取文件列表成功')
                     },
                     function (err) {

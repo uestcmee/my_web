@@ -237,7 +237,7 @@ def upload_files():
     :return:
     """
     file_list = os.listdir('./data/BondDeal/uploads')
-    file_list.sort(reverse=True)
+    file_list.sort(reverse=True)  # 逆序排序，确保第一个为最新的
     json_obj = {'files': [{i: v} for i, v in enumerate(file_list)]}
     return json_obj
 
