@@ -15,9 +15,9 @@ sys.path.insert(0, "../my_scheduled_app/")  # 加入path，以便引用那边的
 app = Flask(__name__)
 # 数据库
 if os.name == 'nt':
-    myclient = pymongo.MongoClient("mongodb://cscficc.cn:27017/")
+    myclient = pymongo.MongoClient("mongodb://db:112233@cscficc.cn:27017/")
 else:
-    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+    myclient = pymongo.MongoClient("mongodb://db:112233@localhost:27017/")
 
 @app.route("/")
 def index():
