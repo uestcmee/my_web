@@ -9,7 +9,7 @@ var app = new Vue({
             all_data: {},//所有数据的dict
             days: [],//目前有的日期
             file_value: '',
-            file_name: '2020年06月24日周三.txt',
+            file_name: '',
             fileList: [],
             //复选框
             checkAll: false,
