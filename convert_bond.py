@@ -1,11 +1,18 @@
+import datetime
+
 import numpy as np
 import pandas as pd
 import pymongo
 
 
 def one_rr(date, df_oneday, pct_chg_label='pct_chg', convert_value_label='convert_value'):
-    df_diff_price = pd.DataFrame()
+    # 计算上市日期，删除上市5日内的
+    df_oneday['ipo_day'] = datetime.datetime.strptime(date, '%Y-%m-%d') - df_oneday['上市日期'].apply(
+        lambda x: datetime.datetime.strptime(str(x)[:8], '%Y%m%d'))
+    df_oneday = df_oneday[df_oneday['ipo_day'] > '5 days']
 
+    # 计算各个分段的收益率
+    df_diff_price = pd.DataFrame()
     mini_df = df_oneday[(df_oneday[convert_value_label] < 70)]  # 小于70元
     df_diff_price.loc[date, '<70'] = (mini_df[pct_chg_label].mean())
 
