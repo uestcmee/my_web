@@ -24,15 +24,14 @@ def get_cum_rr():
     # 读取sina的转债数据并做预处理
     df = pd.DataFrame([one for one in mycol_sina.find({}, {'_id': 0})])
     df = df.replace('-', np.nan)
-    df = df[~df['pct_chg'].isna()]
-
+    df = df[~df['转债涨跌幅'].isna()]
     df_need = df
     # 计算每日各个分段的收益率
     rr_all = pd.DataFrame()  # 存储各日收益率
     day_list = df_need['date'].value_counts().index.tolist()
     for day in day_list:
         df_oneday = df_need[df_need['date'] == day]
-        rr_1d = one_rr(day, df_oneday, 'pct_chg', '转股价值')  # 得到当日的各个价格区间的收益率
+        rr_1d = one_rr(day, df_oneday, '转债涨跌幅', '转股价值')  # 得到当日的各个价格区间的收益率
         if rr_all.shape == (0, 0):
             rr_all = rr_1d
         else:
