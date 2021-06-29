@@ -19,6 +19,7 @@ if os.name == 'nt':
 else:
     myclient = pymongo.MongoClient("mongodb://db:112233@localhost:27017/")
 
+
 @app.route("/")
 def index():
     return render_template("main_elementUI.html")
@@ -250,6 +251,8 @@ def upload_data():
     """
     try:
         txt_name = (request.args['txt_name'])
+        if txt_name == '':
+            txt_name = '2020年06月24日周三.txt'
     except:
         txt_name = '2020年06月24日周三.txt'
     print(txt_name)
