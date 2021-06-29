@@ -110,6 +110,16 @@ def au_info():
         "au.html")
 
 
+@app.route("/conv_bond/table", methods=["GET"])
+def conv_bond_table():
+    from convert_bond import get_table
+    try:
+        date = (request.args['date'])
+    except:
+        date = '2021-06-29'
+    return jsonify(get_table(date))  # jsonify
+
+
 @app.route("/conv_bond/rr", methods=["GET"])
 def conv_bond_rr():
     from convert_bond import get_cum_rr

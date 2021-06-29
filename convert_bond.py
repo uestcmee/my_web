@@ -4,6 +4,8 @@ import numpy as np
 import pandas as pd
 import pymongo
 
+myclient = pymongo.MongoClient("mongodb://db:112233@cscficc.cn:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
+
 
 def one_rr(date, df_oneday, pct_chg_label='pct_chg', convert_value_label='convert_value'):
     # 计算上市日期，删除上市5日内的
@@ -26,7 +28,6 @@ def one_rr(date, df_oneday, pct_chg_label='pct_chg', convert_value_label='conver
 
 
 def get_cum_rr():
-    myclient = pymongo.MongoClient("mongodb://db:112233@cscficc.cn:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
     mycol_sina = myclient["Bond"]['convertible_bond_sina']
     # 读取sina的转债数据并做预处理
     df = pd.DataFrame([one for one in mycol_sina.find({}, {'_id': 0})])
@@ -48,6 +49,21 @@ def get_cum_rr():
     # rr_df.columns=list(map(lambda x :x.ljust(7,'_'),rr_df.columns.tolist())) # 加个下划线方便后面图中对齐
     rr_df = (((1 + rr_all / 100).cumprod() - 1) * 100).round(4)
     return rr_df
+
+
+def get_table(date='2021-06-29'):
+    mycol_sina = myclient['Bond']['convertible_bond_sina']
+    df = pd.DataFrame([one for one in mycol_sina.find({}, {'_id': 0})])
+    df_oneday = df[df['date'] == date][['转债名称', '转债涨跌幅', '正股涨跌幅', '转股价值', '转股溢价率']]
+    df_oneday = df_oneday.replace('-', np.nan)
+    df_oneday.dropna(inplace=True)
+    for col in df_oneday.columns:  # 转变为float
+        try:
+            df_oneday[col] = df_oneday[col].astype(float)
+        except:
+            print(col, '无法转变为 float')
+    table_list = list(df_oneday.T.to_dict().values())
+    return table_list
 
 
 if __name__ == '__main__':
