@@ -26,137 +26,141 @@
 <body>
 <div class="container">
     <div class="row clearfix ">
-
-        <div class="col-md-12 column">
-
-            <h3 class="text-center">
+        <h3 class="text-center">
+            IRS利差
+        </h3>
+        <ul class="breadcrumb">
+            <li>
+                <a href="/intro">主页</a>
+            </li>
+            <li class="active">
                 IRS利差
-            </h3>
-            <ul class="breadcrumb">
-                <li>
-                    <a href="/intro">主页</a>
-                </li>
-                <li class="active">
-                    IRS利差
-                </li>
-            </ul>
-            <div class="row ">
-                <div class="col-md-6 column">
+            </li>
+        </ul>
+        <div class="row breadcrumb" id="top-bar">
+            <div class="col-md-6 column">
 
-                    <label>选所用数据区间：</label>
-                    <div class="btn-group">
-                        <button class="btn btn-default" onclick="change_date(start=0)"> 全部数据</button>
-                        <button class="btn btn-default" onclick="change_date(start=1)"> 近一年</button>
-                        <button class="btn btn-default" onclick="change_date(start=2)"> 近两年</button>
-                        <button class="btn btn-default" onclick="change_date(start=3)"> 近三年</button>
-                        <button class="btn btn-default" onclick="change_date(start=4)"> 年初至今</button>
-                    </div>
-                </div>
-                <div class="col-md-6 column">
-
-                    <label>或选择开始日期：</label>
-                    <input class="btn btn-default" onchange="change_date(start=this.value)"
-                           type="date" name="date" value="2020-01-01"/>
-                    <!--                    <label >-</label>-->
-                    <!--                     <input class="btn btn-default" onchange="change_date(start=this.value)"-->
-                    <!--                            type="date" name="date" value="2021-01-01"/>-->
-                    <!--                <button class="btn btn-primary " onclick="calc_spread(data_now)">确认</button>-->
-
+                <label>选所用数据区间：</label>
+                <div class="btn-group">
+                    <button class="btn btn-default" onclick="change_date(start=0)"> 全部数据</button>
+                    <button class="btn btn-default" onclick="change_date(start=1)"> 近一年</button>
+                    <button class="btn btn-default" onclick="change_date(start=2)"> 近两年</button>
+                    <button class="btn btn-default" onclick="change_date(start=3)"> 近三年</button>
+                    <button class="btn btn-default" onclick="change_date(start=4)"> 年初至今</button>
                 </div>
             </div>
+            <div class="col-md-6 column">
 
-            <hr/>
-            <div>
-                <div class="row">
-                    <div class="col-md-2 column">
-                        <select class="form-control" id="type1" ,name="type1">
-                            <option value="国债" selected="selected">国债</option>
-                            <option value="国开">国开</option>
-                            <option value="口行">口行</option>
-                            <option value="FR007">IRS</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2 column">
+                <label>或选择开始日期：</label>
+                <input class="btn btn-default" onchange="change_date(start=this.value)"
+                       type="date" name="date" value="2020-01-01"/>
+                <!--                    <label >-</label>-->
+                <!--                     <input class="btn btn-default" onchange="change_date(start=this.value)"-->
+                <!--                            type="date" name="date" value="2021-01-01"/>-->
+                <!--                <button class="btn btn-primary " onclick="calc_spread(data_now)">确认</button>-->
 
-                        <select class="form-control" id="year1" ,name="year1">
-                            <option value="1Y">1Y</option>
-                            <option value="2Y">2Y</option>
-                            <option value="3Y">3Y</option>
-                            <option value="5Y" selected="selected">5Y</option>
-                            <option value="7Y">7Y</option>
-                            <option value="10Y">10Y</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2 column">
+            </div>
+        </div>
+        <div class="row clearfix ">
 
-                        <p class="text-center">减去</p>
-                    </div>
-                    <div class="col-md-2 column">
 
-                        <select class="form-control" id="type2" ,name="type2">
-                            <option value="国债">国债</option>
-                            <option value="国开">国开</option>
-                            <option value="口行">口行</option>
-                            <option value="FR007" selected="selected">IRS</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2 column">
+            <div class="col-md-12 column">
 
-                        <select class="form-control" id="year2" ,name="year2">
-                            <option value="1Y">1Y</option>
-                            <option value="2Y">2Y</option>
-                            <option value="3Y">3Y</option>
-                            <option value="5Y" selected="selected">5Y</option>
-                            <option value="7Y">7Y</option>
-                            <option value="10Y">10Y</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2 column">
 
-                        <button class="btn btn-primary btn-group-justified" onclick="calc_spread(data_now)">确认</button>
+                <hr/>
+                <div>
+                    <div class="row">
+                        <div class="col-md-2 column">
+                            <select class="form-control" id="type1" ,name="type1">
+                                <option value="国债" selected="selected">国债</option>
+                                <option value="国开">国开</option>
+                                <option value="口行">口行</option>
+                                <option value="FR007">IRS</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 column">
+
+                            <select class="form-control" id="year1" ,name="year1">
+                                <option value="1Y">1Y</option>
+                                <option value="2Y">2Y</option>
+                                <option value="3Y">3Y</option>
+                                <option value="5Y" selected="selected">5Y</option>
+                                <option value="7Y">7Y</option>
+                                <option value="10Y">10Y</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 column">
+
+                            <p class="text-center">减去</p>
+                        </div>
+                        <div class="col-md-2 column">
+
+                            <select class="form-control" id="type2" ,name="type2">
+                                <option value="国债">国债</option>
+                                <option value="国开">国开</option>
+                                <option value="口行">口行</option>
+                                <option value="FR007" selected="selected">IRS</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 column">
+
+                            <select class="form-control" id="year2" ,name="year2">
+                                <option value="1Y">1Y</option>
+                                <option value="2Y">2Y</option>
+                                <option value="3Y">3Y</option>
+                                <option value="5Y" selected="selected">5Y</option>
+                                <option value="7Y">7Y</option>
+                                <option value="10Y">10Y</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 column">
+
+                            <button class="btn btn-primary btn-group-justified" onclick="calc_spread(data_now)">确认
+                            </button>
+                        </div>
+
                     </div>
+
 
                 </div>
-
-
+                <div id="irs_hist" class="js_fig">
+                    利差图
+                </div>
+                <hr/>
+                <label> 选择日历图显示内容：</label>
+                <div class="btn-group">
+                    <button class="btn btn-default" onclick="update_calendar(start=0)"> 国债</button>
+                    <button class="btn btn-default" onclick="update_calendar(start=1)"> 国开</button>
+                    <button class="btn btn-default" onclick="update_calendar(start=2)"> 口行</button>
+                    <button class="btn btn-default" onclick="update_calendar(start=3)"> Repo</button>
+                </div>
+                <div id="calender" class="js_fig">
+                    日历图
+                </div>
+                <!--			<div class="progress active progress-striped">-->
+                <!--				<div class="progress-bar progress-success" style="width: 60%;">-->
+                <!--                    35%-->
+                <!--				</div>-->
+                <!--			</div>-->
+                <!--			<div class="progress active progress-striped">-->
+                <!--				<div class="progress-bar progress-success">-->
+                <!--				</div>-->
+                <!--			</div>-->
             </div>
-            <div id="irs_hist" class="js_fig">
-                利差图
-            </div>
-            <hr/>
-            <label> 选择日历图显示内容：</label>
-            <div class="btn-group">
-                <button class="btn btn-default" onclick="update_calendar(start=0)"> 国债</button>
-                <button class="btn btn-default" onclick="update_calendar(start=1)"> 国开</button>
-                <button class="btn btn-default" onclick="update_calendar(start=2)"> 口行</button>
-                <button class="btn btn-default" onclick="update_calendar(start=3)"> Repo</button>
-            </div>
-            <div id="calender" class="js_fig">
-                日历图
-            </div>
-            <!--			<div class="progress active progress-striped">-->
-            <!--				<div class="progress-bar progress-success" style="width: 60%;">-->
-            <!--                    35%-->
-            <!--				</div>-->
-            <!--			</div>-->
-            <!--			<div class="progress active progress-striped">-->
-            <!--				<div class="progress-bar progress-success">-->
-            <!--				</div>-->
-            <!--			</div>-->
         </div>
-    </div>
-    <hr/>
-    <div class="row clearfix">
-        <div class="col-md-12 column">
-            <div id="box_fig" class="js_fig"></div>
+        <hr/>
+        <div class="row clearfix">
+            <div class="col-md-12 column">
+                <div id="box_fig" class="js_fig"></div>
+            </div>
         </div>
-    </div>
-    <div class="row clearfix">
-        <div class="col-md-6 column">
-            <div id="time_spread" class="js_fig"></div>
-        </div>
-        <div class="col-md-6 column">
-            <div id="type_spread" class="js_fig"></div>
+        <div class="row clearfix">
+            <div class="col-md-6 column">
+                <div id="time_spread" class="js_fig"></div>
+            </div>
+            <div class="col-md-6 column">
+                <div id="type_spread" class="js_fig"></div>
+            </div>
         </div>
     </div>
 </div>

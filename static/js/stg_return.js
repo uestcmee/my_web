@@ -52,5 +52,4 @@ var hist_fig = echarts.init(document.getElementById('hist_fig'));
 hist_fig.setOption(hist_fig_option)
 $(window).resize(function () {
     hist_fig.resize()
-
 })
