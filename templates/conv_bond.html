@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>转债收益率</title>
+    <!--    vue+elementUI-->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!--    <script src="https://cdn.staticfile.org/vue/2.6.12/vue.min.js"></script>-->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+    <link rel="icon" href="../static/img/favicon.ico" type="image/x-ico"/>
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入组件库 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+
+</head>
+<body>
+
+<div id="app">
+    <!--    <h2>各转股价值段对应收益率</h2>-->
+    <el-col :span='24'>
+        <div id="hist_fig"></div>
+    </el-col>
+
+</div>
+
+<style>
+    #hist_fig {
+        height: 500px;
+        width: 100%;
+    }
+</style>
+
+<script src="../static/js/echarts.min.js"></script>
+
+<script>
+    var app = new Vue({
+            el: '#app',
+            data: {
+                // data() {
+                //     return {
+                hist_fig_option: {
+                    title: {
+                        text: '各转股价值对应累计收益率 ',
+                        left: 'left',
+                    },
+                    dataZoom: [
+                        {
+                            show: true,
+                            realtime: true,
+                        },
+                        {
+                            type: 'inside',
+                            realtime: true,
+                        }
+                    ],
+                    legend: {
+                        show: true,
+                    },
+                    // grid:  {width: '75%', height: '75%'},//利差
+                    tooltip: {
+                        trigger: 'axis',
+                    },
+                    xAxis: {
+                        show: true,
+                        type: 'category',
+                        data: []
+                    },
+                    yAxis: {
+                        name: '累计收益率',
+                        type: 'value',
+                        axisLabel: {
+                            show: true,
+                            fontSize: 12,
+
+                        }
+                    },
+                    series: []
+                },
+                priceData: {}
+            },
+            methods: {
+                update_fig() {
+                    this.hist_fig_option.xAxis.data = Object.keys(this.priceData["<70"])
+                    for (var one in Object.keys(this.priceData)) {
+                        let label = Object.keys(this.priceData)[one]
+                        this.hist_fig_option.series.push({
+                                name: label,
+                                type: 'line',
+                                smooth: false,
+                                data: Object.values(this.priceData[label])
+                            },
+                        );
+                    }
+                    var hist_fig = echarts.init(document.getElementById('hist_fig'));
+                    hist_fig.setOption(this.hist_fig_option);
+                    $(window).resize(function () {
+                        hist_fig.resize()
+                    })
+                },
+                sleep(time) {
+                    var startTime = new Date().getTime() + parseInt(time, 10);
+                    while (new Date().getTime() < startTime) {
+                    }
+                },
+                get_data() {
+                    that = this
+                    axios.get('/conv_bond/rr').then(
+                        function (response) {
+                            that.priceData = JSON.parse(response['data'])
+                            console.log(that.priceData)
+                            that.update_fig()
+
+                        },
+                        function (err) {
+                            err
+                        })
+                }
+            },
+            mounted() {
+                // this.sleep(1000); // 延时函数，单位ms
+                this.get_data()
+
+            }
+        })
+    ;
+</script>
+<!--<script src="../static/js/conv_bond.js"></script>-->
+
+<div id="footer"></div>
+<script>
+    $(function () {
+        $("#footer").load("footer.html");
+    });
+</script>
+</body>
+</html>

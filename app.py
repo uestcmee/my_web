@@ -106,26 +106,23 @@ def au_hist():
 
 @app.route("/au_data", methods=["GET", "POST"])
 def au_info():
-    # # df = pd.read_csv(au_hist_path, encoding="gbk")
-    # mydb = myclient["au"]
-    # mycol = mydb["day"]
-    # df = pd.DataFrame([one for one in mycol.find({}, {"_id": 0})])
-    # df = df[["date", "qihuo", "xianhuo", "diff", "ytm", "symbol"]]
-    # df.sort_values(by="date", inplace=True)
-    # df["ytm"] = df["ytm"].round(4)
-    # df.columns = [["日期", "期货", "现货", "价差", "收益率", "合约"]]
-    # # df["收益率"] = df["收益率"].apply(lambda x: round(x, 2))
-    # return render_template(
-    #     "au.html",
-    #     trade_day=get_today_str()["trade_day"],
-    #     au_price=df.to_html(
-    #         classes="table table-hover table-striped",
-    #         table_id="hist_table",
-    #         index=False,
-    #     ),
-    # )
     return render_template(
         "au.html")
+
+
+@app.route("/conv_bond/rr", methods=["GET"])
+def conv_bond_rr():
+    from convert_bond import get_cum_rr
+    rr_df = get_cum_rr()
+    rr_df_dict = pd.DataFrame(rr_df).to_json()
+    # print(rr_df_dict)
+    return jsonify(rr_df_dict)  # jsonify
+
+
+@app.route("/conv_bond", methods=["GET"])
+def conv_bond():
+    return render_template(
+        "conv_bond.html")
 
 
 # 这里因为前面修改了path，所以真的在引用schedule文件夹里的函数
@@ -135,15 +132,8 @@ from au_data_crawler import get_today_str
 @app.route("/au_contract_list")
 def au_contract_list():
     date = get_today_str()["trade_day"]
-    # try:
-    #     df = pd.read_sql(date, engine_contract, index_col="symbol")["delivery_day"]
-    # except:  # 如果没有找到对应的成交数据，重新获取一次
-    #     from au_data_crawler import save_contract
-    #
-    #     save_contract(init=True)
-    #     df = pd.read_sql(date, engine_contract, index_col="symbol")["delivery_day"]
+
     try:
-        # myclient = pymongo.MongoClient("mongodb://localhost:27017/")  # 其实好像可以用localhost，正好本地云端分别用自己的数据库
         mydb = myclient["au"]
         mycol = mydb["contract"]
         df = pd.DataFrame(
