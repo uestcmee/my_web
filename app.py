@@ -125,6 +125,7 @@ def conv_bond_table():
 def conv_bond_rr():
     from convert_bond import get_cum_rr
     rr_df = get_cum_rr()
+    rr_df.sort_index(inplace=True)  # 对时间进行排序
     rr_df_dict = pd.DataFrame(rr_df).to_json()
     # print(rr_df_dict)
     return jsonify(rr_df_dict)  # jsonify
