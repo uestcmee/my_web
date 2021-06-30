@@ -123,6 +123,7 @@ var app = new Vue({
                             that.days.push({value: val, label: val}) //都只使用了数据值
                         }
                         that.file_name = that.days[0].label
+                        that.get_data(that.file_name) //更新文件列表之后再获取数据，否则会先按空值获取
                         console.log('获取文件列表成功')
                     },
                     function (err) {
@@ -158,7 +159,6 @@ var app = new Vue({
         ,
         mounted() {
             this.get_file()
-            this.get_data(this.file_name)
         }
     })
 ;
