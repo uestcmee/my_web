@@ -45,6 +45,7 @@ def get_cum_rr():
         else:
             rr_all = pd.concat([rr_all, rr_1d])
     rr_all.dropna(inplace=True)  # 去掉空值
+    rr_all.sort_index(inplace=True)
     # 计算累计收益率
     # rr_df.columns=list(map(lambda x :x.ljust(7,'_'),rr_df.columns.tolist())) # 加个下划线方便后面图中对齐
     rr_df = (((1 + rr_all / 100).cumprod() - 1) * 100).round(4)
