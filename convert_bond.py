@@ -22,7 +22,7 @@ def one_rr(date, df_oneday, pct_chg_label='pct_chg', convert_value_label='conver
         mini_df = df_oneday[(df_oneday[convert_value_label] >= i) & (df_oneday[convert_value_label] < i + 10)]
         df_diff_price.loc[date, '{}-{}'.format(i, i + 10)] = (mini_df[pct_chg_label].mean())
 
-    mini_df = df_oneday[(df_oneday[convert_value_label] >= 150)]
+    mini_df = df_oneday[(df_oneday[convert_value_label] >= 130)]
     df_diff_price.loc[date, '130+'] = (mini_df[pct_chg_label].mean())
     return df_diff_price
 
