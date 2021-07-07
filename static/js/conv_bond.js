@@ -14,10 +14,10 @@ var app = new Vue({
                         realtime: true,
                         // start: 50
                     },
-                    // {
-                    //     type: 'inside',
-                    //     realtime: true,
-                    // }
+                    {
+                        type: 'inside',
+                        realtime: true,
+                    }
                 ],
                 legend: {
                     show: true,
