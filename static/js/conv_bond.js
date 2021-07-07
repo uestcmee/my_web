@@ -12,11 +12,12 @@ var app = new Vue({
                     {
                         show: true,
                         realtime: true,
+                        // start: 50
                     },
-                    {
-                        type: 'inside',
-                        realtime: true,
-                    }
+                    // {
+                    //     type: 'inside',
+                    //     realtime: true,
+                    // }
                 ],
                 legend: {
                     show: true,
@@ -52,31 +53,46 @@ var app = new Vue({
                 }], //表格中的值
             date_list: [], //所有日期
             choose_day: '2020-06-29', //选择的日期
+            hist_fig: '',
+            // start_value: 0, //图形的起始百分比，暂时没用
         },
         methods: {
             update_fig() {
                 date_list = Object.keys(this.priceData["<70"]) //获取日期列表
-
-                this.hist_fig_option.xAxis.data = date_list
+                this.hist_fig_option.xAxis.data = ['start'].concat(date_list)
+                // this.hist_fig_option.xAxis.data =
                 this.date_list = date_list //更新日期列表
                 this.choose_day = date_list[date_list.length - 1] //选择的日期
                 this.get_table()
 
                 for (var one in Object.keys(this.priceData)) {
-                    let label = Object.keys(this.priceData)[one]
+                    let label = Object.keys(this.priceData)[one] //区间范围label名称
+                    var series_data = [0].concat(Object.values(this.priceData[label]))
                     this.hist_fig_option.series.push({
                             name: label,
                             type: 'line',
                             smooth: false,
-                            data: Object.values(this.priceData[label])
+                            data: Object.values(series_data)
                         },
                     );
                 }
-                var hist_fig = echarts.init(document.getElementById('hist_fig'));
-                hist_fig.setOption(this.hist_fig_option);
+                hist_fig = echarts.init(document.getElementById('hist_fig')),
+                    hist_fig.setOption(this.hist_fig_option);
+                this.hist_fig = hist_fig
                 $(window).resize(function () {
                     hist_fig.resize()
                 })
+                // hist_fig.on('dataZoom', function (event) {
+                //     if (event.batch) {
+                //         // this.start_value = event.batch[0].start;
+                //         // end = event.batch[0].end;
+                //     } else {
+                //         this.start_value = event.start;
+                //         console.log(this.start_value)
+                //         // end = event.end;
+                //     }
+                //
+                // });
             },
             get_data() {
                 that = this
@@ -112,6 +128,7 @@ var app = new Vue({
         },
         mounted() {
             this.get_data() // 获取累计收益率数据
+
 
         }
     })
